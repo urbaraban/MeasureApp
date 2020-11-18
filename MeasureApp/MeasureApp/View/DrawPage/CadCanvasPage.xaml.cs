@@ -1,23 +1,26 @@
-﻿using Plugin.BLE;
-using Plugin.BLE.Abstractions.Contracts;
-using System;
+﻿using System;
+
 using Xamarin.Forms;
+using Xamarin.Forms.Xaml;
 
-namespace MeasureApp
+namespace MeasureApp.View.DrawPage
 {
-    public partial class MainPage : ContentPage
+    [XamlCompilation(XamlCompilationOptions.Compile)]
+    public partial class CadCanvasPage : ContentPage
     {
-        private IBluetoothLE ble = CrossBluetoothLE.Current;
-        private IAdapter adapter = CrossBluetoothLE.Current.Adapter;
-
-        public MainPage()
+        public CadCanvasPage()
         {
-            Device.SetFlags(new[] { "Shapes_Experimental", "Brush_Experimental" });
             InitializeComponent();
             AddBtn.Clicked += AddBtn_Clicked;
             ClearBtn.Clicked += ClearBtn_Clicked;
+            FitBtn.Clicked += FitBtn_Clicked;
         }
- 
+
+        private void FitBtn_Clicked(object sender, EventArgs e)
+        {
+            MainCanvas.FitChild();
+        }
+
         private void ClearBtn_Clicked(object sender, EventArgs e)
         {
             /*if (this.MainCanvas.SelectedLine != null)
@@ -30,7 +33,7 @@ namespace MeasureApp
 
         private async void AddBtn_Clicked(object sender, EventArgs e)
         {
-            string result = await DisplayPromptAsync("Добавить линию", "Мне нужны твоя длинна и угол", "Add", "Cancel", "0000&00", -1, Keyboard.Numeric, "300&90");
+            string result = await DisplayPromptAsync("Добавить линию", "Мне нужны твоя длинна и угол", "Add", "Cancel", "0000&00", -1, Keyboard.Numeric, "100&90");
 
             if (string.IsNullOrEmpty(result) == false)
             {

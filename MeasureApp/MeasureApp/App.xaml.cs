@@ -1,4 +1,5 @@
-﻿using System;
+﻿using App1;
+using Plugin.BLE.Abstractions.Contracts;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -6,11 +7,12 @@ namespace MeasureApp
 {
     public partial class App : Application
     {
+        public static IAdapter Adapter;
         public App()
         {
             Device.SetFlags(new[] { "Shapes_Experimental", "Brush_Experimental" });
             InitializeComponent();
-            MainPage = new MainPage();
+            MainPage = new AppShell();
         }
 
         protected override void OnStart()

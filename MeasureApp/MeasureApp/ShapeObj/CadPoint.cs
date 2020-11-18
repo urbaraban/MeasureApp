@@ -12,7 +12,7 @@ namespace MeasureApp.ShapeObj
             get => this._x;
             set
             {
-                if (this._x != value)
+                if (this._x != (value))
                 {
                     this._x = value;
                     OnPropertyChanged("Point");
