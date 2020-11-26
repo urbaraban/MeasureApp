@@ -6,7 +6,6 @@ namespace MeasureApp.ShapeObj
 {
     public class CadAnchor : CadObject
     {
-
         public EllipseGeometry _ellipse;
 
         public CadPoint cadPoint;
@@ -33,7 +32,6 @@ namespace MeasureApp.ShapeObj
 
             this.Data = this._ellipse;
         }
-
         private void CadPoint_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "Point")

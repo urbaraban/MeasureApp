@@ -10,7 +10,7 @@ namespace MeasureApp
         public static IAdapter Adapter;
         public App()
         {
-            Device.SetFlags(new[] { "Shapes_Experimental", "Brush_Experimental" });
+            Device.SetFlags(new[] { "Shapes_Experimental", "Brush_Experimental", "DragAndDrop_Experimental" });
             InitializeComponent();
             MainPage = new AppShell();
         }

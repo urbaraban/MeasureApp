@@ -1,5 +1,7 @@
-﻿using System;
-
+﻿using MeasureApp.ShapeObj;
+using MeasureApp.ShapeObj.LabelObject;
+using System;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -14,6 +16,23 @@ namespace MeasureApp.View.DrawPage
             AddBtn.Clicked += AddBtn_Clicked;
             ClearBtn.Clicked += ClearBtn_Clicked;
             FitBtn.Clicked += FitBtn_Clicked;
+            MainCanvas.ShowObjectMenu += MainCanvas_ShowObjectMenu;
+            MainCanvas.CallValueDialog += MainCanvas_CallValueDialog;
+        }
+
+        private async void MainCanvas_CallValueDialog(object sender, CadVariable e)
+        {
+            string result = await DisplayPromptAsync("Изменить значение", e.Name, "Add", "Cancel", "0000", -1, Keyboard.Numeric, e.Value.ToString());
+
+            if (string.IsNullOrEmpty(result) == false)
+            {
+                e.Value = double.Parse(result);
+            }
+        }
+
+        private async void MainCanvas_ShowObjectMenu(object sender, SheetMenu e)
+        {
+            e.SendAction(await DisplayActionSheet("Чего делаем?", "Cancel", null, e.Buttons.ToArray()));
         }
 
         private void FitBtn_Clicked(object sender, EventArgs e)
@@ -46,5 +65,8 @@ namespace MeasureApp.View.DrawPage
             }
 
         }
+
+  
+    
     }
 }
