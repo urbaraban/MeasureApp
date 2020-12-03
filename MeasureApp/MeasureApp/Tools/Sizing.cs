@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
+using Xamarin.Forms;
 
 namespace MeasureApp.Tools
 {
@@ -13,7 +14,7 @@ namespace MeasureApp.Tools
            return Math.Sqrt(Math.Pow(cadPoint2.X - cadPoint1.X, 2) + Math.Pow(cadPoint2.Y - cadPoint1.Y, 2));
         }
 
-        public static CadPoint GetPositionLineFromAngle(CadPoint Point1, CadPoint Point2, double newLenth, double angle)
+        public static Point GetPositionLineFromAngle(CadPoint Point1, CadPoint Point2, double newLenth, double angle)
         {
             double Lenth = PtPLenth(Point1, Point2);
 
@@ -22,7 +23,7 @@ namespace MeasureApp.Tools
             double angleInRadians = angle * (Math.PI / 180);
             double cosTheta = Math.Cos(angleInRadians);
             double sinTheta = Math.Sin(angleInRadians);
-            return new CadPoint()
+            return new Point()
             {
                 X =
                     (double)
@@ -51,6 +52,36 @@ namespace MeasureApp.Tools
                 X = Point1.X + (Point2.X - Point1.X) * t,
                 Y = Point1.Y + (Point2.Y - Point1.Y) * t
             };
+        }
+
+        public static double AngleHorizont(CadPoint cadPoint1, CadPoint cadPoint2)
+        {
+            double degrees;
+
+            // Avoid divide by zero run values.
+            if (cadPoint2.X - cadPoint1.X == 0)
+            {
+                if (cadPoint2.Y > cadPoint1.X)
+                    degrees = 90;
+                else
+                    degrees = 270;
+            }
+            else
+            {
+                // Calculate angle from offset.
+                double riseoverrun = (double)(cadPoint2.Y - cadPoint1.Y) / (double)(cadPoint2.X - cadPoint1.X);
+                double radians = Math.Atan(riseoverrun);
+                degrees = radians * ((double)180 / Math.PI);
+
+                // Handle quadrant specific transformations.       
+                if ((cadPoint2.X - cadPoint1.X) < 0 || (cadPoint2.Y - cadPoint1.Y) < 0)
+                    degrees += 180;
+                if ((cadPoint2.X - cadPoint1.X) > 0 && (cadPoint2.Y - cadPoint1.Y) < 0)
+                    degrees -= 180;
+                if (degrees < 0)
+                    degrees += 360;
+            }
+            return degrees;
         }
     }
 }

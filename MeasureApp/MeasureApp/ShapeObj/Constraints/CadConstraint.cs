@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace MeasureApp.ShapeObj.Constraints
@@ -20,10 +19,27 @@ namespace MeasureApp.ShapeObj.Constraints
 
         public static void RemoveRunConstrait(CadConstraint cadConstraint, CadAnchor cadAnchor)
         {
-            if (RuntimeConstraits.Last() == cadConstraint)
+            if (RuntimeConstraits.Contains(cadConstraint) == true)
             {
-                RuntimeConstraits.Remove(cadConstraint);
-                FixedAnchor.Remove(cadAnchor);
+                if (cadConstraint == RuntimeConstraits[0])
+                {
+                    RuntimeConstraits.Clear();
+                    FixedAnchor.Clear();
+                }
+                else
+                {
+                    int ContsrIndex = RuntimeConstraits.IndexOf(cadConstraint);
+                    if (ContsrIndex > -1)
+                    {
+                        RuntimeConstraits.RemoveRange(ContsrIndex, RuntimeConstraits.Count - ContsrIndex);
+                    }
+
+                    int AnchorIndex = FixedAnchor.IndexOf(cadAnchor);
+                    if (AnchorIndex > -1)
+                    {
+                        FixedAnchor.RemoveRange(AnchorIndex, FixedAnchor.Count - AnchorIndex);
+                    }
+                }
             }
         }
 

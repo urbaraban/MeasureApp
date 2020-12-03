@@ -4,42 +4,59 @@ using System;
 
 namespace MeasureApp.ShapeObj.Constraints
 {
-    public class LenthAnchorAnchor : CadConstraint
+    public class LenthConstrait : CadConstraint
     {
-        private CadVariable _lenth
-        {
-            get => this.Variable;
-            set
-            {
-                this.Variable = value;
-            }
-        }
-
         public event EventHandler Changed;
 
         public Orientaton Orientation = Orientaton.OFF; // -1 — Off, 0 — Vetical, 1 — Horizontal
 
-        public CadAnchor Anchor1 { get; }
-        public CadAnchor Anchor2 { get; }
+        public CadAnchor Anchor1 { get; set; }
+        public CadAnchor Anchor2 { get; set; }
         public double Lenth 
         {
-            get => this._lenth.Value < 0 ? Sizing.PtPLenth(this.Anchor1.cadPoint, this.Anchor2.cadPoint) : this._lenth.Value;
-            set => this._lenth.Value = value;
+            get => this.Variable.Value < 0 ? Sizing.PtPLenth(this.Anchor1.cadPoint, this.Anchor2.cadPoint) : this.Variable.Value;
+            set
+            {
+                this.Variable.Value = value;
+                OnPropertyChanged("Lenth");
+            }
         }
 
-        public LenthAnchorAnchor(CadAnchor point1, CadAnchor point2, double Lenth)
+        public LenthConstrait(CadAnchor point1, CadAnchor point2, double Lenth)
         {
             this.Anchor1 = point1;
             this.Anchor2 = point2;
-            this._lenth = new CadVariable(Lenth);
+
+            this.Variable = new CadVariable(Lenth);
 
             this.Anchor1.PropertyChanged += Point1_PropertyChanged;
             this.Anchor2.PropertyChanged += Point2_PropertyChanged;
 
-            this.Anchor1.ConstrainList.Add(this);
-            this.Anchor2.ConstrainList.Add(this);
+            this.Anchor1.Constraints.Add(this);
+            this.Anchor2.Constraints.Add(this);
 
             this.Variable.PropertyChanged += Variable_PropertyChanged;
+
+            this.Anchor1.ChangedAnchror += Anchor1_ChangedAnchror;
+            this.Anchor2.ChangedAnchror += Anchor1_ChangedAnchror;
+        }
+
+        private void Anchor1_ChangedAnchror(object sender, CadAnchor e)
+        {
+            if (this.Anchor1 == sender) this.Anchor1 = e;
+            if (this.Anchor2 == sender) this.Anchor2 = e;
+        }
+
+
+        public void Remove()
+        {
+            this.Anchor1.PropertyChanged -= Point1_PropertyChanged;
+            this.Anchor2.PropertyChanged -= Point2_PropertyChanged;
+
+            this.Anchor1.Constraints.Remove(this);
+            this.Anchor2.Constraints.Remove(this);
+
+            this.Variable.PropertyChanged -= Variable_PropertyChanged;
         }
 
         private void Variable_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -54,7 +71,6 @@ namespace MeasureApp.ShapeObj.Constraints
 
         private void Point1_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-
             MakeMagic(this.Anchor1, this.Anchor2);
         }
 
@@ -62,7 +78,7 @@ namespace MeasureApp.ShapeObj.Constraints
         {
             if (this.Anchor2.IsFix == false)
             {
-                if (this._lenth.Value > -1 && this._lenth.Value != Sizing.PtPLenth(cadAnchor1.cadPoint, cadAnchor2.cadPoint) &&
+                if (this.Variable.Value > -1 && this.Variable.Value != Sizing.PtPLenth(cadAnchor1.cadPoint, cadAnchor2.cadPoint) &&
                     CadConstraint.RuntimeConstraits.Contains(this) == false && CadConstraint.FixedAnchor.Contains(this.Anchor2) == false)
                 {
                     CadConstraint.AddRunConstrait(this, cadAnchor1);
@@ -78,13 +94,11 @@ namespace MeasureApp.ShapeObj.Constraints
                             this.Orientation == Orientaton.Vertical ? cadAnchor1.cadPoint.Y + this.Lenth * vectorY : cadAnchor1.cadPoint.Y, true);
                     }
                     CadConstraint.RemoveRunConstrait(this, cadAnchor1);
-
-                    this.Changed?.Invoke(this, null);
                 }
             }
             else MakeMagic(cadAnchor2, cadAnchor1);
+
+            this.Changed?.Invoke(this, null);
         }
-
-
     }
 }

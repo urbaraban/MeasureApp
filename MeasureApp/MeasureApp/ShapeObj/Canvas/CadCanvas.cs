@@ -1,43 +1,87 @@
-﻿using MeasureApp.ShapeObj.Constraints;
+﻿using App1;
+using MeasureApp.ShapeObj.Constraints;
 using MeasureApp.ShapeObj.LabelObject;
 using MeasureApp.Tools;
+using MeasureApp.View.DrawPage;
 using System;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 
-namespace MeasureApp.ShapeObj.Canvas
+namespace MeasureApp.ShapeObj
 {
     public class CadCanvas : ContentView
     {
-        public static double Width = 1000;
-        public static double Height = 1000;
+        public static new double Width = 100000;
+        public static new double Height = 100000;
 
-        public event EventHandler<double> ScaleChanged;
-        public event EventHandler<SheetMenu> ShowObjectMenu;
+        public static event EventHandler<double> DragSize;
+        public static double DragSizeKoeff = 1.5;
+        public static event EventHandler<double> RegularSize;
+        public static double RegularAnchorSize = 7;
+        private static double canvasscale = 1;
+
+
+        public static void CallDragSize()
+        {
+            DragSize?.Invoke(null, canvasscale);
+        }
+
+        public static void CallRegularSize()
+        {
+            RegularSize?.Invoke(null, canvasscale);
+        }
+
+        private DrawMethod _method = DrawMethod.StepByStep;
+
+        public DrawMethod Method
+        {
+            get => this._method;
+            set
+            {
+                this._method = value;
+                OnPropertyChanged("Method");
+            }
+        }
+
+        
         public event EventHandler<CadVariable> CallValueDialog;
 
         private AbsoluteLayout MainLayout;
+        private AbsoluteLayout GroupLayout;
         private AbsoluteLayout ObjectLayout;
         private AbsoluteLayout AnchorLayout;
 
         private PanGestureRecognizer panGesture = new PanGestureRecognizer();
 
-        private double currentScale = 1;
         private double startScale = 1;
-        private double xOffset = 0;
-        private double yOffset = 0;
+        private double startProp = 1;
        
 
         private Point startPoint = new Point(0, 0);
 
-        public LenthAnchorAnchor SelectedLine { get; internal set; }
+        public CadLine StartLine { get; internal set; }
+        public CadAnchor StartAnchor { get; internal set; }
+
+        public CadAnchor LastAnchor { get; internal set; }
 
         public CadCanvas()
         {
+            this.IsClippedToBounds = false;
+
+            this.WidthRequest = 100;
+            this.HeightRequest = 100;
+
             this.MainLayout = new AbsoluteLayout()
             {
-                ScaleY = -1
+                ScaleY = -1,
+            };
+
+            this.GroupLayout = new AbsoluteLayout()
+            {
+                VerticalOptions = LayoutOptions.StartAndExpand,
+                HorizontalOptions = LayoutOptions.EndAndExpand,
+                BackgroundColor = Color.White,
             };
 
             this.AnchorLayout = new AbsoluteLayout()
@@ -47,21 +91,16 @@ namespace MeasureApp.ShapeObj.Canvas
                 WidthRequest = CadCanvas.Width,
                 HeightRequest = CadCanvas.Height,
             };
-            //this.AnchorLayout.Layout(new Rectangle(-100, -100, CadCanvas.Width + 100, CadCanvas.Height + 100));
-            this.AnchorLayout.ChildAdded += Canvas_ChildAdded;
+
 
             this.ObjectLayout = new AbsoluteLayout()
             {
                 VerticalOptions = LayoutOptions.StartAndExpand,
                 HorizontalOptions = LayoutOptions.EndAndExpand,
-                BackgroundColor = Color.White,
+                
                 WidthRequest = CadCanvas.Width,
                 HeightRequest = CadCanvas.Height,
             };
-            this.ObjectLayout.Layout(new Rectangle(-100, -100, CadCanvas.Width + 100, CadCanvas.Height + 100));
-            this.ObjectLayout.ChildAdded += Canvas_ChildAdded;
-
-
 
             PinchGestureRecognizer pinchGestureRecognizer = new PinchGestureRecognizer();
             pinchGestureRecognizer.PinchUpdated += PinchGestureRecognizer_PinchUpdated;
@@ -70,197 +109,268 @@ namespace MeasureApp.ShapeObj.Canvas
 
             panGesture.PanUpdated += PanGesture_PanUpdated;
             this.GestureRecognizers.Add(panGesture);
-            this.MainLayout.Children.Add(this.ObjectLayout);
-            this.MainLayout.Children.Add(this.AnchorLayout);
+
 
             this.Content = this.MainLayout;
+            this.MainLayout.Children.Add(GroupLayout);
+            this.Add(this.ObjectLayout);
+            this.Add(this.AnchorLayout);
+
+            
         }
 
         public void FitChild()
         {
             if (this.ObjectLayout.Children.Count > 0)
             {
-                double minX = this.ObjectLayout.Children[0].Bounds.X,
-                    maxX = this.ObjectLayout.Children[0].Bounds.X + this.ObjectLayout.Children[0].Bounds.Width,
-                    minY = this.ObjectLayout.Children[0].Bounds.Y,
-                    maxY = this.ObjectLayout.Children[0].Bounds.Y + this.ObjectLayout.Children[0].Bounds.Height;
+                double startWidth = this.GroupLayout.Width * this.GroupLayout.Scale;
+                Point startCenterPoint = new Point()
+                {
+                    X = (this.MainLayout.Width / 2  - this.GroupLayout.TranslationX) / this.GroupLayout.Scale,
+                    Y = (this.MainLayout.Height / 2 - this.GroupLayout.TranslationY) / this.GroupLayout.Scale
+                };
+
+                double minX = this.ObjectLayout.TranslationX + this.ObjectLayout.Children[0].Bounds.Left,
+                    maxX = this.ObjectLayout.TranslationX + this.ObjectLayout.Children[0].Bounds.Right,
+                    minY = this.ObjectLayout.TranslationY + this.ObjectLayout.Children[0].Bounds.Top,
+                    maxY = this.ObjectLayout.TranslationY + this.ObjectLayout.Children[0].Bounds.Bottom;
 
                 foreach (VisualElement visualElement in this.ObjectLayout.Children)
                 {
-                    minX = Math.Min(minX, visualElement.X);
-                    maxX = Math.Max(maxX, visualElement.X + this.ObjectLayout.Children[0].Bounds.Width);
-                    minY = Math.Min(minY, visualElement.Y);
-                    maxY = Math.Max(maxY, visualElement.Y + this.ObjectLayout.Children[0].Bounds.Height);
+                    minX = Math.Min(minX, visualElement.TranslationX + visualElement.Bounds.Left);
+                    maxX = Math.Max(maxX, visualElement.TranslationX + visualElement.Bounds.Right);
+                    minY = Math.Min(minY, visualElement.TranslationY + visualElement.Bounds.Top);
+                    maxY = Math.Max(maxY, visualElement.TranslationY + visualElement.Bounds.Bottom);
                 }
 
-                this.ObjectLayout.Scale = Math.Min(DeviceDisplay.MainDisplayInfo.Width / DeviceDisplay.MainDisplayInfo.Density / (maxX - minX),
-                     DeviceDisplay.MainDisplayInfo.Height / DeviceDisplay.MainDisplayInfo.Density / (maxY - minY));
+                this.GroupLayout.Scale = Math.Min(this.MainLayout.Width / (maxX - minX), this.MainLayout.Height / (maxY - minY)) * 0.7;
 
-                this.ObjectLayout.TranslationX -= ((maxX - minX) / 2 - DeviceDisplay.MainDisplayInfo.Width / DeviceDisplay.MainDisplayInfo.Density / 2) * this.Scale;
-                this.ObjectLayout.TranslationY -= ((maxY - minY) / 2 - DeviceDisplay.MainDisplayInfo.Height / DeviceDisplay.MainDisplayInfo.Density / 2) * this.Scale;
+                this.GroupLayout.TranslationX += (this.GroupLayout.Width * this.GroupLayout.Scale - startWidth) / 2;
+                this.GroupLayout.TranslationY += (this.GroupLayout.Width * this.GroupLayout.Scale - startWidth) / 2;
+
+                //this.GroupLayout.TranslationX = (startCenterPoint.X - (minX + maxX) / 2) * this.GroupLayout.Scale;
+                //this.GroupLayout.TranslationY = (startCenterPoint.Y - (minY + maxY) / 2) * this.GroupLayout.Scale;
+
+                Console.WriteLine($"{this.GroupLayout.TranslationX} {this.GroupLayout.TranslationY}");
+
+                CadCanvas.canvasscale = this.GroupLayout.Scale;
+                CallRegularSize();
             }
         }
+
 
         private void PanGesture_PanUpdated(object sender, PanUpdatedEventArgs e)
         {
             if (e.StatusType == GestureStatus.Started)
             {
-                startPoint.X = this.MainLayout.TranslationX;
-                startPoint.Y = this.MainLayout.TranslationY;
+                startPoint.X = this.GroupLayout.TranslationX;
+                startPoint.Y = this.GroupLayout.TranslationY;
             }
             if (e.StatusType == GestureStatus.Running)
             {
-                this.MainLayout.TranslationX = startPoint.X + e.TotalX;
-                this.MainLayout.TranslationY = startPoint.Y + e.TotalY;
+                this.GroupLayout.TranslationX = startPoint.X + e.TotalX;
+                this.GroupLayout.TranslationY = startPoint.Y - e.TotalY;
             }
+
+            //Console.WriteLine($"{this.GroupLayout.TranslationX} {this.GroupLayout.TranslationY}");
         }
 
         private void PinchGestureRecognizer_PinchUpdated(object sender, PinchGestureUpdatedEventArgs e)
         {
             if (e.Status == GestureStatus.Started)
             {
-                // Store the current scale factor applied to the wrapped user interface element,
-                // and zero the components for the center point of the translate transform.
-                double startScale = this.ObjectLayout.Scale;
-               // this.MainLayout.AnchorX = 0;
-                //this.MainLayout.AnchorY = 0;
+                startProp = this.MainLayout.Width / (this.GroupLayout.Width * this.GroupLayout.Scale) * 30;
             }
             if (e.Status == GestureStatus.Running)
             {
-                // Calculate the scale factor to be applied.
-                currentScale += (e.Scale - 1) * startScale/2;
-               // currentScale = Math.Max(0.5, currentScale);
+                double StartWidth = this.GroupLayout.Width * this.GroupLayout.Scale;
 
-                // The ScaleOrigin is in relative coordinates to the wrapped user interface element,
-                // so get the X pixel coordinate.
-                double renderedX = this.MainLayout.X + xOffset;
-                double deltaX = renderedX / Width;
-                double deltaWidth = Width / (this.MainLayout.Width * startScale);
-                double originX = (e.ScaleOrigin.X - deltaX) * deltaWidth;
-
-                // The ScaleOrigin is in relative coordinates to the wrapped user interface element,
-                // so get the Y pixel coordinate.
-                double renderedY = this.MainLayout.Y + yOffset;
-                double deltaY = renderedY / Height;
-                double deltaHeight = Height / (this.MainLayout.Height * startScale);
-                double originY = (e.ScaleOrigin.Y - deltaY) * deltaHeight;
-
-                // Calculate the transformed element pixel coordinates.
-                double targetX = xOffset - (originX * this.MainLayout.Width) * (currentScale - startScale);
-                double targetY = yOffset - (originY * this.MainLayout.Height) * (currentScale - startScale);
-
-                // Apply translation based on the change in origin.
-                this.MainLayout.TranslationX = targetX.Clamp(-this.MainLayout.Width * (currentScale - 1), 0);
-                this.MainLayout.TranslationY = targetY.Clamp(-this.MainLayout.Height * (currentScale - 1), 0);
-
+                startScale = this.GroupLayout.Scale;
                 // Apply scale factor.
-                this.MainLayout.Scale = currentScale;
+                this.GroupLayout.Scale = startScale * (1 - ((1 - e.Scale) * startProp));
+                Console.WriteLine(e.Scale);
+
+                this.GroupLayout.TranslationX += (this.GroupLayout.Width * this.GroupLayout.Scale - StartWidth) / 2;
+                this.GroupLayout.TranslationY += (this.GroupLayout.Width * this.GroupLayout.Scale - StartWidth) / 2;
             }
             if (e.Status == GestureStatus.Completed)
             {
-                // Store the translation delta's of the wrapped user interface element.
-                xOffset = this.MainLayout.TranslationX;
-                yOffset = this.MainLayout.TranslationY;
+                CadCanvas.canvasscale = this.GroupLayout.Scale;
+                CallRegularSize();
             }
-        }
 
-        private void Canvas_ChildAdded(object sender, ElementEventArgs e)
-        {
-
+           
         }
 
         public void Clear()
         {
             this.AnchorLayout.Children.Clear();
             this.ObjectLayout.Children.Clear();
-            this.SelectedLine = null;
+            this.StartAnchor = null;
+            this.StartLine = null;
+            this.LastAnchor = null;
+            this.GroupLayout.Scale = 1;
+            this.GroupLayout.TranslationX = 0;
+            this.GroupLayout.TranslationY = 0;
         }
 
         public void Remove(CadObject cadObject)
         {
             this.ObjectLayout.Children.Remove(cadObject);
-            this.SelectedLine = null;
-        }
-        /*
-        private double ch(double value)
-        {
-            return this.zeroOffcet.X + value;
+            this.AnchorLayout.Children.Remove(cadObject);
         }
 
-        private double cv(double value)
+        public void Add(object Object)
         {
-            return this.ObjectLayout.HeightRequest - this.zeroOffcet.Y - value;
-        }*/
-
-        public void AddLine(double lineLenth, double lineAngle)
-        {
-            if (SelectedLine == null)
+            if (Object is CadLine)
             {
-                CadAnchor cadAnchor1 = new CadAnchor(new CadPoint(30, 30), 7);
-                cadAnchor1.Droped += CadAnchor1_Droped;
-                CadAnchor cadAnchor2 = new CadAnchor(new CadPoint(30, 30 + lineLenth), 7);
-                cadAnchor2.Droped += CadAnchor1_Droped;
-                MakeLine(new LenthAnchorAnchor(cadAnchor1, cadAnchor2, lineLenth), lineAngle);
+                this.ObjectLayout.Children.Add((CadLine)Object);
+            }
+            if (Object is CadAnchor)
+            {
+                this.AnchorLayout.Children.Add((CadAnchor)Object);
+            }
+            if (Object is ConstraitLabel)
+            {
+                this.AnchorLayout.Children.Add((ConstraitLabel)Object);
+            }
+            if (Object is AbsoluteLayout)
+            {
+                this.GroupLayout.Children.Add((AbsoluteLayout)Object);
+            }
+        }
+
+        /// <summary>
+        /// Find position and make line on canvas with anchor
+        /// </summary>
+        /// <param name="Lenth"></param>
+        /// <param name="Angle"></param>
+        public void BuildLine(double Lenth, double Angle)
+        {
+            CadLine cadLine = null;
+
+            //Если у нас нет линии привязки
+            if (this.StartLine == null)
+            {
+                cadLine = MakeLine(new LenthConstrait(MakeAnchor(100, 100), MakeAnchor(100, 100 + Lenth), Lenth), Angle);
             }
             else
             {
-                if (SelectedLine is LenthAnchorAnchor anchorAnchor)
+                if (this.StartLine is CadLine)
                 {
-                    CadAnchor cadAnchor2 = new CadAnchor(Sizing.GetPositionLineFromAngle(anchorAnchor.Anchor1.cadPoint, anchorAnchor.Anchor2.cadPoint, lineLenth, lineAngle));
-                    MakeLine(new LenthAnchorAnchor(anchorAnchor.Anchor2, cadAnchor2, lineLenth), lineAngle);
+                    Point point = Sizing.GetPositionLineFromAngle(this.StartLine.AnchorsConstrait.Anchor1.cadPoint, this.StartLine.AnchorsConstrait.Anchor2.cadPoint, Lenth, Angle);
+                    CadAnchor cadAnchor2 = MakeAnchor(point.X, point.Y);
+                    cadLine = MakeLine(new LenthConstrait(this.LastAnchor, cadAnchor2, Lenth), Angle);
 
+                    this.AddConstraiLabel(new AngleLabel(new AngleConstrait(this.StartLine.AnchorsConstrait, cadLine.AnchorsConstrait, Angle)));
+                }
+            }
+
+            if (cadLine != null)
+            {
+                if (this.Method == DrawMethod.StepByStep || this.StartAnchor == null || this.StartLine == null)
+                {
+                    cadLine.IsSelect = true;
+                    this.LastAnchor = cadLine.AnchorsConstrait.Anchor2;
+
+                    if (this.Method == DrawMethod.StepByStep)
+                    {
+                        cadLine.AnchorsConstrait.Anchor2.IsSelect = true;
+                    }
+                    else if (this.StartAnchor == null)
+                    {
+                        cadLine.AnchorsConstrait.Anchor1.IsSelect = true;
+                    }
                 }
             }
         }
 
-        private void CadAnchor1_Droped(object sender, object e)
+        private void CadObject_Selected(object sender, bool e)
         {
-            if (sender is CadAnchor cadAnchor2 && e is CadAnchor cadAnchor1)
+            if (e == true)
             {
-                MakeLine(new LenthAnchorAnchor(cadAnchor1, cadAnchor2, -1), -1);
+                if (sender is CadAnchor cadAnchor)
+                {
+                    if (this.StartAnchor != null)
+                    {
+                        this.StartAnchor.IsSelect = false;
+                    }
+                    this.StartAnchor = cadAnchor;
+                }
+                if (sender is CadLine cadLine)
+                {
+                    if (this.StartLine != null)
+                    {
+                        this.StartLine.IsSelect = false;
+                    }
+                    this.StartLine = cadLine;
+                }
             }
         }
 
-        private void MakeLine(LenthAnchorAnchor lenthAnchorAnchor, double angle)
+        private async void CadAnchor1_Droped(object sender, object e)
+        {
+            if (sender != e)
+            {
+                if (sender is CadAnchor cadAnchor2 && e is CadAnchor cadAnchor1)
+                {
+                    SheetMenu sheetMenu = new SheetMenu(new System.Collections.Generic.List<string>() { "Connect", "Merge" });
+                    string result = await AppShell.Instance.SheetMenuDialog(sheetMenu);
+                    switch (result)
+                    {
+                        case "Connect":
+                            MakeLine(new LenthConstrait(cadAnchor1, cadAnchor2, -1), -1);
+                            break;
+                        case "Merge":
+                            cadAnchor1.ChangeAnchor(cadAnchor2);
+                            break;
+                    }
+                }
+            }
+        }
+
+        private CadAnchor MakeAnchor(double X, double Y, bool Visible = true)
+        {
+            CadAnchor cadAnchor = new CadAnchor(new CadPoint(X, Y));
+            cadAnchor.Scale = 1 / this.GroupLayout.Scale;
+            cadAnchor.Droped += CadAnchor1_Droped;
+            cadAnchor.Selected += CadObject_Selected;
+            cadAnchor.IsVisible = Visible;
+            this.Add(cadAnchor);
+            return cadAnchor;
+        }
+
+        private CadLine MakeLine(LenthConstrait lenthAnchorAnchor, double angle)
         {
             CadLine cadLine = new CadLine(lenthAnchorAnchor, false);
+            cadLine.StrokeThickness = 5 *  1 / this.GroupLayout.Scale;
+            cadLine.Selected += CadObject_Selected;
+
             LineLabel lineLabel = new LineLabel(cadLine);
-
-            this.ObjectLayout.Children.Add(cadLine);
-
+            this.Add(cadLine);
             this.AddConstraiLabel(lineLabel);
-            this.AnchorLayout.Children.Add(lenthAnchorAnchor.Anchor2);
 
-            if (SelectedLine is LenthAnchorAnchor anchorAnchor)
-            {
-              //  AngleLabel angleLabel = new AngleLabel(new AngleBetweenThreeAnchor(anchorAnchor, cadLine.AnchorsConstrait, angle));
-              //  this.AddConstraiLabel(angleLabel);
-            }
-            else
-            {
-                this.AnchorLayout.Children.Add(lenthAnchorAnchor.Anchor1);
-            }
-
-            cadLine.Update();
-
-            SelectedLine = cadLine.AnchorsConstrait;
+            return cadLine;
         }
 
         private void AddConstraiLabel(ConstraitLabel constraitLabel)
         {
-            constraitLabel.ShowObjectMenu += LineLabel_ShowObjectMenu;
             constraitLabel.CallValueDialog += LineLabel_CallValueDialog;
-            this.AnchorLayout.Children.Add(constraitLabel);
+            constraitLabel.Scale = 1 / this.GroupLayout.Scale;
+            this.Add(constraitLabel);
         }
+
 
         private void LineLabel_CallValueDialog(object sender, CadVariable e)
         {
             CallValueDialog?.Invoke(sender, e);
         }
 
-        private void LineLabel_ShowObjectMenu(object sender, SheetMenu e)
-        {
-            ShowObjectMenu?.Invoke(sender, e);
-        }
+    }
+
+    public enum DrawMethod
+    {
+        StepByStep,
+        FromPoint
     }
 }

@@ -3,7 +3,7 @@
        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
        xmlns:local="clr-namespace:MeasureApp.View"
        xmlns:drawpage="clr-namespace:MeasureApp.View.DrawPage"
-       xmlns:device="clr-namespace:MeasureApp.View.Device"
+       xmlns:device="clr-namespace:MeasureApp.View.BLEDevice.Pages"
        Title="MeasureApp"
        x:Class="App1.AppShell">
 

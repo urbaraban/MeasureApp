@@ -28,23 +28,26 @@ namespace MeasureApp.ShapeObj
             
         }
 
-        private LineGeometry Line;
-
-        public LenthAnchorAnchor AnchorsConstrait;
+        public LenthConstrait AnchorsConstrait;
 
 
         /// <summary>
         /// Visualize line between two anchor
         /// </summary>
         /// <param name="anchorAnchorLenth"></param>
-        public CadLine(LenthAnchorAnchor anchorAnchorLenth, bool TempFlag) : base(false)
+        public CadLine(LenthConstrait anchorAnchorLenth, bool TempFlag) : base(false)
         {
             this.TempLine = TempFlag;
             this.AnchorsConstrait = anchorAnchorLenth;
             this.AnchorsConstrait.Changed += Anchors_Changed;
             this.StrokeLineCap = PenLineCap.Round;
-
+            CadCanvas.RegularSize += CadCanvas_RegularSize;
             Update();
+        }
+
+        private void CadCanvas_RegularSize(object sender, double e)
+        {
+            this.StrokeThickness = 5 * 1 / e;
         }
 
         private void Anchors_Changed(object sender, EventArgs e)
@@ -58,18 +61,23 @@ namespace MeasureApp.ShapeObj
         public void Update()
         {
             double Offset = 10;
-            double MinX = Math.Min(this.AnchorsConstrait.Anchor1.cadPoint.X, this.AnchorsConstrait.Anchor2.cadPoint.X) - Offset;
-            double MinY = Math.Min(this.AnchorsConstrait.Anchor1.cadPoint.Y, this.AnchorsConstrait.Anchor2.cadPoint.Y) - Offset;
-            double MaxX = Math.Abs(this.AnchorsConstrait.Anchor2.cadPoint.X - this.AnchorsConstrait.Anchor1.cadPoint.X) + Offset;
-            double MaxY = Math.Abs(this.AnchorsConstrait.Anchor2.cadPoint.Y - this.AnchorsConstrait.Anchor1.cadPoint.Y) + Offset;
+
+            double MinX = Math.Min(this.AnchorsConstrait.Anchor1.cadPoint.X, this.AnchorsConstrait.Anchor2.cadPoint.X);
+            double MinY = Math.Min(this.AnchorsConstrait.Anchor1.cadPoint.Y, this.AnchorsConstrait.Anchor2.cadPoint.Y);
+            double MaxX = Math.Max(this.AnchorsConstrait.Anchor2.cadPoint.X, this.AnchorsConstrait.Anchor1.cadPoint.X);
+            double MaxY = Math.Max(this.AnchorsConstrait.Anchor2.cadPoint.Y, this.AnchorsConstrait.Anchor1.cadPoint.Y);
+
+            this.TranslationX = MinX - Offset;
+            this.TranslationY = MinY - Offset;
 
             this.Data = new LineGeometry()
             {
-                StartPoint = new Point(this.AnchorsConstrait.Anchor1.cadPoint.Point.X - MinX, this.AnchorsConstrait.Anchor1.cadPoint.Point.Y - MinY),
-                EndPoint = new Point(this.AnchorsConstrait.Anchor2.cadPoint.Point.X - MinX, this.AnchorsConstrait.Anchor2.cadPoint.Point.Y - MinY)
+                StartPoint = new Point(this.AnchorsConstrait.Anchor1.cadPoint.Point.X - this.TranslationX, this.AnchorsConstrait.Anchor1.cadPoint.Point.Y - this.TranslationY),
+                EndPoint = new Point(this.AnchorsConstrait.Anchor2.cadPoint.Point.X - this.TranslationX, this.AnchorsConstrait.Anchor2.cadPoint.Point.Y - this.TranslationY)
             };
 
-            this.Layout(new Xamarin.Forms.Rectangle(MinX, MinY, MaxX, MaxY));
+            this.Layout(new Xamarin.Forms.Rectangle(0, 0, MaxX - this.TranslationX + Offset, MaxY - this.TranslationY + Offset));
+
 
 
         }

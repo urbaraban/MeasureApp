@@ -40,5 +40,10 @@ namespace MeasureApp.ShapeObj
             this._value = Value;
             this.Name = Name;
         }
+
+        public void Update(double Value)
+        {
+            this._value = Value;
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using MeasureApp.ShapeObj.Constraints;
+﻿using MeasureApp.ShapeObj.Canvas;
+using MeasureApp.ShapeObj.Constraints;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,9 +11,7 @@ namespace MeasureApp.ShapeObj
 {
     public abstract class CadObject : Path, INotifyPropertyChanged
     {
-        public List<CadConstraint> ConstrainList = new List<CadConstraint>();
-
-        public event EventHandler<bool> SelectStatusChange;
+        public event EventHandler<bool> Selected;
         public event EventHandler<Point> DeltaTranslate;
         public event EventHandler<object> Droped;
 
@@ -24,7 +23,8 @@ namespace MeasureApp.ShapeObj
             set
             {
                 this._isselect = value;
-                //SelectStatusChange?.Invoke(this, this._isselect);
+                this.Stroke = this._isselect == true ? Brush.Orange : Brush.Blue;
+                Selected?.Invoke(this, this._isselect);
             }
         }
 
@@ -36,6 +36,7 @@ namespace MeasureApp.ShapeObj
             set
             {
                 this._isfix = value;
+                this.Stroke = this._isfix == true ? Brush.Gray : Brush.Blue;
                 OnPropertyChanged("IsFix");
             }
         }
@@ -97,22 +98,26 @@ namespace MeasureApp.ShapeObj
 
             this.dragGesture.CanDrag = true;
             this.dragGesture.DragStarting += DragGesture_DragStarting;
+            this.dragGesture.DropCompleted += DragGesture_DropCompleted;
             this.GestureRecognizers.Add(this.dragGesture);
 
             this.dropGesture.AllowDrop = true;
             this.dropGesture.Drop += DropGesture_Drop;
-            this.dropGesture.DragOver += DropGesture_DragOver;
             this.GestureRecognizers.Add(this.dropGesture);
         }
 
-        private void DropGesture_DragOver(object sender, DragEventArgs e)
+        private double regulaScale = 1;
+
+        private void DragGesture_DropCompleted(object sender, DropCompletedEventArgs e)
         {
-            //Console.WriteLine(e.Data.Properties["Object"]);
+            CadCanvas.CallRegularSize();
         }
+
 
         private void DragGesture_DragStarting(object sender, DragStartingEventArgs e)
         {
             e.Data.Properties.Add("Object", this);
+            CadCanvas.CallDragSize();
         }
 
         private void DropGesture_Drop(object sender, DropEventArgs e)
@@ -122,7 +127,7 @@ namespace MeasureApp.ShapeObj
 
         private void TapGesture_Tapped(object sender, EventArgs e)
         {
-            
+            this.IsSelect = !this.IsSelect;
         }
 
         private void PanGesture_PanUpdated(object sender, PanUpdatedEventArgs e)

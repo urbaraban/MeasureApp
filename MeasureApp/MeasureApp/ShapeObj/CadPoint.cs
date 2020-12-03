@@ -71,6 +71,12 @@ namespace MeasureApp.ShapeObj
             OnPropertyChanged("Point");
         }
 
+        public void Update(Point Point, bool Constraint = false)
+        {
+            this._x = Point.X;
+            this._y = Point.Y;
+            OnPropertyChanged("Point");
+        }
         public void Add(Point cadPoint)
         {
             this._x += cadPoint.X;

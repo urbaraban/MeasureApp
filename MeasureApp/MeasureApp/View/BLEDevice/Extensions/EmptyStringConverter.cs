@@ -2,7 +2,7 @@
 using System.Globalization;
 using Xamarin.Forms;
 
-namespace Robotics.Mobile.BtLEExplorer
+namespace MeasureApp.View.Device
 {
 	public class EmptyStringConverter : IValueConverter
 	{

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
-             xmlns:shapeobj="clr-namespace:MeasureApp.ShapeObj.Canvas"
+             xmlns:shapeobj="clr-namespace:MeasureApp.ShapeObj"
              x:Class="MeasureApp.View.DrawPage.CadCanvasPage">
     <ContentPage.Content>
         <StackLayout Orientation="Vertical" VerticalOptions="FillAndExpand">
@@ -19,6 +19,12 @@
                     <Button x:Name="AddBtn" Text="Add"/>
                     <Button x:Name="ClearBtn" Text="Clear"/>
                     <Button x:Name="FitBtn" Text="Fit"/>
+                </StackLayout>
+                <StackLayout Padding="20" Orientation="Horizontal" AbsoluteLayout.LayoutBounds="0, 0.98, -1, -1"
+                             AbsoluteLayout.LayoutFlags="PositionProportional">
+                    <RadioButton x:Name="RadioStep" CheckedChanged="RadioStep_CheckedChanged" HorizontalOptions="Center" GroupName="DrawMethod" IsChecked="True" Text="StepByStep" StyleId="" />
+                    <RadioButton x:Name="RadioPoint" CheckedChanged="RadioPoint_CheckedChanged" HorizontalOptions="Center" GroupName="DrawMethod" IsChecked="False" Text="FromPoint" WidthRequest="-1" StyleId="MethodPoint" />
+                    <Label x:Name="DrawMethodLabel" Text="DrawMethod" VerticalOptions="Center"/>
                 </StackLayout>
             </AbsoluteLayout>
         </StackLayout>
