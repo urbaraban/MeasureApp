@@ -2,6 +2,7 @@
 using Xamarin.Forms;
 using System.Globalization;
 
+
 namespace MeasureApp.View.Device
 {
 	public class GuidConverter : IValueConverter

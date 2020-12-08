@@ -1,9 +1,10 @@
-﻿using Plugin.BLE;
-using Plugin.BLE.Abstractions.Contracts;
-using Plugin.BLE.Abstractions.EventArgs;
+﻿
+using App1;
+using InTheHand.Bluetooth;
 using System;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -13,86 +14,158 @@ namespace MeasureApp.View.BLEDevice.Pages
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class DeviceList : ContentPage
     {
-        IAdapter adapter;
-        ObservableCollection<IDevice> devices;
+        private List<BluetoothDevice> Devices = new List<BluetoothDevice>();
 
         public DeviceList()
         {
             InitializeComponent();
 
-            this.adapter = CrossBluetoothLE.Current.Adapter;
-            this.devices = new ObservableCollection<IDevice>();
+            //////////////////////////////
+            ///
+            LoadBleScan();
 
-            listView.ItemsSource = devices;
+            ////////////////////////////////
 
-            adapter.DeviceDiscovered += (object sender, DeviceEventArgs e) => devices.Add(e.Device);
-
-            adapter.ScanTimeoutElapsed += (sender, e) =>
-            {
-                adapter.StopScanningForDevicesAsync(); // not sure why it doesn't stop already, if the timeout elapses... or is this a fake timeout we made?
-                Xamarin.Forms.Device.BeginInvokeOnMainThread(() => DisplayAlert("Timeout", "Bluetooth scan timeout elapsed", "OK"));
-            };
-
-            ScanAllButton.Clicked += (sender, e) => StartScanning();
+            ScanAllButton.Clicked += (sender, e) => LoadBleScan();
 
             ScanHrmButton.Clicked += (sender, e) => StartScanning();
         }
 
 
-        public async void OnItemSelected(object sender, SelectedItemChangedEventArgs e)
+        private async void LoadBleScan()
         {
-            if (((ListView)sender).SelectedItem == null)
-                return;
+            //listView.ItemsSource = Devices;
 
-            Debug.WriteLine(" xxxxxxxxxxxx OnItemSelected " + e.SelectedItem.ToString());
+            bool availability = false;
 
-            StopScanning();
-
-            var device = e.SelectedItem as IDevice;
-
-            //var servicePage = new ServiceList(adapter, device);
-
-            // load services on the next page
-            //await Navigation.PushAsync(servicePage);
-
-            ((ListView)sender).SelectedItem = null; // clear selection
-        }
-
-        void StartScanning()
-        {
-            Guid[] guids = new Guid[1];
-
-            StartScanning(guids);
-        }
-
-        void StartScanning(Guid[] forService)
-        {
-            if (adapter.IsScanning)
+            while (!availability)
             {
-                adapter.StopScanningForDevicesAsync();
-
-                Debug.WriteLine("adapter.StopScanningForDevices()");
+                availability = await Bluetooth.GetAvailabilityAsync();
+                await Task.Delay(500);
             }
-            else
-            {
-                devices.Clear();
-                adapter.StartScanningForDevicesAsync();
 
-                Debug.WriteLine("adapter.StartScanningForDevices(" + forService + ")");
+            foreach (var d in await Bluetooth.GetPairedDevicesAsync())
+            {
+                Devices.Add(d);
+                Debug.WriteLine($"{d.Id} {d.Name}");
+            }
+
+            Bluetooth.AdvertisementReceived += Bluetooth_AdvertisementReceived;
+            AppShell.scan = await Bluetooth.RequestLEScanAsync();
+
+            RequestDeviceOptions options = new RequestDeviceOptions();
+            options.AcceptAllDevices = true;
+            BluetoothDevice device = await Bluetooth.RequestDeviceAsync(options);
+
+            if (device != null)
+            {
+                LoadDevice(device);
             }
         }
 
-        void StopScanning()
+        private async void LoadDevice(BluetoothDevice device)
         {
-            // stop scanning
-            new Task(() =>
+            await device.Gatt.ConnectAsync();
+
+            var servs = await device.Gatt.GetPrimaryServicesAsync();
+
+            foreach (var serv in servs)
             {
-                if (adapter.IsScanning)
+                var rssi = await device.Gatt.ReadRssi();
+                Debug.WriteLine($"{rssi} {serv.Uuid} Primary:{serv.IsPrimary}");
+
+                Debug.Indent();
+
+                if (serv.Uuid.ToString() == "FFB0")
                 {
-                    Debug.WriteLine("Still scanning, stopping the scan");
-                    adapter.StopScanningForDevicesAsync();
+                    var characteristics = await serv.GetCharacteristicsAsync();
+
+
+                    foreach (var characteristic in characteristics)
+                    {
+                        Debug.WriteLine($"{characteristic.Uuid} UserDescription:{characteristic.UserDescription} Properties:{characteristic.Properties}");
+
+                        Debug.Indent();
+
+                        if (characteristic.Uuid.ToString() == "FFB2")
+                        {
+                             if (characteristic.Properties.HasFlag(GattCharacteristicProperties.Notify))
+                                {
+                                //var notifyResult = await characteristic.WriteValueWithoutResponseAsync();
+                                AppShell.GattCharacteristic = characteristic;
+
+                               // await characteristic.StartNotificationsAsync();
+                               // characteristic.WriteValueWithoutResponseAsync(Encoding.ASCII.GetBytes("1"));
+                                }
+
+
+                                foreach (var descriptors in await characteristic.GetDescriptorsAsync())
+                                {
+                                    Debug.WriteLine($"Descriptor:{descriptors.Uuid}");
+
+                                    var val2 = await descriptors.ReadValueAsync();
+
+                                    if (descriptors.Uuid == GattDescriptorUuids.ClientCharacteristicConfiguration)
+                                    {
+                                        Debug.WriteLine($"Notifying:{val2[0] > 0}");
+                                    }
+                                    else if (descriptors.Uuid == GattDescriptorUuids.CharacteristicUserDescription)
+                                    {
+                                        Debug.WriteLine($"UserDescription:{ByteArrayToString(val2)}");
+                                    }
+                                    else
+                                    {
+                                        Debug.WriteLine(ByteArrayToString(val2));
+                                    }
+
+                                }
+                            
+                        }
+
+                        Debug.Unindent();
+                    }
                 }
-            }).Start();
+                Debug.Unindent();
+            }
+        }
+
+        private void Chars_CharacteristicValueChanged(object sender, GattCharacteristicValueChangedEventArgs e)
+        {
+            
+        }
+
+        private void Bluetooth_AdvertisementReceived(object sender, BluetoothAdvertisingEvent e)
+        {
+            Devices.Add(e.Device);
+            Debug.WriteLine($"Name:{e.Name} Rssi:{e.Rssi}");
+        }
+
+
+
+        private static string ByteArrayToString(byte[] data)
+        {
+            if (data == null)
+                return "<NULL>";
+
+            StringBuilder sb = new StringBuilder();
+
+            foreach (byte b in data)
+            {
+                sb.Append(b.ToString("X"));
+            }
+
+            return sb.ToString();
+        }
+
+
+        private void StartScanning()
+        {
+           
+        }
+
+        private void StopScanning()
+        {
+            
         }
     }
 }

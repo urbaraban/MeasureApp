@@ -14,6 +14,7 @@ namespace MeasureApp.View.DrawPage
             AddBtn.Clicked += AddBtn_Clicked;
             ClearBtn.Clicked += ClearBtn_Clicked;
             FitBtn.Clicked += FitBtn_Clicked;
+     
 
             Binding binding = new Binding()
             {

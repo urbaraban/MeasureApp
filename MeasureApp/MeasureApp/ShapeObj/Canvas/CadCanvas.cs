@@ -2,11 +2,11 @@
 using MeasureApp.ShapeObj.Constraints;
 using MeasureApp.ShapeObj.LabelObject;
 using MeasureApp.Tools;
-using MeasureApp.View.DrawPage;
 using System;
+using System.Text;
+using System.Text.RegularExpressions;
 using Xamarin.Essentials;
 using Xamarin.Forms;
-using Xamarin.Forms.Internals;
 
 namespace MeasureApp.ShapeObj
 {
@@ -14,6 +14,7 @@ namespace MeasureApp.ShapeObj
     {
         public static new double Width = 100000;
         public static new double Height = 100000;
+        public static Point ZeroPoint = new Point(5000, 5000);
 
         public static event EventHandler<double> DragSize;
         public static double DragSizeKoeff = 1.5;
@@ -68,6 +69,7 @@ namespace MeasureApp.ShapeObj
         public CadCanvas()
         {
             this.IsClippedToBounds = false;
+            AppShell.UpdatedGattCharacteristic += AppShell_UpdatedGattCharacteristic;
 
             this.WidthRequest = 100;
             this.HeightRequest = 100;
@@ -115,8 +117,26 @@ namespace MeasureApp.ShapeObj
             this.MainLayout.Children.Add(GroupLayout);
             this.Add(this.ObjectLayout);
             this.Add(this.AnchorLayout);
-
+            this.GroupLayout.TranslationX = -ZeroPoint.X + 100;
+            this.GroupLayout.TranslationY = -ZeroPoint.Y + 100;
             
+        }
+
+        private async void AppShell_UpdatedGattCharacteristic(object sender, EventArgs e)
+        {
+            AppShell.GattCharacteristic.CharacteristicValueChanged += GattCharacteristic_CharacteristicValueChanged;
+            await AppShell.GattCharacteristic.StartNotificationsAsync();
+        }
+
+        private void GattCharacteristic_CharacteristicValueChanged(object sender, InTheHand.Bluetooth.GattCharacteristicValueChangedEventArgs e)
+        {
+            string value = Encoding.ASCII.GetString(e.Value);
+
+            Regex regex = new Regex(@"[^\d]");
+
+            double lenth = double.Parse(regex.Replace(value, ""));
+
+            BuildLine(lenth, -1);
         }
 
         public void FitChild()
@@ -126,27 +146,29 @@ namespace MeasureApp.ShapeObj
                 double startWidth = this.GroupLayout.Width * this.GroupLayout.Scale;
                 Point startCenterPoint = new Point()
                 {
-                    X = (this.MainLayout.Width / 2  - this.GroupLayout.TranslationX) / this.GroupLayout.Scale,
+                    X = (this.MainLayout.Width / 2 - this.GroupLayout.TranslationX) / this.GroupLayout.Scale,
                     Y = (this.MainLayout.Height / 2 - this.GroupLayout.TranslationY) / this.GroupLayout.Scale
                 };
 
-                double minX = this.ObjectLayout.TranslationX + this.ObjectLayout.Children[0].Bounds.Left,
-                    maxX = this.ObjectLayout.TranslationX + this.ObjectLayout.Children[0].Bounds.Right,
-                    minY = this.ObjectLayout.TranslationY + this.ObjectLayout.Children[0].Bounds.Top,
-                    maxY = this.ObjectLayout.TranslationY + this.ObjectLayout.Children[0].Bounds.Bottom;
+                double minX = double.MaxValue, maxX = double.MinValue, minY = double.MaxValue, maxY = double.MinValue;
 
                 foreach (VisualElement visualElement in this.ObjectLayout.Children)
                 {
-                    minX = Math.Min(minX, visualElement.TranslationX + visualElement.Bounds.Left);
-                    maxX = Math.Max(maxX, visualElement.TranslationX + visualElement.Bounds.Right);
-                    minY = Math.Min(minY, visualElement.TranslationY + visualElement.Bounds.Top);
-                    maxY = Math.Max(maxY, visualElement.TranslationY + visualElement.Bounds.Bottom);
+                    if (visualElement is CadLine cadLine)
+                    {
+                        minX = Math.Min(minX, cadLine.Bounds.Left);
+                        maxX = Math.Max(maxX, cadLine.Bounds.Right);
+                        minY = Math.Min(minY, cadLine.Bounds.Top);
+                        maxY = Math.Max(maxY, cadLine.Bounds.Bottom);
+                    }
                 }
+                double scale = Math.Min(this.MainLayout.Width / (maxX - minX), this.MainLayout.Height / (maxY - minY));
+                this.GroupLayout.Scale = scale * 0.8;
+                //this.GroupLayout.ScaleTo(scale, 15000, Easing.Linear);
 
-                this.GroupLayout.Scale = Math.Min(this.MainLayout.Width / (maxX - minX), this.MainLayout.Height / (maxY - minY)) * 0.7;
 
-                this.GroupLayout.TranslationX += (this.GroupLayout.Width * this.GroupLayout.Scale - startWidth) / 2;
-                this.GroupLayout.TranslationY += (this.GroupLayout.Width * this.GroupLayout.Scale - startWidth) / 2;
+                this.GroupLayout.TranslationX = -(this.GroupLayout.Width / 2 - (this.GroupLayout.Width / 2 - minX) * this.GroupLayout.Scale) + Math.Abs(maxX - minX) * this.GroupLayout.Scale * 0.1;
+                this.GroupLayout.TranslationY = -(this.GroupLayout.Height / 2 - (this.GroupLayout.Height / 2 - minY) * this.GroupLayout.Scale) + Math.Abs(maxY - minY) * this.GroupLayout.Scale * 0.1;
 
                 //this.GroupLayout.TranslationX = (startCenterPoint.X - (minX + maxX) / 2) * this.GroupLayout.Scale;
                 //this.GroupLayout.TranslationY = (startCenterPoint.Y - (minY + maxY) / 2) * this.GroupLayout.Scale;
@@ -188,7 +210,6 @@ namespace MeasureApp.ShapeObj
                 startScale = this.GroupLayout.Scale;
                 // Apply scale factor.
                 this.GroupLayout.Scale = startScale * (1 - ((1 - e.Scale) * startProp));
-                Console.WriteLine(e.Scale);
 
                 this.GroupLayout.TranslationX += (this.GroupLayout.Width * this.GroupLayout.Scale - StartWidth) / 2;
                 this.GroupLayout.TranslationY += (this.GroupLayout.Width * this.GroupLayout.Scale - StartWidth) / 2;
@@ -210,8 +231,8 @@ namespace MeasureApp.ShapeObj
             this.StartLine = null;
             this.LastAnchor = null;
             this.GroupLayout.Scale = 1;
-            this.GroupLayout.TranslationX = 0;
-            this.GroupLayout.TranslationY = 0;
+            this.GroupLayout.TranslationX = -ZeroPoint.X + 100;
+            this.GroupLayout.TranslationY = -ZeroPoint.Y + 100;
         }
 
         public void Remove(CadObject cadObject)
@@ -222,22 +243,25 @@ namespace MeasureApp.ShapeObj
 
         public void Add(object Object)
         {
-            if (Object is CadLine)
+            MainThread.BeginInvokeOnMainThread(() =>
             {
-                this.ObjectLayout.Children.Add((CadLine)Object);
-            }
-            if (Object is CadAnchor)
-            {
-                this.AnchorLayout.Children.Add((CadAnchor)Object);
-            }
-            if (Object is ConstraitLabel)
-            {
-                this.AnchorLayout.Children.Add((ConstraitLabel)Object);
-            }
-            if (Object is AbsoluteLayout)
-            {
-                this.GroupLayout.Children.Add((AbsoluteLayout)Object);
-            }
+                if (Object is CadLine)
+                {
+                    this.ObjectLayout.Children.Add((CadLine)Object);
+                }
+                if (Object is CadAnchor)
+                {
+                    this.AnchorLayout.Children.Add((CadAnchor)Object);
+                }
+                if (Object is ConstraitLabel)
+                {
+                    this.AnchorLayout.Children.Add((ConstraitLabel)Object);
+                }
+                if (Object is AbsoluteLayout)
+                {
+                    this.GroupLayout.Children.Add((AbsoluteLayout)Object);
+                }
+            });
         }
 
         /// <summary>
@@ -252,7 +276,7 @@ namespace MeasureApp.ShapeObj
             //Если у нас нет линии привязки
             if (this.StartLine == null)
             {
-                cadLine = MakeLine(new LenthConstrait(MakeAnchor(100, 100), MakeAnchor(100, 100 + Lenth), Lenth), Angle);
+                cadLine = MakeLine(new LenthConstrait(MakeAnchor(ZeroPoint.X, ZeroPoint.Y), MakeAnchor(ZeroPoint.X, ZeroPoint.Y + Lenth), Lenth), Angle);
             }
             else
             {

@@ -30,6 +30,11 @@ namespace MeasureApp.ShapeObj
 
         public LenthConstrait AnchorsConstrait;
 
+        public new Xamarin.Forms.Rectangle Bounds => new Xamarin.Forms.Rectangle(
+            Math.Min(AnchorsConstrait.Anchor1.X, AnchorsConstrait.Anchor2.X), 
+            Math.Min(AnchorsConstrait.Anchor1.Y, AnchorsConstrait.Anchor2.Y), 
+            Math.Abs(AnchorsConstrait.Anchor2.X - AnchorsConstrait.Anchor1.X), 
+            Math.Abs(AnchorsConstrait.Anchor2.Y - AnchorsConstrait.Anchor1.Y));
 
         /// <summary>
         /// Visualize line between two anchor
