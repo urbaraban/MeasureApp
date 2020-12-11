@@ -83,5 +83,23 @@ namespace MeasureApp.Tools
             }
             return degrees;
         }
+
+        /// <summary>
+        /// Find Angle from three point. Use contrClockwise model
+        /// </summary>
+        /// <param name="p0">First point</param>
+        /// <param name="c">Center point</param>
+        /// <param name="p1">EndPoint</param>
+        /// <returns></returns>
+        public static double AngleThreePoint(CadPoint p0, CadPoint c, CadPoint p1)
+        {
+            var p0c = Math.Sqrt(Math.Pow(c.X - p0.X, 2) +
+                                Math.Pow(c.Y - p0.Y, 2)); // p0->c (b)   
+            var p1c = Math.Sqrt(Math.Pow(c.X - p1.X, 2) +
+                                Math.Pow(c.Y - p1.Y, 2)); // p1->c (a)
+            var p0p1 = Math.Sqrt(Math.Pow(p1.X - p0.X, 2) +
+                                 Math.Pow(p1.Y - p0.Y, 2)); // p0->p1 (c)
+            return Math.Acos((p1c * p1c + p0c * p0c - p0p1 * p0p1) / (2 * p1c * p0c)) * 180 / Math.PI;
+        }
     }
 }

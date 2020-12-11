@@ -1,21 +1,23 @@
-﻿using System;
+﻿using App1;
+using MeasureApp.ShapeObj.Interface;
+using System;
 using Xamarin.Forms;
 
 namespace MeasureApp.ShapeObj.LabelObject
 {
-    public abstract class  ConstraitLabel : Label
+    public abstract class  ConstraitLabel : Label, CanvasObject, CommonObject
     {
-        public event EventHandler<SheetMenu> ShowObjectMenu;
-        public event EventHandler<CadVariable> CallValueDialog;
+        public event EventHandler Removed;
         public event EventHandler<bool> Selected;
 
-        public SheetMenu sheetMenu;
-
         public CadVariable Variable;
+
 
         private int taps = 0;
         private bool runtimer = false;
 
+        public  virtual SheetMenu SheetMenu { get => this._sheetMenu; set => this._sheetMenu = value; }
+        private SheetMenu _sheetMenu;
 
         public ConstraitLabel(CadVariable Variable)
         {
@@ -29,10 +31,33 @@ namespace MeasureApp.ShapeObj.LabelObject
 
         private void Value_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            this.Text = this.Variable.ToString();
+            Update();
         }
 
         private async void TapGestureRecognizer_Tapped(object sender, EventArgs e)
+        {
+            TapManager();
+        }
+
+
+        public void TryRemove()
+        {
+            this.Removed?.Invoke(this, null);
+        }
+
+        public void Update()
+        {
+            Xamarin.Forms.Device.InvokeOnMainThreadAsync(() => {
+                this.Text = this.Variable.ToString();
+            });
+        }
+
+        public virtual void RunSheetMenuCommand(string NameCommand)
+        {
+            
+        }
+
+        public void TapManager()
         {
             taps += 1;
             if (this.runtimer == false)
@@ -46,7 +71,7 @@ namespace MeasureApp.ShapeObj.LabelObject
                     }
                     else
                     {
-                        ShowObjectMenu?.Invoke(this, this.sheetMenu);
+                        this.SheetMenu.ShowMenu(this);
                     }
 
                     taps = 0;
@@ -55,6 +80,5 @@ namespace MeasureApp.ShapeObj.LabelObject
                 this.runtimer = false;
             }
         }
-        
     }
 }

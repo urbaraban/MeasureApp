@@ -1,10 +1,10 @@
 ﻿using App1;
 using MeasureApp.ShapeObj.Constraints;
+using MeasureApp.ShapeObj.Interface;
 using MeasureApp.ShapeObj.LabelObject;
 using MeasureApp.Tools;
 using System;
-using System.Text;
-using System.Text.RegularExpressions;
+using System.Windows.Input;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 
@@ -12,6 +12,9 @@ namespace MeasureApp.ShapeObj
 {
     public class CadCanvas : ContentView
     {
+
+
+
         public static new double Width = 100000;
         public static new double Height = 100000;
         public static Point ZeroPoint = new Point(5000, 5000);
@@ -19,8 +22,10 @@ namespace MeasureApp.ShapeObj
         public static event EventHandler<double> DragSize;
         public static double DragSizeKoeff = 1.5;
         public static event EventHandler<double> RegularSize;
-        public static double RegularAnchorSize = 7;
+        public static double RegularAnchorSize = 10;
+        
         private static double canvasscale = 1;
+        
 
 
         public static void CallDragSize()
@@ -57,11 +62,12 @@ namespace MeasureApp.ShapeObj
 
         private double startScale = 1;
         private double startProp = 1;
+        
        
 
         private Point startPoint = new Point(0, 0);
 
-        public CadLine StartLine { get; internal set; }
+        public LenthConstrait LastLenthConstrait { get; internal set; }
         public CadAnchor StartAnchor { get; internal set; }
 
         public CadAnchor LastAnchor { get; internal set; }
@@ -69,7 +75,7 @@ namespace MeasureApp.ShapeObj
         public CadCanvas()
         {
             this.IsClippedToBounds = false;
-            AppShell.UpdatedGattCharacteristic += AppShell_UpdatedGattCharacteristic;
+            AppShell.LenthUpdated += AppShell_LenthUpdated;
 
             this.WidthRequest = 100;
             this.HeightRequest = 100;
@@ -122,23 +128,14 @@ namespace MeasureApp.ShapeObj
             
         }
 
-        private async void AppShell_UpdatedGattCharacteristic(object sender, EventArgs e)
+        private void AppShell_LenthUpdated(object sender, Tuple<double, double> e)
         {
-            AppShell.GattCharacteristic.CharacteristicValueChanged += GattCharacteristic_CharacteristicValueChanged;
-            await AppShell.GattCharacteristic.StartNotificationsAsync();
+            BuildLine(e.Item1, e.Item2);
         }
 
-        private void GattCharacteristic_CharacteristicValueChanged(object sender, InTheHand.Bluetooth.GattCharacteristicValueChangedEventArgs e)
-        {
-            string value = Encoding.ASCII.GetString(e.Value);
-
-            Regex regex = new Regex(@"[^\d]");
-
-            double lenth = double.Parse(regex.Replace(value, ""));
-
-            BuildLine(lenth, -1);
-        }
-
+        /// <summary>
+        /// Adapt screen for size object on Canvas
+        /// </summary>
         public void FitChild()
         {
             if (this.ObjectLayout.Children.Count > 0)
@@ -164,14 +161,9 @@ namespace MeasureApp.ShapeObj
                 }
                 double scale = Math.Min(this.MainLayout.Width / (maxX - minX), this.MainLayout.Height / (maxY - minY));
                 this.GroupLayout.Scale = scale * 0.8;
-                //this.GroupLayout.ScaleTo(scale, 15000, Easing.Linear);
-
 
                 this.GroupLayout.TranslationX = -(this.GroupLayout.Width / 2 - (this.GroupLayout.Width / 2 - minX) * this.GroupLayout.Scale) + Math.Abs(maxX - minX) * this.GroupLayout.Scale * 0.1;
                 this.GroupLayout.TranslationY = -(this.GroupLayout.Height / 2 - (this.GroupLayout.Height / 2 - minY) * this.GroupLayout.Scale) + Math.Abs(maxY - minY) * this.GroupLayout.Scale * 0.1;
-
-                //this.GroupLayout.TranslationX = (startCenterPoint.X - (minX + maxX) / 2) * this.GroupLayout.Scale;
-                //this.GroupLayout.TranslationY = (startCenterPoint.Y - (minY + maxY) / 2) * this.GroupLayout.Scale;
 
                 Console.WriteLine($"{this.GroupLayout.TranslationX} {this.GroupLayout.TranslationY}");
 
@@ -179,7 +171,6 @@ namespace MeasureApp.ShapeObj
                 CallRegularSize();
             }
         }
-
 
         private void PanGesture_PanUpdated(object sender, PanUpdatedEventArgs e)
         {
@@ -228,7 +219,7 @@ namespace MeasureApp.ShapeObj
             this.AnchorLayout.Children.Clear();
             this.ObjectLayout.Children.Clear();
             this.StartAnchor = null;
-            this.StartLine = null;
+            this.LastLenthConstrait = null;
             this.LastAnchor = null;
             this.GroupLayout.Scale = 1;
             this.GroupLayout.TranslationX = -ZeroPoint.X + 100;
@@ -241,8 +232,17 @@ namespace MeasureApp.ShapeObj
             this.AnchorLayout.Children.Remove(cadObject);
         }
 
+        /// <summary>
+        /// Add object on Canvas. 
+        /// </summary>
+        /// <param name="Object"></param>
         public void Add(object Object)
         {
+            if (Object is CommonObject canvasObject)
+            {
+                canvasObject.Removed += CanvasObject_Removed;
+            }
+
             MainThread.BeginInvokeOnMainThread(() =>
             {
                 if (Object is CadLine)
@@ -264,37 +264,140 @@ namespace MeasureApp.ShapeObj
             });
         }
 
+        private void CanvasObject_Removed(object sender, EventArgs e)
+        {
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                if (sender is CadLine)
+                {
+                    this.ObjectLayout.Children.Remove((CadLine)sender);
+                }
+                if (sender is CadAnchor)
+                {
+                    this.AnchorLayout.Children.Remove((CadAnchor)sender);
+                }
+                if (sender is ConstraitLabel)
+                {
+                    this.AnchorLayout.Children.Remove((ConstraitLabel)sender);
+                }
+                if (sender is AbsoluteLayout)
+                {
+                    this.GroupLayout.Children.Remove((AbsoluteLayout)sender);
+                }
+            });
+        }
+
         /// <summary>
         /// Find position and make line on canvas with anchor
         /// </summary>
         /// <param name="Lenth"></param>
         /// <param name="Angle"></param>
+       
+
+        private void CadObject_Selected(object sender, bool e)
+        {
+            if (e == true)
+            {
+                if (sender is CadAnchor cadAnchor)
+                {
+                    if (this.StartAnchor != null)
+                    {
+                        this.StartAnchor.IsSelect = false;
+                    }
+                    this.StartAnchor = cadAnchor;
+                }
+                if (sender is LenthConstrait lenthConstrait)
+                {
+                    if (this.LastLenthConstrait != null)
+                    {
+                        this.LastLenthConstrait.IsSelect = false;
+                    }
+                    this.LastLenthConstrait = lenthConstrait;
+                }
+            }
+        }
+
+        private async void CadAnchor1_Droped(object sender, object e)
+        {
+            if (sender != e)
+            {
+                if (sender is CadAnchor cadAnchor2 && e is CadAnchor cadAnchor1)
+                {
+                    ICommand ConnectPoint = new Command(async () =>
+                    {
+                        MakeLine(new LenthConstrait(cadAnchor1, cadAnchor2, -1), -1);
+                    });
+                    ICommand MergePoint = new Command(async () =>
+                    {
+                        cadAnchor1.ChangeAnchor(cadAnchor2);
+                    });
+
+                    SheetMenu sheetMenu = new SheetMenu(new System.Collections.Generic.List<SheetMenuItem>() {
+                        new SheetMenuItem(ConnectPoint, "{CONNECT_POINT}"),
+                        new SheetMenuItem(MergePoint, "{MERGE_POINT}")
+                    });
+
+                    string result = await AppShell.Instance.SheetMenuDialog(sheetMenu);
+                    switch (result)
+                    {
+                        case "Connect":
+                            MakeLine(new LenthConstrait(cadAnchor1, cadAnchor2, -1), -1);
+                            break;
+                        case "Merge":
+                            cadAnchor1.ChangeAnchor(cadAnchor2);
+                            break;
+                    }
+
+
+                }
+            }
+            }
+
+
+
+        private CadAnchor MakeAnchor(double X, double Y, bool Visible = true)
+        {
+            CadAnchor cadAnchor = new CadAnchor(new CadPoint(X, Y));
+            cadAnchor.Scale = 1 / this.GroupLayout.Scale;
+            cadAnchor.Droped += CadAnchor1_Droped;
+            cadAnchor.Selected += CadObject_Selected;
+            cadAnchor.Removed += CadAnchor_Removed;
+            cadAnchor.IsVisible = Visible;
+            this.Add(cadAnchor);
+            return cadAnchor;
+        }
+
+        private void CadAnchor_Removed(object sender, EventArgs e)
+        {
+            Remove((CadObject)sender);
+        }
+
         public void BuildLine(double Lenth, double Angle)
         {
             CadLine cadLine = null;
 
             //Если у нас нет линии привязки
-            if (this.StartLine == null)
+            if (this.LastLenthConstrait == null)
             {
                 cadLine = MakeLine(new LenthConstrait(MakeAnchor(ZeroPoint.X, ZeroPoint.Y), MakeAnchor(ZeroPoint.X, ZeroPoint.Y + Lenth), Lenth), Angle);
             }
             else
             {
-                if (this.StartLine is CadLine)
+                if (this.LastLenthConstrait is LenthConstrait)
                 {
-                    Point point = Sizing.GetPositionLineFromAngle(this.StartLine.AnchorsConstrait.Anchor1.cadPoint, this.StartLine.AnchorsConstrait.Anchor2.cadPoint, Lenth, Angle);
+                    Point point = Sizing.GetPositionLineFromAngle(this.LastLenthConstrait.Anchor1.cadPoint, this.LastLenthConstrait.Anchor2.cadPoint, Lenth, Angle < 0 ? 90 : Angle);
                     CadAnchor cadAnchor2 = MakeAnchor(point.X, point.Y);
                     cadLine = MakeLine(new LenthConstrait(this.LastAnchor, cadAnchor2, Lenth), Angle);
 
-                    this.AddConstraiLabel(new AngleLabel(new AngleConstrait(this.StartLine.AnchorsConstrait, cadLine.AnchorsConstrait, Angle)));
+                    this.AddConstraiLabel(new AngleLabel(new AngleConstrait(this.LastLenthConstrait, cadLine.AnchorsConstrait, Angle)));
                 }
             }
 
             if (cadLine != null)
             {
-                if (this.Method == DrawMethod.StepByStep || this.StartAnchor == null || this.StartLine == null)
+                if (this.Method == DrawMethod.StepByStep || this.StartAnchor == null || this.LastLenthConstrait == null)
                 {
-                    cadLine.IsSelect = true;
+                    cadLine.AnchorsConstrait.IsSelect = true;
                     this.LastAnchor = cadLine.AnchorsConstrait.Anchor2;
 
                     if (this.Method == DrawMethod.StepByStep)
@@ -309,68 +412,13 @@ namespace MeasureApp.ShapeObj
             }
         }
 
-        private void CadObject_Selected(object sender, bool e)
-        {
-            if (e == true)
-            {
-                if (sender is CadAnchor cadAnchor)
-                {
-                    if (this.StartAnchor != null)
-                    {
-                        this.StartAnchor.IsSelect = false;
-                    }
-                    this.StartAnchor = cadAnchor;
-                }
-                if (sender is CadLine cadLine)
-                {
-                    if (this.StartLine != null)
-                    {
-                        this.StartLine.IsSelect = false;
-                    }
-                    this.StartLine = cadLine;
-                }
-            }
-        }
-
-        private async void CadAnchor1_Droped(object sender, object e)
-        {
-            if (sender != e)
-            {
-                if (sender is CadAnchor cadAnchor2 && e is CadAnchor cadAnchor1)
-                {
-                    SheetMenu sheetMenu = new SheetMenu(new System.Collections.Generic.List<string>() { "Connect", "Merge" });
-                    string result = await AppShell.Instance.SheetMenuDialog(sheetMenu);
-                    switch (result)
-                    {
-                        case "Connect":
-                            MakeLine(new LenthConstrait(cadAnchor1, cadAnchor2, -1), -1);
-                            break;
-                        case "Merge":
-                            cadAnchor1.ChangeAnchor(cadAnchor2);
-                            break;
-                    }
-                }
-            }
-        }
-
-        private CadAnchor MakeAnchor(double X, double Y, bool Visible = true)
-        {
-            CadAnchor cadAnchor = new CadAnchor(new CadPoint(X, Y));
-            cadAnchor.Scale = 1 / this.GroupLayout.Scale;
-            cadAnchor.Droped += CadAnchor1_Droped;
-            cadAnchor.Selected += CadObject_Selected;
-            cadAnchor.IsVisible = Visible;
-            this.Add(cadAnchor);
-            return cadAnchor;
-        }
-
         private CadLine MakeLine(LenthConstrait lenthAnchorAnchor, double angle)
         {
             CadLine cadLine = new CadLine(lenthAnchorAnchor, false);
             cadLine.StrokeThickness = 5 *  1 / this.GroupLayout.Scale;
-            cadLine.Selected += CadObject_Selected;
+            cadLine.AnchorsConstrait.Selected += CadObject_Selected;
 
-            LineLabel lineLabel = new LineLabel(cadLine);
+            LineLabel lineLabel = new LineLabel(cadLine.AnchorsConstrait);
             this.Add(cadLine);
             this.AddConstraiLabel(lineLabel);
 
@@ -379,7 +427,6 @@ namespace MeasureApp.ShapeObj
 
         private void AddConstraiLabel(ConstraitLabel constraitLabel)
         {
-            constraitLabel.CallValueDialog += LineLabel_CallValueDialog;
             constraitLabel.Scale = 1 / this.GroupLayout.Scale;
             this.Add(constraitLabel);
         }

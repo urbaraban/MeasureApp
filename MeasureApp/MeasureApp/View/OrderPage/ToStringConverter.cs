@@ -2,7 +2,7 @@
 using System.Globalization;
 using Xamarin.Forms;
 
-namespace MeasureApp.View.DrawPage
+namespace MeasureApp.View.OrderPage
 {
     public class ToStringConverter : IValueConverter
     {

@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-namespace MeasureApp.View.DrawPage
+namespace MeasureApp.View.OrderPage
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class AdressListPage : ContentPage
+    public partial class ContourInfoPage : ContentPage
     {
-        public AdressListPage()
+        public ContourInfoPage()
         {
             InitializeComponent();
         }

@@ -2,10 +2,10 @@
 <Shell xmlns="http://xamarin.com/schemas/2014/forms" 
        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
        xmlns:local="clr-namespace:MeasureApp.View"
-       xmlns:drawpage="clr-namespace:MeasureApp.View.DrawPage"
-       xmlns:device="clr-namespace:MeasureApp.View.BLEDevice.Pages"
+       xmlns:orderPage="clr-namespace:MeasureApp.View.OrderPage"
        Title="MeasureApp"
-       x:Class="App1.AppShell">
+       x:Class="App1.AppShell"
+       WidthRequest="200">
 
     <!--
         The overall app visual hierarchy is defined here, along with navigation.
@@ -82,21 +82,29 @@
         https://docs.microsoft.com/dotnet/api/xamarin.forms.shellgroupitem.flyoutdisplayoptions?view=xamarin-forms
     -->
 
+    <Shell.FlyoutHeader>
+        <StackLayout BackgroundColor="White" Padding="10">
+            <Image HeightRequest="100" Aspect="AspectFit" Source="SureMeasureLogo.png" />
+            <Label Text="Sure Measure" />
+            <Label Text="Все серьезно!"/>
+        </StackLayout>
+    </Shell.FlyoutHeader>
 
     <FlyoutItem Title="Draw" Icon="icon_about.png">
-        <ShellContent Title="Draw" Icon="icon_feed.png" ContentTemplate="{DataTemplate drawpage:CadCanvasPage}" />
-        <ShellContent Title="Adress" Icon="icon_about.png" Route="AdressListPage" ContentTemplate="{DataTemplate drawpage:AdressListPage}" />
-        
-        <ShellContent Title="Info" Icon="icon_feed.png" ContentTemplate="{DataTemplate drawpage:ContourInfoPage}" />
+        <ShellContent Title="Draw" Icon="icon_feed.png" ContentTemplate="{DataTemplate orderPage:CadCanvasPage}" />
+        <ShellContent Title="Adress" Icon="icon_about.png" Route="AdressListPage" ContentTemplate="{DataTemplate orderPage:AdressListPage}" />
+        <ShellContent Title="Info" Icon="icon_feed.png" ContentTemplate="{DataTemplate orderPage:ContourInfoPage}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Device" Icon="icon_about.png">
-        <ShellContent Route="DeviceList" ContentTemplate="{DataTemplate device:DeviceList}" />
-    </FlyoutItem>
-    
+    <MenuItem Text="Device"
+              IconImageSource="random.png"
+              Clicked="MenuItem_Clicked" />
+
     <FlyoutItem Title="About" Icon="icon_about.png">
         <ShellContent Route="AboutPage" ContentTemplate="{DataTemplate local:AboutPage}" />
     </FlyoutItem>
+
+
 
 
 

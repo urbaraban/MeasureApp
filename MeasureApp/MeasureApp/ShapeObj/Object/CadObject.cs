@@ -1,7 +1,7 @@
-﻿using MeasureApp.ShapeObj.Canvas;
-using MeasureApp.ShapeObj.Constraints;
+﻿using App1;
+using MeasureApp.ShapeObj.Interface;
+using MeasureApp.ShapeObj.LabelObject;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Xamarin.Forms;
@@ -9,37 +9,54 @@ using Xamarin.Forms.Shapes;
 
 namespace MeasureApp.ShapeObj
 {
-    public abstract class CadObject : Path, INotifyPropertyChanged
+    public abstract class CadObject : Path, INotifyPropertyChanged, MainObject, CanvasObject, CommonObject
     {
-        public event EventHandler<bool> Selected;
-        public event EventHandler<Point> DeltaTranslate;
-        public event EventHandler<object> Droped;
+        public virtual event EventHandler<bool> Selected;
+        public virtual event EventHandler<Point> DeltaTranslate;
+        public virtual event EventHandler<object> Droped;
+        public virtual event EventHandler<bool> Fixed;
+        public virtual event EventHandler<bool> Supported;
+        public virtual event EventHandler Removed;
 
-        private bool _isselect = false;
-
-        public bool IsSelect
+        public virtual string Name { get; set; }
+        public virtual bool IsSelect
         {
             get => this._isselect;
             set
             {
                 this._isselect = value;
+                Xamarin.Forms.Device.BeginInvokeOnMainThread(() => { 
                 this.Stroke = this._isselect == true ? Brush.Orange : Brush.Blue;
+                });
                 Selected?.Invoke(this, this._isselect);
             }
         }
+        private bool _isselect = false;
 
-        private bool _isfix = false;
-
-        public bool IsFix
+        public virtual bool IsFix
         {
             get => this._isfix;
             set
             {
                 this._isfix = value;
-                this.Stroke = this._isfix == true ? Brush.Gray : Brush.Blue;
-                OnPropertyChanged("IsFix");
+                Xamarin.Forms.Device.BeginInvokeOnMainThread(() => {
+                    this.Stroke = this._isfix == true ? Brush.Gray : Brush.Blue;
+                });
+                Fixed?.Invoke(this, this._isfix);
             }
         }
+        private bool _isfix = false;
+
+        public virtual bool IsSupport
+        {
+            get => this._issupport;
+            set
+            {
+                this._issupport = value;
+                Supported?.Invoke(this, this._issupport);
+            }
+        }
+        private bool _issupport = false;
 
         public virtual double X
         {
@@ -51,7 +68,7 @@ namespace MeasureApp.ShapeObj
                     if (this.TranslationX != value)
                     {
                         this.TranslationX = value;
-                        OnPropertyChanged("X");
+                        //OnPropertyChanged("X");
                     }
                 }
             }
@@ -67,19 +84,31 @@ namespace MeasureApp.ShapeObj
                     if (this.TranslationY != value)
                     {
                         this.TranslationY = value;
-                        OnPropertyChanged("Y");
+                        //OnPropertyChanged("Y");
                     }
                 }
             }
         }
 
+        public SheetMenu SheetMenu
+        {
+            get => _sheetMenu;
+            set
+            {
+                this._sheetMenu = value;
+            }
+        }
+        private SheetMenu _sheetMenu;
+
+        #region Gestured
         private PanGestureRecognizer panGesture = new PanGestureRecognizer();
-
         private TapGestureRecognizer tapGesture = new TapGestureRecognizer();
-
         private DropGestureRecognizer dropGesture = new DropGestureRecognizer();
-
         private DragGestureRecognizer dragGesture = new DragGestureRecognizer();
+        #endregion
+
+        private int taps = 0;
+        private bool runtimer = false;
 
         public CadObject(bool Move)
         {
@@ -106,8 +135,6 @@ namespace MeasureApp.ShapeObj
             this.GestureRecognizers.Add(this.dropGesture);
         }
 
-        private double regulaScale = 1;
-
         private void DragGesture_DropCompleted(object sender, DropCompletedEventArgs e)
         {
             CadCanvas.CallRegularSize();
@@ -127,14 +154,17 @@ namespace MeasureApp.ShapeObj
 
         private void TapGesture_Tapped(object sender, EventArgs e)
         {
-            this.IsSelect = !this.IsSelect;
+            TapManager();
         }
 
         private void PanGesture_PanUpdated(object sender, PanUpdatedEventArgs e)
         {
-            this.X += e.TotalX;
-            this.Y += e.TotalY;
-            this.DeltaTranslate?.Invoke(this, new Point(e.TotalX, e.TotalY));
+            if (this.IsFix == false)
+            {
+                this.X += e.TotalX;
+                this.Y += e.TotalY;
+                this.DeltaTranslate?.Invoke(this, new Point(e.TotalX, e.TotalY));
+            }
         }
 
 
@@ -143,6 +173,46 @@ namespace MeasureApp.ShapeObj
         public void OnPropertyChanged([CallerMemberName] string prop = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+        }
+
+
+        public virtual void Update()
+        {
+            
+        }
+
+        public virtual void TryRemove()
+        {
+            Removed?.Invoke(this, null);
+        }
+
+        public void RunSheetMenuCommand(string CommandName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void TapManager()
+        {
+            taps += 1;
+            if (this.runtimer == false)
+            {
+                this.runtimer = true;
+                Device.StartTimer(TimeSpan.FromSeconds(0.5), () =>
+                {
+                    if (taps < 2)
+                    {
+                        Selected?.Invoke(this, true);
+                    }
+                    else
+                    {
+                        this.SheetMenu.ShowMenu(this);
+                    }
+
+                    taps = 0;
+                    return false; // return true to repeat counting, false to stop timer
+                });
+                this.runtimer = false;
+            }
         }
     }
 }

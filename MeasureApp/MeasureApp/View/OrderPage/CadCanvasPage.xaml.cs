@@ -3,7 +3,7 @@ using System;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-namespace MeasureApp.View.DrawPage
+namespace MeasureApp.View.OrderPage
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class CadCanvasPage : ContentPage

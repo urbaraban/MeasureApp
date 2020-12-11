@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:controls="clr-namespace:MeasureApp.OrderPage.Controls"
+             x:Class="MeasureApp.View.OrderPage.AdressListPage"
+             xmlns:data="clr-namespace:MeasureApp.Data"
+             Title="Orders">
+    <Shell.SearchHandler>
+        <controls:OrderSearchHandler Placeholder="Enter search term"
+                                         ShowsResults="true"
+                                        DisplayMemberName="Name" />
+    </Shell.SearchHandler>
+    
+    <ContentPage.Content>
+
+
+        <CollectionView Margin="20"
+                    ItemsSource="{x:Static data:OrdersData.Orders}"
+                    ItemTemplate="{StaticResource OrderTemplate}"
+                    SelectionMode="Single"
+                    SelectionChanged="OnCollectionViewSelectionChanged" />
+
+    </ContentPage.Content>
+</ContentPage>

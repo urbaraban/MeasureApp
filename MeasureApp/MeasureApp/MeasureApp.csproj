@@ -1,13 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
     <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>MeasureApp.pfx</AssemblyOriginatorKeyFile>
     <AssemblyName>ToCornerApp</AssemblyName>
     <Authors>Urbaraban</Authors>
     <Company>2Build</Company>
+    <ApplicationIcon>Sure-Measure-01.ico</ApplicationIcon>
+    <PackageIcon>Sure-Measure-01.png</PackageIcon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -34,17 +36,27 @@
     <EmbeddedResource Update="View\AboutPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="View\BLEDevice\Pages\DeviceList.xaml">
+    <EmbeddedResource Update="View\OrderPage\AdressListPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="View\DrawPage\AdressListPage.xaml">
+    <EmbeddedResource Update="View\OrderPage\CadCanvasPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="View\DrawPage\CadCanvasPage.xaml">
+    <EmbeddedResource Update="View\OrderPage\ContourInfoPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="View\DrawPage\ContourInfoPage.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="D:\YandexDisk\YandexDisk\logo\Sure Measure\Sure-Measure-01.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="images\logo\" />
+    <Folder Include="View\BLEDevice\Pages\" />
+    <Folder Include="View\Controls\" />
   </ItemGroup>
 </Project>

@@ -1,12 +1,14 @@
-﻿using System;
+﻿using MeasureApp.ShapeObj.Interface;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace MeasureApp.ShapeObj.Constraints
 {
-    public abstract class CadConstraint : INotifyPropertyChanged
+    public abstract class CadConstraint : INotifyPropertyChanged, MainObject
     {
+
         #region static
         public static List<CadAnchor> FixedAnchor = new List<CadAnchor>();
         public static List<CadConstraint> RuntimeConstraits = new List<CadConstraint>();
@@ -49,6 +51,23 @@ namespace MeasureApp.ShapeObj.Constraints
         }
         #endregion
 
+
+        public event EventHandler Removed;
+        public event EventHandler<bool> Selected;
+        public event EventHandler<bool> Fixed;
+        public event EventHandler<bool> Supported;
+
+        public virtual bool IsSupport {
+            get => this._issupport;
+            set
+            {
+                this._issupport = value;
+                Supported?.Invoke(this, this._issupport);
+            }
+        }
+        private bool _issupport = false;
+
+
         #region non static
         private CadVariable _variable;
 
@@ -62,6 +81,20 @@ namespace MeasureApp.ShapeObj.Constraints
             }
         }
 
+        public virtual string Name { get; set; }
+
+        public virtual bool IsSelect 
+        { 
+            get => this._isselect; 
+            set 
+            {
+                this._isselect = value;
+                Selected?.Invoke(this, this._isselect);
+            } 
+        }
+        private bool _isselect = false;
+        public virtual bool IsFix { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         public void OnPropertyChanged([CallerMemberName] string prop = "")
@@ -69,9 +102,7 @@ namespace MeasureApp.ShapeObj.Constraints
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
 
-        public event EventHandler Removed;
-
-        public void Remove()
+        public void TryRemove()
         {
             Removed?.Invoke(this, null);
         }

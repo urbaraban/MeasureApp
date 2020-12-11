@@ -1,6 +1,7 @@
 ﻿using MeasureApp.ShapeObj.Constraints;
 using System;
 using System.Collections.Generic;
+using System.Windows.Input;
 using Xamarin.Forms;
 using Xamarin.Forms.Shapes;
 
@@ -8,7 +9,13 @@ namespace MeasureApp.ShapeObj
 {
     public class CadAnchor : CadObject
     {
+        private ICommand Fix => new Command(() =>
+        {
+            this.IsFix = !this.IsFix;
+        });
+
         public event EventHandler<CadAnchor> ChangedAnchror;
+        public override event EventHandler Removed;
 
         public List<CadConstraint> Constraints = new List<CadConstraint>();
 
@@ -19,6 +26,8 @@ namespace MeasureApp.ShapeObj
         public override double X { get => this.cadPoint.X; set => this.cadPoint.X = value; }
         public override double Y { get => this.cadPoint.Y; set => this.cadPoint.Y = value; }
 
+
+
         private double offcet => this._ellipse.RadiusX + this.StrokeThickness / 2;
 
         public CadAnchor(CadPoint point) : base(true)
@@ -27,9 +36,9 @@ namespace MeasureApp.ShapeObj
             this.cadPoint.PropertyChanged += CadPoint_PropertyChanged;
             this._ellipse = new EllipseGeometry()
             {
-               Center = new Point(CadCanvas.RegularAnchorSize + this.StrokeThickness / 2, CadCanvas.RegularAnchorSize + this.StrokeThickness / 2),
-               RadiusX = CadCanvas.RegularAnchorSize,
-               RadiusY = CadCanvas.RegularAnchorSize
+                Center = new Point(CadCanvas.RegularAnchorSize + this.StrokeThickness / 2, CadCanvas.RegularAnchorSize + this.StrokeThickness / 2),
+                RadiusX = CadCanvas.RegularAnchorSize,
+                RadiusY = CadCanvas.RegularAnchorSize
             };
 
             this.TranslationX = point.X - this.offcet;
@@ -40,9 +49,41 @@ namespace MeasureApp.ShapeObj
             CadCanvas.DragSize += CadCanvas_DragSize;
             CadCanvas.RegularSize += CadCanvas_RegularSize;
 
+
+            this.SheetMenu = new LabelObject.SheetMenu(new List<LabelObject.SheetMenuItem>()
+            {
+                new LabelObject.SheetMenuItem(Fix, "{FIX}")
+            });
+
+            this.SheetMenu.ReturnValue += SheetMenu_ReturnValue;
         }
 
-        public void ChangeAnchor(CadAnchor cadAnchor)
+        private void SheetMenu_ReturnValue(object sender, string e)
+        {
+            RunSheetMenuCommand(e);
+        }
+
+        public void RunSheetMenuCommand(string CommandName)
+        {
+            switch (CommandName)
+            {
+                case "Call value":
+                    
+                    break;
+                case "Invert":
+                    
+                    break;
+                case "Free":
+                    
+                    break;
+            }
+        }
+
+            /// <summary>
+            /// Make event change this anchor on inner in Lenth constraint
+            /// </summary>
+            /// <param name="cadAnchor"></param>
+            public void ChangeAnchor(CadAnchor cadAnchor)
         {
             ChangedAnchror?.Invoke(this, cadAnchor);
         }
@@ -64,6 +105,14 @@ namespace MeasureApp.ShapeObj
                 this.TranslationX = this.cadPoint.X - this.offcet;
                 this.TranslationY = this.cadPoint.Y - this.offcet;
                 this.OnPropertyChanged("Point");
+            }
+        }
+
+        public override void TryRemove()
+        {
+            if (this.Constraints.Count < 2)
+            {
+                Removed?.Invoke(this, null);
             }
         }
     }

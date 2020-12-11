@@ -1,38 +1,86 @@
 ﻿using App1;
-using MeasureApp.ShapeObj.Canvas;
 using MeasureApp.ShapeObj.Constraints;
+using MeasureApp.ShapeObj.Interface;
 using MeasureApp.Tools;
-using MeasureApp.View.DrawPage;
+using MeasureApp.View.OrderPage;
 using System;
-using System.Collections.Generic;
+using System.Windows.Input;
 using Xamarin.Forms;
 
 namespace MeasureApp.ShapeObj.LabelObject
 {
+    public enum LineMenuItems
+    {
+        Edit_value,
+        Measure,
+        Temped,
+        Vertical,
+        Horizontal,
+        Free,
+        Fix_this,
+        Remove
+    }
+
     public class LineLabel : ConstraitLabel
     {
-        private LenthConstrait _lenthAnchor;
-        private CadLine _cadLine;
+        private ICommand CallValueDialog => new Command(async () =>
+        {
+            string callresult = await AppShell.Instance.DisplayPromtDialog(_lenthConstrait.Variable.Name, _lenthConstrait.Variable.Value.ToString());
+            this._lenthConstrait.Variable.Value = double.Parse(callresult);
+        });
+        private ICommand Measure => new Command(async () =>
+        {
+            AppShell.MeasireVariable = this.Variable;
+        });
+        private ICommand SupportLine => new Command(async () =>
+        {
+            this._lenthConstrait.IsSupport = !this._lenthConstrait.IsSupport;
+        });
+        private ICommand Verical => new Command(async () =>
+        {
+            this._lenthConstrait.Orientation = Orientaton.Vertical;
+        });
+        private ICommand Horizontal => new Command(async () =>
+        {
+            this._lenthConstrait.Orientation = Orientaton.Horizontal;
+        });
+        private ICommand Free_Orientation => new Command(async () =>
+        {
+            this._lenthConstrait.Orientation = Orientaton.OFF;
+        });
+        private ICommand Fix => new Command(async () =>
+        {
+            this._lenthConstrait.Fix(true);
+        });
+        private ICommand Remove => new Command(async () =>
+        {
+            this._lenthConstrait.TryRemove();
+        });
 
-        public LineLabel(CadLine cadLine) : base(cadLine.AnchorsConstrait.Variable)
+
+        public string Name => _lenthConstrait.Anchor1.Name + _lenthConstrait.Anchor2.Name;
+
+        private LenthConstrait _lenthConstrait;
+
+        public LineLabel(LenthConstrait lenthConstrait) : base(lenthConstrait.Variable)
         {
             this.HorizontalTextAlignment = TextAlignment.Center;
             this.VerticalTextAlignment = TextAlignment.Center;
 
-            this._cadLine = cadLine;
-            this._lenthAnchor = cadLine.AnchorsConstrait;
-            this.Text = this._lenthAnchor.Lenth.ToString();
+            this._lenthConstrait = lenthConstrait;
+            this.Text = this._lenthConstrait.Lenth.ToString();
             this.ScaleY = -1;
 
             this.BackgroundColor = Color.Green;
-            this._lenthAnchor.Changed += LenthAnchorAnchor_Changed;
+            this._lenthConstrait.Changed += LenthAnchorAnchor_Changed;
+            this._lenthConstrait.Removed += _lenthAnchor_Removed;
 
             CadCanvas.RegularSize += CadCanvas_RegularSize;
 
-            this.BindingContext = cadLine.AnchorsConstrait;
+            this.BindingContext = _lenthConstrait;
             this.SetBinding(Label.TextProperty, new Binding()
             {
-                Source = cadLine.AnchorsConstrait,
+                Source = _lenthConstrait,
                 Path = "Lenth",
                 Mode = BindingMode.OneWay,
                 Converter = new ToStringConverter()
@@ -40,44 +88,35 @@ namespace MeasureApp.ShapeObj.LabelObject
 
             this.Selected += LineLabel_Selected;
 
-            this.sheetMenu = new SheetMenu(new List<string> { 
-                "Call value", 
-                "Temp line",
-                "Vertical",
-                "Horizontal",
-                "Free"
-            });
-
-            this.ShowObjectMenu += LineLabel_ShowObjectMenu;
+            this.SheetMenu = new SheetMenu(new System.Collections.Generic.List<SheetMenuItem>()
+            {
+                new SheetMenuItem(CallValueDialog, "{CALL_VALUE_DIALOG}"),
+                new SheetMenuItem(Measure, "{MEASURE}"),
+                new SheetMenuItem(SupportLine, "{SUPPORT_LINE}"),
+                new SheetMenuItem(Verical, "{VERTICAL}"),
+                new SheetMenuItem(Horizontal, "{HORIZONTAL}"),
+                new SheetMenuItem(Free_Orientation, "{FREE_ORIENTATION}"),
+                new SheetMenuItem(Fix, "{FIX}"),
+                new SheetMenuItem(Remove, "{REMOVE}"),
+            }) ;
 
             this.Update();
         }
 
-        private async void LineLabel_ShowObjectMenu(object sender, SheetMenu e)
-        {
-            string result = await AppShell.Instance.SheetMenuDialog(e);
 
-            switch (result)
-            {
-                case "Call value":
-                    string callresult = await AppShell.Instance.DisplayPromtDialog(_lenthAnchor.Variable.Name, _lenthAnchor.Variable.Value.ToString());
-                    this._lenthAnchor.Variable.Value = double.Parse(callresult);
-                    break;
-                case "Temp line":
-                    this._cadLine.TempLine = !this._cadLine.TempLine;
-                    break;
-                case "Vertical":
-                    this._lenthAnchor.Orientation = EnumLibrary.Orientaton.Vertical;
-                    break;
-                case "Horizontal":
-                    this._lenthAnchor.Orientation = EnumLibrary.Orientaton.Horizontal;
-                    break;
-                case "Free":
-                    this._lenthAnchor.Orientation = EnumLibrary.Orientaton.OFF;
-                    break;
-            }
+        public void Update()
+        {
+            this.TranslationX = (this._lenthConstrait.Anchor2.X + this._lenthConstrait.Anchor1.X) / 2;
+            this.TranslationY = (this._lenthConstrait.Anchor2.Y + this._lenthConstrait.Anchor1.Y) / 2;
+
+            this.Rotation = Sizing.AngleHorizont(this._lenthConstrait.Anchor1.cadPoint, this._lenthConstrait.Anchor2.cadPoint);
+
+            Xamarin.Forms.Device.InvokeOnMainThreadAsync(() => {
+                this.Text = Math.Round(Sizing.PtPLenth(this._lenthConstrait.Anchor1.cadPoint, this._lenthConstrait.Anchor2.cadPoint), 2).ToString();
+            });
         }
 
+       
         private void CadCanvas_RegularSize(object sender, double e)
         {
             this.Scale = 1 / e;
@@ -85,17 +124,7 @@ namespace MeasureApp.ShapeObj.LabelObject
 
         private void LineLabel_Selected(object sender, bool e)
         {
-            this._cadLine.IsSelect = !this._cadLine.IsSelect;
-        }
-
-        private void SheetMenu_ReturnedValue(object sender, string e)
-        {
-            this.Variable.Value = double.Parse(e);
-        }
-
-        private async void SheetMenu_SheetMenuClosed(object sender, string e)
-        {
-
+            //this._cadLine.IsSelect = !this._cadLine.IsSelect;
         }
 
         private void LenthAnchorAnchor_Changed(object sender, System.EventArgs e)
@@ -103,14 +132,10 @@ namespace MeasureApp.ShapeObj.LabelObject
             this.Update();
         }
 
-        public void Update()
+        private void _lenthAnchor_Removed(object sender, EventArgs e)
         {
-            this.TranslationX = (this._lenthAnchor.Anchor2.X + this._lenthAnchor.Anchor1.X) / 2;
-            this.TranslationY = (this._lenthAnchor.Anchor2.Y + this._lenthAnchor.Anchor1.Y) / 2;
-
-            this.Rotation = Sizing.AngleHorizont(this._lenthAnchor.Anchor1.cadPoint, this._lenthAnchor.Anchor2.cadPoint);
-
-            this.Text = Math.Round(Sizing.PtPLenth(this._lenthAnchor.Anchor1.cadPoint, this._lenthAnchor.Anchor2.cadPoint), 2).ToString();
+            this.TryRemove();
         }
+
     }
 }
