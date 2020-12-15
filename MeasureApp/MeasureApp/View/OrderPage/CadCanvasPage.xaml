@@ -13,15 +13,39 @@
                              Margin="10" IsClippedToBounds="true">
 
                 </shapeobj:CadCanvas>
+                <StackLayout AbsoluteLayout.LayoutBounds="0,0,1,0.10" 
+                   AbsoluteLayout.LayoutFlags="SizeProportional" BackgroundColor="CadetBlue"
+                             Orientation="Vertical">
+                    <Grid Margin=" 10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                        </Grid.ColumnDefinitions>
+                        <Picker x:Name="ContourPicker" 
+                                Title="Выбор контура"
+                                TitleColor="Wheat"
+                                Grid.Column="0"
+                        />
+                        <Button Text="+" Grid.Column="1"/>
+                        <Button Text="—" Grid.Column="2"/>
+                    </Grid>
+                </StackLayout>
+
                 <StackLayout AbsoluteLayout.LayoutBounds="0.98, 0.98, -1, -1" 
                 AbsoluteLayout.LayoutFlags="PositionProportional"
-                             BackgroundColor="DarkMagenta" 
+                             BackgroundColor="#A5977B" 
                              VerticalOptions="End" HorizontalOptions="End">
+                    <Picker x:Name="PathPocker" Title="Contour" 
+                            HorizontalTextAlignment="Center" 
+                            Margin="0,0,0,100"/>
+
                     <Button x:Name="AddBtn" Text="Add"/>
-                    <Button x:Name="ClearBtn" Text="Clear"/>
                     <Button x:Name="FitBtn" Text="Fit"/>
+                    <Button x:Name="ClearBtn" Text="Clear"/>
+                    
                 </StackLayout>
-                <StackLayout Padding="20" Orientation="Horizontal" AbsoluteLayout.LayoutBounds="0, 0.98, -1, -1"
+                <StackLayout Padding="20" Orientation="Horizontal" AbsoluteLayout.LayoutBounds="0, 1, -1, -1"
                              AbsoluteLayout.LayoutFlags="PositionProportional">
                     <RadioButton x:Name="RadioStep" CheckedChanged="RadioStep_CheckedChanged" HorizontalOptions="Center" GroupName="DrawMethod" IsChecked="True" Text="StepByStep" StyleId="" />
                     <RadioButton x:Name="RadioPoint" CheckedChanged="RadioPoint_CheckedChanged" HorizontalOptions="Center" GroupName="DrawMethod" IsChecked="False" Text="FromPoint" WidthRequest="-1" StyleId="MethodPoint" />

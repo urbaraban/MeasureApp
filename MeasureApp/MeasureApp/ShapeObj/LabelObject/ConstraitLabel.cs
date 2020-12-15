@@ -1,17 +1,26 @@
-﻿using App1;
-using MeasureApp.ShapeObj.Interface;
+﻿using MeasureApp.ShapeObj.Interface;
 using System;
 using Xamarin.Forms;
 
 namespace MeasureApp.ShapeObj.LabelObject
 {
-    public abstract class  ConstraitLabel : Label, CanvasObject, CommonObject
+    public abstract class  ConstraitLabel : Label, CanvasObject, ActiveObject
     {
-        public event EventHandler Removed;
-        public event EventHandler<bool> Selected;
+        public virtual event EventHandler<object> Droped;
+        public virtual event EventHandler Removed;
+
 
         public CadVariable Variable;
 
+        public virtual bool IsSelect
+        {
+            get => this._isselect;
+            set
+            {
+                this._isselect = value;
+            }
+        }
+        private bool _isselect = false;
 
         private int taps = 0;
         private bool runtimer = false;
@@ -34,30 +43,24 @@ namespace MeasureApp.ShapeObj.LabelObject
             Update();
         }
 
-        private async void TapGestureRecognizer_Tapped(object sender, EventArgs e)
+        private void TapGestureRecognizer_Tapped(object sender, EventArgs e)
         {
             TapManager();
         }
 
-
-        public void TryRemove()
+        public virtual void TryRemove()
         {
             this.Removed?.Invoke(this, null);
         }
 
-        public void Update()
+        public virtual void Update()
         {
             Xamarin.Forms.Device.InvokeOnMainThreadAsync(() => {
                 this.Text = this.Variable.ToString();
             });
         }
 
-        public virtual void RunSheetMenuCommand(string NameCommand)
-        {
-            
-        }
-
-        public void TapManager()
+        private void TapManager()
         {
             taps += 1;
             if (this.runtimer == false)
@@ -67,7 +70,7 @@ namespace MeasureApp.ShapeObj.LabelObject
                 {
                     if (taps < 2)
                     {
-                        Selected?.Invoke(this, true);
+                        this.IsSelect = !this.IsSelect;
                     }
                     else
                     {

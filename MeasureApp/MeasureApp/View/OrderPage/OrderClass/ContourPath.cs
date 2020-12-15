@@ -1,12 +1,12 @@
 ﻿using MeasureApp.ShapeObj;
-using MeasureApp.ShapeObj.Constraints;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace MeasureApp.View.OrderPage
+
+namespace MeasureApp.View.OrderPage.OrderClass
 {
-    class Contour : INotifyPropertyChanged
+    public class ContourPath : INotifyPropertyChanged
     {
         /// <summary>
         /// Contour sqare
@@ -26,30 +26,22 @@ namespace MeasureApp.View.OrderPage
         }
         private double _gabaritsqare;
 
-        /// <summary>
-        /// Perimetr controur
-        /// </summary>
-        public double Perimetr => CalcPerimetr();
-
-        private double CalcPerimetr()
+        public bool IsClosed
         {
-            double lenth = 0;
-
-            foreach (LenthConstrait lenthConstrait in Lenths)
+            get => this._isclosed;
+            set
             {
-                if (lenthConstrait.IsSupport == false)
-                {
-                    lenth += lenthConstrait.Lenth;
-                }
+                this._isclosed = value;
+                OnPropertyChanged("IsClosed");
             }
-            return lenth;
         }
+        private bool _isclosed;
 
-        public List<CadAnchor> Anchors;
+        public List<CadPoint> Points = new List<CadPoint>();
 
-        public List<LenthConstrait> Lenths;
+        public string Color = "#0000FF";
 
-        public List<AngleConstrait> Angles;
+
 
         public event PropertyChangedEventHandler PropertyChanged;
 

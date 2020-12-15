@@ -19,7 +19,7 @@ namespace MeasureApp.Tools
             double Lenth = PtPLenth(Point1, Point2);
 
             double pos = newLenth / Lenth;
-            CadPoint pointH = new CadPoint(Point2.X + (Point1.X - Point2.X) * pos, Point2.Y + (Point1.Y - Point2.Y) * pos);
+            Point pointH = new Point(Point2.X + (Point1.X - Point2.X) * pos, Point2.Y + (Point1.Y - Point2.Y) * pos);
             double angleInRadians = angle * (Math.PI / 180);
             double cosTheta = Math.Cos(angleInRadians);
             double sinTheta = Math.Sin(angleInRadians);

@@ -1,4 +1,4 @@
-﻿using MeasureApp.View.OrderPage;
+﻿using MeasureApp.View.OrderPage.OrderClass;
 using System.Collections.Generic;
 
 namespace MeasureApp.Data

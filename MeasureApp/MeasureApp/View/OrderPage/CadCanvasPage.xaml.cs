@@ -1,4 +1,5 @@
 ﻿using MeasureApp.ShapeObj;
+using MeasureApp.View.OrderPage.OrderClass;
 using System;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -8,13 +9,14 @@ namespace MeasureApp.View.OrderPage
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class CadCanvasPage : ContentPage
     {
+        private Order order => (Order)this.BindingContext;
+
         public CadCanvasPage()
         {
             InitializeComponent();
             AddBtn.Clicked += AddBtn_Clicked;
             ClearBtn.Clicked += ClearBtn_Clicked;
             FitBtn.Clicked += FitBtn_Clicked;
-     
 
             Binding binding = new Binding()
             {
@@ -26,8 +28,20 @@ namespace MeasureApp.View.OrderPage
             DrawMethodLabel.Text = this.MainCanvas.Method.ToString();
             DrawMethodLabel.BindingContext = this.MainCanvas.Method;
             DrawMethodLabel.SetBinding(Label.TextProperty, binding);
+
+            this.BindingContextChanged += CadCanvasPage_BindingContextChanged;
+            ContourPicker.SelectedIndexChanged += ContourPicker_SelectedIndexChanged;
         }
 
+        private void CadCanvasPage_BindingContextChanged(object sender, EventArgs e)
+        {
+            ContourPicker.ItemsSource = order.Contours;
+        }
+
+        private void ContourPicker_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            MainCanvas.BindingContext = ContourPicker.SelectedItem;
+        }
 
         private void FitBtn_Clicked(object sender, EventArgs e)
         {

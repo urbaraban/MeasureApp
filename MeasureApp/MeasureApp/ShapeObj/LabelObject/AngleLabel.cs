@@ -27,11 +27,11 @@ namespace MeasureApp.ShapeObj.LabelObject
         private List<SheetMenuItem> commands = new List<SheetMenuItem>();
 
 
-        private AngleConstrait _angleConstrait;
-        public AngleLabel(AngleConstrait AngleConstrait) : base(AngleConstrait.Variable)
+        private ConstraintAngle _angleConstrait;
+        public AngleLabel(ConstraintAngle AngleConstrait) : base(AngleConstrait.Variable)
         {
             this._angleConstrait = AngleConstrait;
-            Point point = Sizing.GetPositionLineFromAngle(this._angleConstrait.anchorAnchor1.Anchor1.cadPoint, this._angleConstrait.anchorAnchor1.Anchor2.cadPoint, 10, this._angleConstrait.Angle / 2d);
+            Point point = Sizing.GetPositionLineFromAngle(this._angleConstrait.anchorAnchor1.Point1, this._angleConstrait.anchorAnchor1.Point2, 10, this._angleConstrait.Angle / 2d);
             this.TranslationX = point.X;
             this.TranslationY = point.Y;
             this.Text = this._angleConstrait.Angle.ToString();
@@ -39,9 +39,9 @@ namespace MeasureApp.ShapeObj.LabelObject
             this.HorizontalTextAlignment = TextAlignment.Center;
             this.VerticalTextAlignment = TextAlignment.End;
             this.BackgroundColor = Color.Yellow;
-            this._angleConstrait.anchorAnchor1.Anchor1.PropertyChanged += Anchor_PropertyChanged;
-            this._angleConstrait.anchorAnchor1.Anchor2.PropertyChanged += Anchor_PropertyChanged;
-            this._angleConstrait.anchorAnchor2.Anchor2.PropertyChanged += Anchor_PropertyChanged;
+            this._angleConstrait.anchorAnchor1.Point1.PropertyChanged += Anchor_PropertyChanged;
+            this._angleConstrait.anchorAnchor1.Point2.PropertyChanged += Anchor_PropertyChanged;
+            this._angleConstrait.anchorAnchor2.Point2.PropertyChanged += Anchor_PropertyChanged;
             CadCanvas.RegularSize += CadCanvas_RegularSize;
 
             this.commands.Add(new SheetMenuItem(CallValueDialog, "{CALL_VALUE_DIALOG}"));
@@ -60,7 +60,7 @@ namespace MeasureApp.ShapeObj.LabelObject
 
         private void Anchor_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            Point point = Sizing.GetPositionLineFromAngle(this._angleConstrait.anchorAnchor1.Anchor1.cadPoint, this._angleConstrait.anchorAnchor1.Anchor2.cadPoint, 10, this._angleConstrait.Angle / 2d);
+            Point point = Sizing.GetPositionLineFromAngle(this._angleConstrait.anchorAnchor1.Point1, this._angleConstrait.anchorAnchor1.Point2, 10, this._angleConstrait.Angle / 2d);
             this.TranslationX = point.X;
             this.TranslationY = point.Y;
         }

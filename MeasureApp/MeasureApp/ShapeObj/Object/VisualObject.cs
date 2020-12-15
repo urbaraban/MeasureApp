@@ -1,5 +1,4 @@
-﻿using App1;
-using MeasureApp.ShapeObj.Interface;
+﻿using MeasureApp.ShapeObj.Interface;
 using MeasureApp.ShapeObj.LabelObject;
 using System;
 using System.ComponentModel;
@@ -9,16 +8,14 @@ using Xamarin.Forms.Shapes;
 
 namespace MeasureApp.ShapeObj
 {
-    public abstract class CadObject : Path, INotifyPropertyChanged, MainObject, CanvasObject, CommonObject
+    public abstract class VisualObject : Path, INotifyPropertyChanged, CanvasObject, ActiveObject
     {
         public virtual event EventHandler<bool> Selected;
-        public virtual event EventHandler<Point> DeltaTranslate;
         public virtual event EventHandler<object> Droped;
-        public virtual event EventHandler<bool> Fixed;
-        public virtual event EventHandler<bool> Supported;
         public virtual event EventHandler Removed;
 
-        public virtual string Name { get; set; }
+        public virtual string ID { get; set; }
+
         public virtual bool IsSelect
         {
             get => this._isselect;
@@ -33,43 +30,15 @@ namespace MeasureApp.ShapeObj
         }
         private bool _isselect = false;
 
-        public virtual bool IsFix
-        {
-            get => this._isfix;
-            set
-            {
-                this._isfix = value;
-                Xamarin.Forms.Device.BeginInvokeOnMainThread(() => {
-                    this.Stroke = this._isfix == true ? Brush.Gray : Brush.Blue;
-                });
-                Fixed?.Invoke(this, this._isfix);
-            }
-        }
-        private bool _isfix = false;
-
-        public virtual bool IsSupport
-        {
-            get => this._issupport;
-            set
-            {
-                this._issupport = value;
-                Supported?.Invoke(this, this._issupport);
-            }
-        }
-        private bool _issupport = false;
-
         public virtual double X
         {
             get => this.TranslationX;
             set
             {
-                if (this.IsFix == false)
+                if (this.TranslationX != value)
                 {
-                    if (this.TranslationX != value)
-                    {
-                        this.TranslationX = value;
-                        //OnPropertyChanged("X");
-                    }
+                    this.TranslationX = value;
+                    //OnPropertyChanged("X");
                 }
             }
         }
@@ -79,13 +48,10 @@ namespace MeasureApp.ShapeObj
             get => this.TranslationY;
             set
             {
-                if (this.IsFix == false)
+                if (this.TranslationY != value)
                 {
-                    if (this.TranslationY != value)
-                    {
-                        this.TranslationY = value;
-                        //OnPropertyChanged("Y");
-                    }
+                    this.TranslationY = value;
+                    //OnPropertyChanged("Y");
                 }
             }
         }
@@ -110,7 +76,7 @@ namespace MeasureApp.ShapeObj
         private int taps = 0;
         private bool runtimer = false;
 
-        public CadObject(bool Move)
+        public VisualObject(bool Move)
         {
             this.HorizontalOptions = LayoutOptions.StartAndExpand;
             this.VerticalOptions = LayoutOptions.StartAndExpand;
@@ -133,6 +99,13 @@ namespace MeasureApp.ShapeObj
             this.dropGesture.AllowDrop = true;
             this.dropGesture.Drop += DropGesture_Drop;
             this.GestureRecognizers.Add(this.dropGesture);
+
+            CadCanvas.SellectAll += CadCanvas_SellectAll;
+        }
+
+        private void CadCanvas_SellectAll(object sender, bool e)
+        {
+            this.IsSelect = e;
         }
 
         private void DragGesture_DropCompleted(object sender, DropCompletedEventArgs e)
@@ -159,12 +132,8 @@ namespace MeasureApp.ShapeObj
 
         private void PanGesture_PanUpdated(object sender, PanUpdatedEventArgs e)
         {
-            if (this.IsFix == false)
-            {
-                this.X += e.TotalX;
-                this.Y += e.TotalY;
-                this.DeltaTranslate?.Invoke(this, new Point(e.TotalX, e.TotalY));
-            }
+            this.X += e.TotalX;
+            this.Y += e.TotalY;
         }
 
 
@@ -186,12 +155,7 @@ namespace MeasureApp.ShapeObj
             Removed?.Invoke(this, null);
         }
 
-        public void RunSheetMenuCommand(string CommandName)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void TapManager()
+        private void TapManager()
         {
             taps += 1;
             if (this.runtimer == false)
@@ -201,7 +165,7 @@ namespace MeasureApp.ShapeObj
                 {
                     if (taps < 2)
                     {
-                        Selected?.Invoke(this, true);
+                        this.IsSelect = !this.IsSelect;
                     }
                     else
                     {

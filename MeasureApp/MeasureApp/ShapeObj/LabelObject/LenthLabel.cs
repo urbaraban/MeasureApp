@@ -1,6 +1,5 @@
 ﻿using App1;
 using MeasureApp.ShapeObj.Constraints;
-using MeasureApp.ShapeObj.Interface;
 using MeasureApp.Tools;
 using MeasureApp.View.OrderPage;
 using System;
@@ -21,8 +20,9 @@ namespace MeasureApp.ShapeObj.LabelObject
         Remove
     }
 
-    public class LineLabel : ConstraitLabel
+    public class LenthLabel : ConstraitLabel
     {
+        #region Command
         private ICommand CallValueDialog => new Command(async () =>
         {
             string callresult = await AppShell.Instance.DisplayPromtDialog(_lenthConstrait.Variable.Name, _lenthConstrait.Variable.Value.ToString());
@@ -56,13 +56,21 @@ namespace MeasureApp.ShapeObj.LabelObject
         {
             this._lenthConstrait.TryRemove();
         });
+        #endregion
 
+        public override event EventHandler Removed;
 
-        public string Name => _lenthConstrait.Anchor1.Name + _lenthConstrait.Anchor2.Name;
+        public override bool IsSelect 
+        { 
+            get => _lenthConstrait.IsSelect; 
+            set => _lenthConstrait.IsSelect = value; 
+        }
 
-        private LenthConstrait _lenthConstrait;
+        public string Name => _lenthConstrait.Point1.ID + _lenthConstrait.Point2.ID;
 
-        public LineLabel(LenthConstrait lenthConstrait) : base(lenthConstrait.Variable)
+        private ConstraintLenth _lenthConstrait;
+
+        public LenthLabel(ConstraintLenth lenthConstrait) : base(lenthConstrait.Variable)
         {
             this.HorizontalTextAlignment = TextAlignment.Center;
             this.VerticalTextAlignment = TextAlignment.Center;
@@ -86,8 +94,6 @@ namespace MeasureApp.ShapeObj.LabelObject
                 Converter = new ToStringConverter()
             });
 
-            this.Selected += LineLabel_Selected;
-
             this.SheetMenu = new SheetMenu(new System.Collections.Generic.List<SheetMenuItem>()
             {
                 new SheetMenuItem(CallValueDialog, "{CALL_VALUE_DIALOG}"),
@@ -103,16 +109,15 @@ namespace MeasureApp.ShapeObj.LabelObject
             this.Update();
         }
 
-
         public void Update()
         {
-            this.TranslationX = (this._lenthConstrait.Anchor2.X + this._lenthConstrait.Anchor1.X) / 2;
-            this.TranslationY = (this._lenthConstrait.Anchor2.Y + this._lenthConstrait.Anchor1.Y) / 2;
+            this.TranslationX = (this._lenthConstrait.Point2.OX + this._lenthConstrait.Point1.OX) / 2;
+            this.TranslationY = (this._lenthConstrait.Point2.OY + this._lenthConstrait.Point1.OY) / 2;
 
-            this.Rotation = Sizing.AngleHorizont(this._lenthConstrait.Anchor1.cadPoint, this._lenthConstrait.Anchor2.cadPoint);
+            this.Rotation = Sizing.AngleHorizont(this._lenthConstrait.Point1, this._lenthConstrait.Point2);
 
             Xamarin.Forms.Device.InvokeOnMainThreadAsync(() => {
-                this.Text = Math.Round(Sizing.PtPLenth(this._lenthConstrait.Anchor1.cadPoint, this._lenthConstrait.Anchor2.cadPoint), 2).ToString();
+                this.Text = Math.Round(Sizing.PtPLenth(this._lenthConstrait.Point1, this._lenthConstrait.Point2), 2).ToString();
             });
         }
 
@@ -122,11 +127,6 @@ namespace MeasureApp.ShapeObj.LabelObject
             this.Scale = 1 / e;
         }
 
-        private void LineLabel_Selected(object sender, bool e)
-        {
-            //this._cadLine.IsSelect = !this._cadLine.IsSelect;
-        }
-
         private void LenthAnchorAnchor_Changed(object sender, System.EventArgs e)
         {
             this.Update();
@@ -134,7 +134,12 @@ namespace MeasureApp.ShapeObj.LabelObject
 
         private void _lenthAnchor_Removed(object sender, EventArgs e)
         {
-            this.TryRemove();
+            Removed?.Invoke(this, null);
+        }
+
+        public override void TryRemove()
+        {
+            this._lenthConstrait.TryRemove();
         }
 
     }

@@ -1,10 +1,8 @@
-﻿using MeasureApp.ShapeObj;
-using MeasureApp.ShapeObj.Constraints;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace MeasureApp.View.OrderPage
+namespace MeasureApp.View.OrderPage.OrderClass
 {
     public class Order : INotifyPropertyChanged
     {
@@ -58,6 +56,8 @@ namespace MeasureApp.View.OrderPage
             }
         }
         private string _details;
+
+        public List<Contour> Contours = new List<Contour>();
 
         public event PropertyChangedEventHandler PropertyChanged;
 
