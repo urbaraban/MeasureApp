@@ -6,9 +6,8 @@ namespace MeasureApp.ShapeObj.LabelObject
 {
     public abstract class  ConstraitLabel : Label, CanvasObject, ActiveObject
     {
-        public virtual event EventHandler<object> Droped;
-        public virtual event EventHandler Removed;
-
+        public virtual event EventHandler<object> Dropped;
+        public virtual event EventHandler<bool> Removed;
 
         public CadVariable Variable;
 
@@ -50,7 +49,7 @@ namespace MeasureApp.ShapeObj.LabelObject
 
         public virtual void TryRemove()
         {
-            this.Removed?.Invoke(this, null);
+            this.Removed?.Invoke(this, true);
         }
 
         public virtual void Update()

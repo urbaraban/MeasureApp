@@ -1,6 +1,11 @@
-﻿using MeasureApp.ShapeObj;
-using MeasureApp.View.OrderPage.OrderClass;
+﻿using App1;
+using MeasureApp.Orders;
+using MeasureApp.ShapeObj;
+using MeasureApp.ShapeObj.Constraints;
+using MeasureApp.Tools;
 using System;
+using System.Diagnostics;
+using System.Windows.Input;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -9,38 +14,121 @@ namespace MeasureApp.View.OrderPage
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class CadCanvasPage : ContentPage
     {
+        public ICommand AddContour => new Command(async () =>
+        {
+            this.order.Contours.Add(new Contour("Test"));
+        });
+
         private Order order => (Order)this.BindingContext;
+        private Contour contour => (Contour)ContourPicker.SelectedItem;
+        private ContourPath contourPath => (ContourPath)PathPicker.SelectedItem;
 
         public CadCanvasPage()
         {
+            
             InitializeComponent();
             AddBtn.Clicked += AddBtn_Clicked;
             ClearBtn.Clicked += ClearBtn_Clicked;
             FitBtn.Clicked += FitBtn_Clicked;
 
-            Binding binding = new Binding()
-            {
-                Source = this.MainCanvas,
-                Path = "Method",
-                Mode = BindingMode.OneWay,
-                Converter = new ToStringConverter()
-            };
-            DrawMethodLabel.Text = this.MainCanvas.Method.ToString();
-            DrawMethodLabel.BindingContext = this.MainCanvas.Method;
-            DrawMethodLabel.SetBinding(Label.TextProperty, binding);
-
             this.BindingContextChanged += CadCanvasPage_BindingContextChanged;
             ContourPicker.SelectedIndexChanged += ContourPicker_SelectedIndexChanged;
+            AppShell.LenthUpdated += AppShell_LenthUpdated;
+            
+            if (this.MainCanvas.BindingContext != null)
+                Debug.WriteLine(this.MainCanvas.BindingContext.ToString());
+            this.BindingContext = new Order();
+
+            AppShell.UpdatedOrder += AppShell_UpdatedOrder;
+            
         }
+
+        private void AppShell_UpdatedOrder(object sender, Order e)
+        {
+            this.BindingContext = e;
+        }
+
+        public void BuildLine(double Lenth, double Angle)
+        {
+            //Если у нас нет линии привязки
+            if (this.contour.BaseLenthConstrait == null)
+            {
+                CadPoint cadPoint1 = (CadPoint)this.contour.Add(new CadPoint(0, 0, this.contour.GetNewPointName()), 0);
+                cadPoint1.IsFix = true;
+                CadPoint cadPoint2 = (CadPoint)this.contour.Add(new CadPoint(0, 0 + Lenth, this.contour.GetNewPointName()), 0);
+                cadPoint2.IsFix = true;
+                this.contour.Add(new ConstraintLenth(cadPoint1, cadPoint2, Lenth), 0);
+            }
+            else
+            {
+                CadPoint point1 = this.contour.BaseLenthConstrait.GetNotThisPoint(this.contour.BasePoint);
+                if (point1 == null) return;
+
+                Point point = Sizing.GetPositionLineFromAngle(point1, this.contour.BasePoint, Lenth, Angle < 0 ? 90 : Angle);
+                CadPoint cadPoint2 = new CadPoint(point.X, point.Y, this.contour.GetNewPointName());
+                ConstraintLenth lenthConstrait = (ConstraintLenth)this.contour.Add(new ConstraintLenth(this.contour.BasePoint, cadPoint2, Lenth), 0);
+
+                CadPoint last = this.contour.LastPoint;
+                CadPoint point2 = (CadPoint)this.contour.Add(cadPoint2, 0);
+
+                if (this.contour.Method == DrawMethod.FromPoint && this.contour.BasePoint != this.contour.LastPoint)
+                {
+                    lenthConstrait.IsSupport = true;
+                    this.contour.Add(new ConstraintLenth(last, point2, -1, true), 0);
+                    // this.Contour.Add(new ConstraintAngle(this.Contour.LastLenthConstrait, lenthConstrait, Angle), 0);
+                }
+            }
+        }
+
+
+        private void AppShell_LenthUpdated(object sender, Tuple<double, double> e)
+        {
+            BuildLine(e.Item1, e.Item2);
+        }
+
+
 
         private void CadCanvasPage_BindingContextChanged(object sender, EventArgs e)
         {
-            ContourPicker.ItemsSource = order.Contours;
+            if (this.BindingContext is Order order)
+            {
+                if (order.Contours.Count < 1)
+                {
+                    order.Contours.Add(new Contour("Test"));
+                }
+                ContourPicker.ItemsSource = order.Contours;
+                ContourPicker.SelectedItem = order.Contours[0];
+
+                /*
+                Xamarin.Forms.Device.InvokeOnMainThreadAsync(() =>
+                {
+                    Binding binding = new Binding()
+                    {
+                        Source = this.contour,
+                        Path = "Method",
+                        Mode = BindingMode.OneWay,
+                        Converter = new ToStringConverter()
+                    };
+
+                    DrawMethodLabel.Text = this.contour.Method.ToString();
+                    DrawMethodLabel.BindingContext = this.contour.Method;
+                    DrawMethodLabel.SetBinding(Label.TextProperty, binding);
+                });*/
+            }
         }
 
         private void ContourPicker_SelectedIndexChanged(object sender, EventArgs e)
         {
-            MainCanvas.BindingContext = ContourPicker.SelectedItem;
+            if (ContourPicker.SelectedItem is Contour contour)
+            {
+                if (contour.Paths.Count < 1)
+                {
+                    contour.Paths.Add(new ContourPath(contour.Paths.Count.ToString()));
+                }
+                PathPicker.ItemsSource = contour.Paths;
+                PathPicker.SelectedItem = contour.Paths[0];
+                MainCanvas.BindingContext = contour;
+            }
         }
 
         private void FitBtn_Clicked(object sender, EventArgs e)
@@ -70,19 +158,36 @@ namespace MeasureApp.View.OrderPage
                     LineAngle = double.Parse(strings[1]);
                 }
 
-                MainCanvas.BuildLine(LineLenth, LineAngle);
+                BuildLine(LineLenth, LineAngle);
             }
 
         }
 
+
+
         private void RadioStep_CheckedChanged(object sender, CheckedChangedEventArgs e)
         {
-            this.MainCanvas.Method = DrawMethod.StepByStep;
+            if (this.contour != null)
+            {
+                this.contour.Method = DrawMethod.FromPoint;
+            }
         }
 
         private void RadioPoint_CheckedChanged(object sender, CheckedChangedEventArgs e)
         {
-            this.MainCanvas.Method = DrawMethod.FromPoint;
+            if (this.contour != null)
+            {
+                this.contour.Method = DrawMethod.FromPoint;
+            }
+        }
+
+        private void ContourAddBtn_Clicked(object sender, EventArgs e)
+        {
+            Contour tempContor = new Contour("Test");
+            this.order.Contours.Add(tempContor);
+            ContourPicker.ItemsSource = null;
+            ContourPicker.ItemsSource = this.order.Contours;
+            ContourPicker.SelectedItem = tempContor;
         }
     }
 }

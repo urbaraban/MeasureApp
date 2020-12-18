@@ -11,8 +11,8 @@ namespace MeasureApp.ShapeObj
     public abstract class VisualObject : Path, INotifyPropertyChanged, CanvasObject, ActiveObject
     {
         public virtual event EventHandler<bool> Selected;
-        public virtual event EventHandler<object> Droped;
-        public virtual event EventHandler Removed;
+        public virtual event EventHandler<object> Dropped;
+        public virtual event EventHandler<bool> Removed;
 
         public virtual string ID { get; set; }
 
@@ -122,7 +122,7 @@ namespace MeasureApp.ShapeObj
 
         private void DropGesture_Drop(object sender, DropEventArgs e)
         {
-            this.Droped?.Invoke(this, e.Data.Properties["Object"]);
+            this.Dropped?.Invoke(this, e.Data.Properties["Object"]);
         }
 
         private void TapGesture_Tapped(object sender, EventArgs e)
@@ -152,7 +152,7 @@ namespace MeasureApp.ShapeObj
 
         public virtual void TryRemove()
         {
-            Removed?.Invoke(this, null);
+            Removed?.Invoke(this, true);
         }
 
         private void TapManager()

@@ -6,9 +6,10 @@ namespace MeasureApp.ShapeObj.Interface
 {
     public interface CadObject
     {
-        public event EventHandler Removed;
+        event EventHandler<bool> Removed;
         event EventHandler<bool> Selected;
         event EventHandler<bool> Supported;
+        event EventHandler<bool> LastObject;
 
         public void TryRemove();
 
@@ -23,5 +24,7 @@ namespace MeasureApp.ShapeObj.Interface
         /// Support object stat
         /// </summary>
         bool IsSupport { get; set; }
+
+        void MakeLast();
     }
 }

@@ -9,7 +9,7 @@ namespace MeasureApp.ShapeObj
     public class VisualLine : Path, CanvasObject
     {
         public ConstraintLenth AnchorsConstrait;
-        public event EventHandler Removed;
+        public event EventHandler<bool> Removed;
 
         public new Xamarin.Forms.Rectangle Bounds => new Xamarin.Forms.Rectangle(
             Math.Min(AnchorsConstrait.Point1.OX, AnchorsConstrait.Point2.OX), 
@@ -37,7 +37,6 @@ namespace MeasureApp.ShapeObj
             this.AnchorsConstrait.Selected += AnchorsConstrait_Selected;
             this.StrokeLineCap = PenLineCap.Round;
             CadCanvas.RegularSize += CadCanvas_RegularSize;
-            AnchorsConstrait.PropertyChanged += AnchorsConstrait_PropertyChanged;
             Update();
         }
 
@@ -53,7 +52,7 @@ namespace MeasureApp.ShapeObj
             if (e == true)
             {
                 this.Stroke = Brush.LightGray;
-                this.StrokeDashArray = new DoubleCollection() { 1, 1 };
+                this.StrokeDashArray = new DoubleCollection() { 1, 2 };
             }
             else
             {
@@ -62,9 +61,9 @@ namespace MeasureApp.ShapeObj
             }
         }
 
-        private void AnchorsConstrait_Removed(object sender, EventArgs e)
+        private void AnchorsConstrait_Removed(object sender, bool e)
         {
-            Removed?.Invoke(this, null);
+            Removed?.Invoke(this, e);
         }
 
         /// <summary>
@@ -72,12 +71,17 @@ namespace MeasureApp.ShapeObj
         /// </summary>
         public void Update()
         {
+
             double Offset = 10;
 
             double MinX = Math.Min(this.AnchorsConstrait.Point1.OX, this.AnchorsConstrait.Point2.OX);
             double MinY = Math.Min(this.AnchorsConstrait.Point1.OY, this.AnchorsConstrait.Point2.OY);
             double MaxX = Math.Max(this.AnchorsConstrait.Point2.OX, this.AnchorsConstrait.Point1.OX) + CadCanvas.RegularAnchorSize;
             double MaxY = Math.Max(this.AnchorsConstrait.Point2.OY, this.AnchorsConstrait.Point1.OY) + CadCanvas.RegularAnchorSize;
+
+            Xamarin.Forms.Device.InvokeOnMainThreadAsync(() => {
+                this.Layout(new Xamarin.Forms.Rectangle(0, 0, MaxX, MaxY));
+            });
 
             /*
             this.TranslationX = MinX - Offset;
@@ -89,21 +93,7 @@ namespace MeasureApp.ShapeObj
                 StartPoint = new Point(this.AnchorsConstrait.Point1.OX, this.AnchorsConstrait.Point1.OY),
                 EndPoint = new Point(this.AnchorsConstrait.Point2.OX, this.AnchorsConstrait.Point2.OY)
             };
-            Xamarin.Forms.Device.InvokeOnMainThreadAsync(() => {
-                this.Layout(new Xamarin.Forms.Rectangle(0, 0, MaxX, MaxY));
-            });
-        }
-
-
-        private void AnchorsConstrait_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == "IsTemp")
-            Xamarin.Forms.Device.InvokeOnMainThreadAsync(() =>
-            {
-                this.StrokeDashArray = this.AnchorsConstrait.IsSupport ? new DoubleCollection() { 1, 1 } : new DoubleCollection() { 1 };
-                this.Stroke = this.AnchorsConstrait.IsSupport ? Brush.LightGray : Brush.Blue;
-            });
-            
+ 
         }
 
         private void CadCanvas_RegularSize(object sender, double e)

@@ -14,7 +14,7 @@
 
                 </shapeobj:CadCanvas>
                 <StackLayout AbsoluteLayout.LayoutBounds="0,0,1,0.10" 
-                   AbsoluteLayout.LayoutFlags="SizeProportional" BackgroundColor="CadetBlue"
+                   AbsoluteLayout.LayoutFlags="SizeProportional" 
                              Orientation="Vertical">
                     <Grid Margin=" 10">
                         <Grid.ColumnDefinitions>
@@ -25,18 +25,19 @@
                         <Picker x:Name="ContourPicker" 
                                 Title="Выбор контура"
                                 TitleColor="Wheat"
+                                ItemDisplayBinding="{Binding Path=ID}"
                                 Grid.Column="0"
                         />
-                        <Button Text="+" Grid.Column="1"/>
+                        <Button x:Name="ContourAddBtn" Text="+" Grid.Column="1" Clicked="ContourAddBtn_Clicked" />
                         <Button Text="—" Grid.Column="2"/>
                     </Grid>
                 </StackLayout>
 
                 <StackLayout AbsoluteLayout.LayoutBounds="0.98, 0.98, -1, -1" 
-                AbsoluteLayout.LayoutFlags="PositionProportional"
-                             BackgroundColor="#A5977B" 
+                AbsoluteLayout.LayoutFlags="PositionProportional" WidthRequest="70"
+
                              VerticalOptions="End" HorizontalOptions="End">
-                    <Picker x:Name="PathPocker" Title="Contour" 
+                    <Picker x:Name="PathPicker" Title="Contour" 
                             HorizontalTextAlignment="Center" 
                             Margin="0,0,0,100"/>
 

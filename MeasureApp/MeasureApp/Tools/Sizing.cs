@@ -11,7 +11,7 @@ namespace MeasureApp.Tools
     {
         public static double PtPLenth(CadPoint cadPoint1, CadPoint cadPoint2)
         {
-           return Math.Sqrt(Math.Pow(cadPoint2.X - cadPoint1.X, 2) + Math.Pow(cadPoint2.Y - cadPoint1.Y, 2));
+           return Math.Round(Math.Sqrt(Math.Pow(cadPoint2.X - cadPoint1.X, 2) + Math.Pow(cadPoint2.Y - cadPoint1.Y, 2)), 2);
         }
 
         public static Point GetPositionLineFromAngle(CadPoint Point1, CadPoint Point2, double newLenth, double angle)

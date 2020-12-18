@@ -1,6 +1,8 @@
 ﻿using InTheHand.Bluetooth;
+using MeasureApp.Orders;
 using MeasureApp.ShapeObj;
 using MeasureApp.ShapeObj.LabelObject;
+using MeasureApp.View.OrderPage;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -15,6 +17,7 @@ namespace App1
     {
         public static event EventHandler UpdatedDevice;
         public static event EventHandler<Tuple<double, double>> LenthUpdated;
+        public static event EventHandler<Order> UpdatedOrder;
 
         public static AppShell Instance;
         public static BluetoothLEScan scan;
@@ -73,10 +76,10 @@ namespace App1
 
         private static async void Device_GattServerDisconnected(object sender, EventArgs e)
         {
+            UpdatedDevice?.Invoke(null, null);
             var device = sender as BluetoothDevice;
             await device.Gatt.ConnectAsync();
         }
-
 
         private List<BluetoothDevice> Devices = new List<BluetoothDevice>();
 
@@ -88,7 +91,12 @@ namespace App1
 
             AppShell.Instance = this;
 
+            AdressListPage.UpdatedOrder += AdressListPage_UpdatedOrder;
+        }
 
+        private void AdressListPage_UpdatedOrder(object sender, Order e)
+        {
+            UpdatedOrder(this, e);
         }
 
         private async void OnMenuItemClicked(object sender, EventArgs e)
@@ -103,10 +111,15 @@ namespace App1
             return Result;
         }
 
-        public async Task<string> DisplayPromtDialog(string Name, string Value)
+        public async Task<string> DisplayPromtDialog(string Title, string Value)
         {
-            string result = await DisplayPromptAsync("Изменить значение", Name, "Add", "Cancel", "0000", -1, Keyboard.Numeric, Value);
+            string result = await DisplayPromptAsync("Изменить значение", Title, "Add", "Cancel", "0000", -1, Keyboard.Numeric, Value);
             return result;
+        }
+
+        public async Task<bool> AlertDialog(string Title,string Message, string CanselStr)
+        {
+            return await DisplayAlert(Title, Message, "Yes", "Cancel");
         }
 
         private async Task LoadBleScan()

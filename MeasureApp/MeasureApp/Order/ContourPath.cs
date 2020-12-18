@@ -4,9 +4,9 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 
-namespace MeasureApp.View.OrderPage.OrderClass
+namespace MeasureApp.Orders
 {
-    public class ContourPath : INotifyPropertyChanged
+    public class ContourPath : INotifyPropertyChanged, OrderObjectInt
     {
         /// <summary>
         /// Contour sqare
@@ -41,13 +41,23 @@ namespace MeasureApp.View.OrderPage.OrderClass
 
         public string Color = "#0000FF";
 
+        public string ID { get; set; }
 
+        public ContourPath(string ID)
+        {
+            this.ID = ID;
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         public void OnPropertyChanged([CallerMemberName] string prop = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+        }
+
+        public override string ToString()
+        {
+            return ID;
         }
     }
 }

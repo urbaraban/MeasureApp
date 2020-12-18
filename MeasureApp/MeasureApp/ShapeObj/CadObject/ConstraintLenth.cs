@@ -7,9 +7,10 @@ namespace MeasureApp.ShapeObj.Constraints
     public class ConstraintLenth : CadConstraint, CadObject
     {
         public event EventHandler Changed;
-        public override event EventHandler Removed;
+        public event EventHandler<bool> Removed;
         public event EventHandler<bool> Selected;
         public event EventHandler<bool> Supported;
+        public event EventHandler<bool> LastObject;
 
         public Orientaton Orientation = Orientaton.OFF; // -1 — Off, 0 — Vetical, 1 — Horizontal
 
@@ -73,9 +74,12 @@ namespace MeasureApp.ShapeObj.Constraints
             this.Point2.Removed += Point_Removed;
         }
 
-        private void Point_Removed(object sender, EventArgs e)
+        private void Point_Removed(object sender, bool e)
         {
-            Removed?.Invoke(this, null);
+            if (this.Point1 == sender || this.Point2 == sender)
+            {
+                Removed?.Invoke(this, true);
+            }
         }
 
         private void Point_ChangedPoint(object sender, CadPoint e)
@@ -83,14 +87,12 @@ namespace MeasureApp.ShapeObj.Constraints
             if (this.Point1 == sender) 
             {
                 UnSubAnchor(this.Point1);
-                this.Point1.TryRemove();
                 this.Point1 = e;
                 SubAnchor(this.Point1);
             }
             if (this.Point2 == sender)
             {
                 UnSubAnchor(this.Point2);
-                this.Point2.TryRemove();
                 this.Point2 = e;
                 SubAnchor(this.Point2);
             }
@@ -103,12 +105,12 @@ namespace MeasureApp.ShapeObj.Constraints
             this.Point2.IsFix = state;
         }
 
-        public override void TryRemove()
+        public void TryRemove()
         {
             UnSubAnchor(this.Point1);
             UnSubAnchor(this.Point2);
             this.Variable.PropertyChanged -= Variable_PropertyChanged;
-            Removed?.Invoke(this, null);
+            Removed?.Invoke(this, true);
         }
 
         public void UnSubAnchor(CadPoint cadPoint)
@@ -121,6 +123,18 @@ namespace MeasureApp.ShapeObj.Constraints
         {
             cadPoint.PropertyChanged += Point_PropertyChanged;
             cadPoint.Constraints.Add(this);
+        }
+
+        public CadPoint GetNotThisPoint(CadPoint cadPoint)
+        {
+            if (this.Point1 == cadPoint) return this.Point2;
+            else if (this.Point2 == cadPoint) return this.Point1;
+            return null;
+        }
+
+        public string ToString()
+        {
+            return $"{this.ID}:{Lenth.ToString()}";
         }
 
         private void Variable_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -164,6 +178,11 @@ namespace MeasureApp.ShapeObj.Constraints
             }
 
             this.Changed?.Invoke(this, null);
+        }
+
+        public void MakeLast()
+        {
+            this.LastObject(this, true);
         }
     }
 }

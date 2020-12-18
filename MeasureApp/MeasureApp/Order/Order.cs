@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace MeasureApp.View.OrderPage.OrderClass
+namespace MeasureApp.Orders
 {
     public class Order : INotifyPropertyChanged
     {
@@ -64,6 +64,11 @@ namespace MeasureApp.View.OrderPage.OrderClass
         public void OnPropertyChanged([CallerMemberName] string prop = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+        }
+
+        public override string ToString()
+        {
+            return Name;
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using App1;
-using MeasureApp.View.OrderPage.OrderClass;
+using MeasureApp.Orders;
 using System;
 using System.Collections.Generic;
 using System.Linq;

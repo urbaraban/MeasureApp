@@ -5,7 +5,7 @@ namespace MeasureApp.ShapeObj.Interface
 {
     public interface ActiveObject
     {
-        event EventHandler<object> Droped;
+        event EventHandler<object> Dropped;
 
         SheetMenu SheetMenu { get; set; }
 

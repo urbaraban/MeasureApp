@@ -58,7 +58,7 @@ namespace MeasureApp.ShapeObj.LabelObject
         });
         #endregion
 
-        public override event EventHandler Removed;
+        public override event EventHandler<bool> Removed;
 
         public override bool IsSelect 
         { 
@@ -116,8 +116,11 @@ namespace MeasureApp.ShapeObj.LabelObject
 
             this.Rotation = Sizing.AngleHorizont(this._lenthConstrait.Point1, this._lenthConstrait.Point2);
 
+            double templenth = Math.Round(Sizing.PtPLenth(this._lenthConstrait.Point1, this._lenthConstrait.Point2), 2);
+
             Xamarin.Forms.Device.InvokeOnMainThreadAsync(() => {
-                this.Text = Math.Round(Sizing.PtPLenth(this._lenthConstrait.Point1, this._lenthConstrait.Point2), 2).ToString();
+                this.Text = $"{(_lenthConstrait.Lenth > -1 ? _lenthConstrait.Lenth.ToString() : string.Empty)}" +
+                    $"{ (templenth != _lenthConstrait.Lenth ? $"({templenth.ToString()})" : string.Empty)}";
             });
         }
 
@@ -132,9 +135,9 @@ namespace MeasureApp.ShapeObj.LabelObject
             this.Update();
         }
 
-        private void _lenthAnchor_Removed(object sender, EventArgs e)
+        private void _lenthAnchor_Removed(object sender, bool e)
         {
-            Removed?.Invoke(this, null);
+            Removed?.Invoke(this, true);
         }
 
         public override void TryRemove()

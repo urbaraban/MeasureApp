@@ -51,7 +51,6 @@ namespace MeasureApp.ShapeObj.Constraints
         }
         #endregion
         public event EventHandler<bool> Selected;
-        public virtual event EventHandler Removed;
         public virtual event EventHandler<bool> Fixed;
         public virtual event EventHandler<bool> Supported;
 
@@ -102,11 +101,6 @@ namespace MeasureApp.ShapeObj.Constraints
             }
         }
         private bool _issupprot = false;
-
-        public virtual void TryRemove()
-        {
-            Removed?.Invoke(this, null);
-        }
         #endregion
 
         public event PropertyChangedEventHandler PropertyChanged;

@@ -16,8 +16,12 @@ namespace MeasureApp.ShapeObj
         {
             this.TryRemove();
         });
+        private ICommand LastPoint => new Command(async () =>
+        {
+            this.cadPoint.MakeLast();
+        });
 
-        public override event EventHandler Removed;
+        public override event EventHandler<bool> Removed;
 
         public EllipseGeometry _ellipse;
 
@@ -30,13 +34,7 @@ namespace MeasureApp.ShapeObj
         public override bool IsSelect 
         {
             get => cadPoint.IsSelect;
-            set
-            {
-                cadPoint.IsSelect = value;
-                Xamarin.Forms.Device.BeginInvokeOnMainThread(() => {
-                    this.Stroke = (cadPoint.IsSelect == true ? Brush.Orange : Brush.Blue);
-                });
-            }
+            set => cadPoint.IsSelect = value;
         }
 
         public override double X { get => this.cadPoint.OX; set => this.cadPoint.OX = value; }
@@ -48,6 +46,7 @@ namespace MeasureApp.ShapeObj
             this.cadPoint.PropertyChanged += CadPoint_PropertyChanged;
             this.cadPoint.ChangedPoint += CadPoint_ChangedPoint;
             this.cadPoint.Removed += CadPoint_Removed;
+            this.cadPoint.Selected += CadPoint_Selected;
             this._ellipse = new EllipseGeometry()
             {
                 Center = new Point(CadCanvas.RegularAnchorSize + CadCanvas.RegularAnchorSize / 2, CadCanvas.RegularAnchorSize + CadCanvas.RegularAnchorSize / 2),
@@ -68,13 +67,21 @@ namespace MeasureApp.ShapeObj
             this.SheetMenu = new LabelObject.SheetMenu(new List<LabelObject.SheetMenuItem>()
             {
                 new LabelObject.SheetMenuItem(Fix, "{FIX}"),
-                new LabelObject.SheetMenuItem(Remove, "{REMOVE}")
+                new LabelObject.SheetMenuItem(Remove, "{REMOVE}"),
+                new LabelObject.SheetMenuItem(LastPoint, "{LASTPOINT}")
             });
         }
 
-        private void CadPoint_Removed(object sender, EventArgs e)
+        private void CadPoint_Selected(object sender, bool e)
         {
-            Removed?.Invoke(this, null);
+            Xamarin.Forms.Device.BeginInvokeOnMainThread(() => {
+                this.Stroke = (e == true ? Brush.Orange : Brush.Blue);
+            });
+        }
+
+        private void CadPoint_Removed(object sender, bool e)
+        {
+            Removed?.Invoke(this, true);
         }
 
         private void CadPoint_ChangedPoint(object sender, CadPoint e)
@@ -90,7 +97,7 @@ namespace MeasureApp.ShapeObj
         public void ChangedPoint(CadPoint cadPoint)
         {
             this.cadPoint.ChangePoint(cadPoint);
-            Removed?.Invoke(this, null);
+            Removed?.Invoke(this, true);
         }
 
         private void CadCanvas_RegularSize(object sender, double e)
@@ -121,6 +128,11 @@ namespace MeasureApp.ShapeObj
         public override void TryRemove()
         {
             this.cadPoint.TryRemove();
+        }
+
+        public string ToString()
+        {
+            return $"{this.ID}:{this.X.ToString()} {this.Y.ToString()}";
         }
     }
 }

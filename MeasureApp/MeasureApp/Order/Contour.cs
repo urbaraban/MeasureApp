@@ -6,13 +6,13 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace MeasureApp.View.OrderPage.OrderClass
+namespace MeasureApp.Orders
 {
-    public class Contour : INotifyPropertyChanged
+    public class Contour : INotifyPropertyChanged, OrderObjectInt
     {
         public event EventHandler<object> ObjectAdded;
 
-        public string ID = "Contour";
+        public string ID { get; set; } = "Contour";
 
         public List<ConstraintLenth> Lenths = new List<ConstraintLenth>();
 
@@ -67,15 +67,15 @@ namespace MeasureApp.View.OrderPage.OrderClass
                 this._method = value;
                 if (this._method == DrawMethod.FromPoint)
                 {
-                    this.StartPoint = this.LastPoint;
+                    this.BasePoint = this.LastPoint;
                 }
                 OnPropertyChanged("Method");
             }
         }
         private DrawMethod _method = DrawMethod.StepByStep;
 
-        public ConstraintLenth LastLenthConstrait { get; internal set; }
-        public CadPoint StartPoint { get; internal set; }
+        public ConstraintLenth BaseLenthConstrait { get; internal set; }
+        public CadPoint BasePoint { get; internal set; }
         public CadPoint LastPoint { get; internal set; }
 
         public Contour(string Name)
@@ -84,36 +84,58 @@ namespace MeasureApp.View.OrderPage.OrderClass
             Lenths = new List<ConstraintLenth>();
             Angles = new List<ConstraintAngle>();
             Paths = new List<ContourPath>();
-            Paths.Add(new ContourPath());
+            Paths.Add(new ContourPath(Paths.Count.ToString()));
         }
        
-
-        public string GetLastID()
+        /// <summary>
+        /// Get CadPoint for name. Search in all path.
+        /// </summary>
+        /// <param name="Name"></param>
+        /// <returns></returns>
+        public CadPoint GetPoint(string Name)
         {
-            return string.Empty;
+            foreach (CadPoint cadPoint in this.Points)
+            {
+                if (cadPoint.ID == Name)
+                {
+                    return cadPoint;
+                }
+            }
+            return null;
         }
 
-        public object Add(object Object, int PathIndex)
+        public object Add(object Object, int PathIndex, bool Last = true)
         {
             if (Object is CadObject cadObject)
             {
                 cadObject.Selected += CadObject_Selected;
                 cadObject.Removed += CadObject_Removed;
+                cadObject.LastObject += CadObject_LastObject;
             }
 
             if (Object is CadPoint cadPoint)
             {
                 this.Paths[PathIndex].Points.Add(cadPoint);
-                this.LastPoint = cadPoint;
-                this.LastPoint.IsSelect = true;
+                if (Last == true)
+                {
+                    if (this._method == DrawMethod.StepByStep || this.BasePoint == null)
+                    {
+                        cadPoint.IsSelect = true;
+                    }
+                    else
+                    {
+                        this.LastPoint = cadPoint;
+                    }
+                    
+                }
                 ObjectAdded?.Invoke(this.Paths[PathIndex], Object);
                 return Object;
             }
             else if (Object is ConstraintLenth lenthConstrait)
             {
                 this.Lenths.Add(lenthConstrait);
-                this.LastLenthConstrait = lenthConstrait;
-                this.LastLenthConstrait.IsSelect = true;
+                if (Last == true && (Method == DrawMethod.StepByStep || this.BaseLenthConstrait == null)) 
+                    lenthConstrait.IsSelect = true;
                 ObjectAdded?.Invoke(this, Object);
                 return Object;
             }
@@ -126,7 +148,34 @@ namespace MeasureApp.View.OrderPage.OrderClass
             return null;
         }
 
-        private void CadObject_Removed(object sender, EventArgs e)
+        private void CadObject_LastObject(object sender, bool e)
+        {
+            if (e == true)
+            {
+                if (sender is CadPoint cadPoint)
+                {
+                    if (this._method == DrawMethod.StepByStep)
+                    {
+                        this.LastPoint = cadPoint;
+                        this.BasePoint = cadPoint;
+                    }
+                    else
+                    {
+                        this.LastPoint = cadPoint;
+                    }
+                }
+                if (sender is ConstraintLenth lenthConstrait)
+                {
+                    if (this.BaseLenthConstrait != null)
+                    {
+                        this.BaseLenthConstrait.IsSelect = false;
+                    }
+                    this.BaseLenthConstrait = lenthConstrait;
+                }
+            }
+        }
+
+        private void CadObject_Removed(object sender, bool e)
         {
             this.Remove(sender);
         }
@@ -137,30 +186,28 @@ namespace MeasureApp.View.OrderPage.OrderClass
             {
                 if (sender is CadPoint cadPoint)
                 {
-                    if (this._method == DrawMethod.StepByStep)
+                    if (this._method == DrawMethod.StepByStep || this.BasePoint == null)
                     {
-                        if (this.LastPoint != null) this.LastPoint.IsSelect = false;
+                        if (this.BasePoint != null) this.LastPoint.IsSelect = false;
                         this.LastPoint = cadPoint;
-                        this.StartPoint = cadPoint;
-                    }
-                    else
-                    {
-                        if (this.StartPoint != null) this.StartPoint.IsSelect = false;
-                        this.StartPoint = cadPoint;
-                        if (this.LastPoint == null) this.LastPoint = cadPoint;
+                        this.BasePoint = cadPoint;
                     }
                 }
                 if (sender is ConstraintLenth lenthConstrait)
                 {
-                    if (this.LastLenthConstrait != null)
+                    if (this.BaseLenthConstrait != null)
                     {
-                        this.LastLenthConstrait.IsSelect = false;
+                        this.BaseLenthConstrait.IsSelect = false;
                     }
-                    this.LastLenthConstrait = lenthConstrait;
+                    this.BaseLenthConstrait = lenthConstrait;
                 }
             }
         }
 
+        /// <summary>
+        /// Remove select object
+        /// </summary>
+        /// <param name="Object"></param>
         public void Remove (object Object)
         {
             if (Object is CadObject cadObject)
@@ -176,12 +223,12 @@ namespace MeasureApp.View.OrderPage.OrderClass
                     contourPath.Points.Remove(cadPoint);
                 }
                 this.LastPoint = this.LastPoint == cadPoint ? null : this.LastPoint;
-                this.StartPoint = this.StartPoint == cadPoint ? null : this.StartPoint;
+                this.BasePoint = this.BasePoint == cadPoint ? null : this.BasePoint;
             }
             else if (Object is ConstraintLenth lenthConstrait)
             {
                 this.Lenths.Remove(lenthConstrait);
-                this.LastLenthConstrait = this.LastLenthConstrait == lenthConstrait ? null : this.LastLenthConstrait;
+                this.BaseLenthConstrait = this.BaseLenthConstrait == lenthConstrait ? null : this.BaseLenthConstrait;
             }
             else if (Object is ConstraintAngle angleConstrait)
             {
@@ -189,11 +236,35 @@ namespace MeasureApp.View.OrderPage.OrderClass
             }
         }
 
+        /// <summary>
+        /// Clear contour and set Base and Last object to null
+        /// </summary>
         public void Clear()
         {
-            this.StartPoint = null;
-            this.LastLenthConstrait = null;
+            this.BasePoint = null;
+            this.BaseLenthConstrait = null;
             this.LastPoint = null;
+        }
+
+        public string GetNewPointName()
+        {
+            string result = string.Empty;
+            int count = 0;
+            foreach (ContourPath contourPath in this.Paths)
+            {
+                count += contourPath.Points.Count;
+            }
+
+            result = $"{Convert.ToChar(65 * ((count / 678) > 0 ? 1 : 0) + count / 678)}" +
+                $"{Convert.ToChar(65 * ((count / 26) > 0 ? 1 : 0) + count / 26)}" +
+                $"{Convert.ToChar(65 + count % 26)}";
+
+            return result.Trim('\0');
+        }
+
+        public override string ToString()
+        {
+            return this.ID;
         }
     }
 }

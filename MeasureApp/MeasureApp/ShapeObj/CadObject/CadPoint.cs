@@ -14,10 +14,10 @@ namespace MeasureApp.ShapeObj
         public event PropertyChangedEventHandler PropertyChanged;
         public event EventHandler<bool> Fixed;
         public event EventHandler<bool> Supported;
-        public event EventHandler Removed;
+        public event EventHandler<bool> Removed;
 
         public event EventHandler<CadPoint> ChangedPoint;
-
+        public event EventHandler<bool> LastObject;
 
         public  bool IsSelect
         {
@@ -146,16 +146,17 @@ namespace MeasureApp.ShapeObj
 
         }
 
-        public CadPoint(double X, double Y, string ID)
+        public CadPoint(double X, double Y, string ID, bool Adapt = false)
         {
-            this._x = X;
-            this._y = Y;
+            this._x = X - (Adapt == true ? CadCanvas.ZeroPoint.X : 0);
+            this._y = Y - (Adapt == true ? CadCanvas.ZeroPoint.Y : 0);
             this._id = ID;
         }
 
         public void ChangePoint(CadPoint cadPoint)
         {
             ChangedPoint?.Invoke(this, cadPoint);
+            TryRemove();
         }
         public void Update(CadPoint cadPoint, bool Constraint = false)
         {
@@ -186,15 +187,20 @@ namespace MeasureApp.ShapeObj
 
         public override string ToString()
         {
-            return $"{X.ToString()}:{Y.ToString()}";
+            return $"{this.ID}:{X.ToString()}:{Y.ToString()}";
         }
 
         public void TryRemove()
         {
             if (Constraints.Count < 2)
             {
-                Removed?.Invoke(this, null);
+                Removed?.Invoke(this, true);
             }
+        }
+
+        public void MakeLast()
+        {
+            this.LastObject(this, true);
         }
     }
 }

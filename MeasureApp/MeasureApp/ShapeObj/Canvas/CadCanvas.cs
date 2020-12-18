@@ -1,9 +1,7 @@
-﻿using App1;
+﻿using MeasureApp.Orders;
 using MeasureApp.ShapeObj.Constraints;
 using MeasureApp.ShapeObj.Interface;
 using MeasureApp.ShapeObj.LabelObject;
-using MeasureApp.Tools;
-using MeasureApp.View.OrderPage.OrderClass;
 using System;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -113,22 +111,27 @@ namespace MeasureApp.ShapeObj
             this.Add(this.AnchorLayout);
             this.GroupLayout.TranslationX = -ZeroPoint.X + 100;
             this.GroupLayout.TranslationY = -ZeroPoint.Y + 100;
-            this.BindingContext = new Order();
-
-            AppShell.LenthUpdated += AppShell_LenthUpdated;
-
-            this.Contour = new Contour("Templayted");
-            this.Contour.ObjectAdded += Contour_ObjectAdded;
             this.BindingContextChanged += CadCanvas_BindingContextChanged;
-            this.Contour.ObjectAdded += Contour_ObjectAdded;
         }
 
         private void CadCanvas_BindingContextChanged(object sender, EventArgs e)
         {
-            this.Contour.ObjectAdded -= Contour_ObjectAdded;
-            this.Contour = (Contour)this.BindingContext;
-            DrawContour(this.Contour);
-            this.Contour.ObjectAdded += Contour_ObjectAdded;
+            if (this.BindingContext is Contour contour)
+            {
+                if (this.Contour != null)
+                {
+                    this.Contour.ObjectAdded -= Contour_ObjectAdded;
+                }
+                this.Clear();
+                this.Contour = contour;
+                DrawContour(this.Contour);
+                FitChild();
+                this.Contour.ObjectAdded += Contour_ObjectAdded;
+            }
+            else
+            {
+                this.BindingContext = null;
+            }
         }
 
         private void Contour_ObjectAdded(object sender, object e)
@@ -136,17 +139,28 @@ namespace MeasureApp.ShapeObj
             DrawObject(e);
         }
 
+        /// <summary>
+        /// Select visual form for inner Contour object
+        /// </summary>
+        /// <param name="Object"></param>
+        /// <returns></returns>
         public object DrawObject(object Object)
         {
             if (Object is CadPoint cadPoint)
             {
-                this.Add(MakeAnchor(cadPoint));
+                this.Add(new VisualAnchor(cadPoint)
+                {
+                    Scale = 1 / this.GroupLayout.Scale,
+                });
                 return cadPoint;
             }
             if (Object is ConstraintLenth lenthConstrait)
             {
                 this.Add(new LenthLabel(lenthConstrait));
-                this.Add(MakeLine(lenthConstrait));
+                this.Add(new VisualLine(lenthConstrait, false)
+                {
+                    StrokeThickness = 5 * 1 / this.GroupLayout.Scale,
+                });
                 return lenthConstrait;
             }
             if (Object is ConstraintAngle angleConstrait)
@@ -156,22 +170,6 @@ namespace MeasureApp.ShapeObj
             }
 
             return null;
-            
-            VisualAnchor MakeAnchor(CadPoint cadPoint)
-            {
-                VisualAnchor cadAnchor = new VisualAnchor(cadPoint);
-                cadAnchor.Scale = 1 / this.GroupLayout.Scale;
-                cadAnchor.Droped += CadAnchor1_Droped;
-                return cadAnchor;
-            }
-
-            VisualLine MakeLine(ConstraintLenth lenthAnchorAnchor)
-            {
-                VisualLine cadLine = new VisualLine(lenthAnchorAnchor, false);
-                cadLine.StrokeThickness = 5 * 1 / this.GroupLayout.Scale;
-                cadLine.Stroke = Brush.Blue;
-                return cadLine;
-            }
         }
 
         public async void DrawContour(Contour contour)
@@ -182,9 +180,20 @@ namespace MeasureApp.ShapeObj
                 {
                     foreach (CadPoint point in contour.Points)
                     {
-                        Task.Run(() => { DrawObject(point); });
+                        DrawObject(point);
                     }
                 }
+
+                foreach (ConstraintLenth constraintLenth in contour.Lenths)
+                {
+                    DrawObject(constraintLenth);
+                }
+
+                foreach (ConstraintAngle constraintAngle in contour.Angles)
+                { 
+                    DrawObject(constraintAngle);
+                }
+
             }
         }
 
@@ -216,10 +225,10 @@ namespace MeasureApp.ShapeObj
                     }
                 }
                 double scale = Math.Min(this.MainLayout.Width / (maxX - minX), this.MainLayout.Height / (maxY - minY));
-                this.GroupLayout.Scale = scale * 0.8;
+                this.GroupLayout.Scale = scale * 0.6;
 
-                this.GroupLayout.TranslationX = -(this.GroupLayout.Width / 2 - (this.GroupLayout.Width / 2 - minX) * this.GroupLayout.Scale) + Math.Abs(maxX - minX) * this.GroupLayout.Scale * 0.1;
-                this.GroupLayout.TranslationY = -(this.GroupLayout.Height / 2 - (this.GroupLayout.Height / 2 - minY) * this.GroupLayout.Scale) + Math.Abs(maxY - minY) * this.GroupLayout.Scale * 0.1;
+                this.GroupLayout.TranslationX = -(this.GroupLayout.Width / 2 - (this.GroupLayout.Width / 2 - minX) * this.GroupLayout.Scale) + Math.Abs(maxX - minX) * this.GroupLayout.Scale * 0.1 + 50;
+                this.GroupLayout.TranslationY = -(this.GroupLayout.Height / 2 - (this.GroupLayout.Height / 2 - minY) * this.GroupLayout.Scale) + Math.Abs(maxY - minY) * this.GroupLayout.Scale * 0.1 + 50;
 
                 Console.WriteLine($"{this.GroupLayout.TranslationX} {this.GroupLayout.TranslationY}");
 
@@ -239,7 +248,10 @@ namespace MeasureApp.ShapeObj
             this.GroupLayout.TranslationX = -ZeroPoint.X + 100;
             this.GroupLayout.TranslationY = -ZeroPoint.Y + 100;
 
-            this.Contour.Clear();
+            if (this.Contour != null)
+            {
+                this.Contour.Clear();
+            }
         }
 
         /// <summary>
@@ -284,6 +296,10 @@ namespace MeasureApp.ShapeObj
             {
                 canvasObject.Removed += CanvasObject_Removed;
             }
+            if (Object is ActiveObject activeObject)
+            {
+                activeObject.Dropped += CadAnchor1_Dropped;
+            }
 
             if (Object is ConstraitLabel constraitLabel)
             {
@@ -313,46 +329,18 @@ namespace MeasureApp.ShapeObj
             return Object;
         }
 
-
-
-
         /// <summary>
         /// Find position and make line on canvas with anchor
         /// </summary>
         /// <param name="Lenth"></param>
         /// <param name="Angle"></param>
-        public void BuildLine(double Lenth, double Angle)
-        {
-            //Если у нас нет линии привязки
-            if (this.Contour.LastLenthConstrait == null)
-            {
-                CadPoint cadPoint1 = (CadPoint)this.Contour.Add(new CadPoint(0, 0, "A"), 0);
-                CadPoint cadPoint2 = (CadPoint)this.Contour.Add(new CadPoint(0, 0 + Lenth, "B"), 0);
-                this.Contour.Add(new ConstraintLenth(cadPoint1, cadPoint2, Lenth), 0);
-            }
-            else
-            {
-                if (this.Contour.LastLenthConstrait is ConstraintLenth)
-                {
-                    Point point = Sizing.GetPositionLineFromAngle(this.Contour.LastLenthConstrait.Point1, this.Contour.LastLenthConstrait.Point2, Lenth, Angle < 0 ? 90 : Angle);
-                    CadPoint point2 = (CadPoint)this.Contour.Add(new CadPoint(point.X, point.Y, "Z"), 0);
-                    ConstraintLenth lenthConstrait = (ConstraintLenth)this.Contour.Add(new ConstraintLenth(this.Contour.StartPoint, point2, Lenth), 0);
-                    if (this.Contour.Method == DrawMethod.FromPoint)
-                    {
-                        lenthConstrait.IsSupport = true;
-                        this.Contour.Add(new ConstraintLenth(this.Contour.LastPoint, point2, -1, true), 0);
-                        this.Contour.Add(new ConstraintAngle(this.Contour.LastLenthConstrait, lenthConstrait, Angle), 0);
-                    }
-                }
-            }
-        }
 
-        private void CanvasObject_Removed(object sender, EventArgs e)
+        private void CanvasObject_Removed(object sender, bool e)
         {
             Remove(sender);
         }
 
-        private void CadAnchor1_Droped(object sender, object e)
+        private void CadAnchor1_Dropped(object sender, object e)
         {
             if (sender != e)
             {
@@ -419,10 +407,7 @@ namespace MeasureApp.ShapeObj
             }
         }
 
-        private void AppShell_LenthUpdated(object sender, Tuple<double, double> e)
-        {
-            BuildLine(e.Item1, e.Item2);
-        }
+
 
     }
 

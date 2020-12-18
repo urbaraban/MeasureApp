@@ -8,6 +8,10 @@ namespace MeasureApp.ShapeObj.Constraints
     {
         public ConstraintLenth anchorAnchor1;
         public ConstraintLenth anchorAnchor2;
+
+        public event EventHandler<bool> Removed;
+        public event EventHandler<bool> LastObject;
+
         public double Angle
         {
             get => this.Variable.Value > -1 ? this.Variable.Value : Sizing.AngleThreePoint(this.anchorAnchor1.Point1, this.anchorAnchor1.Point2, this.anchorAnchor2.Point2);
@@ -102,6 +106,16 @@ namespace MeasureApp.ShapeObj.Constraints
                 }
                 CadConstraint.RemoveRunConstrait(this, LastPoint);
             }
+        }
+
+        public void TryRemove()
+        {
+            Removed?.Invoke(this, true);
+        }
+
+        public void MakeLast()
+        {
+            this.LastObject(this, true);
         }
     }
 }
