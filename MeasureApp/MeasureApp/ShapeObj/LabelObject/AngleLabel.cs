@@ -1,5 +1,4 @@
-﻿using App1;
-using MeasureApp.ShapeObj.Constraints;
+﻿using MeasureApp.ShapeObj.Constraints;
 using MeasureApp.Tools;
 using System;
 using System.Collections.Generic;

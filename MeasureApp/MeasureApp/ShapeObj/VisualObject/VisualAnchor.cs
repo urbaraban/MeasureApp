@@ -130,7 +130,7 @@ namespace MeasureApp.ShapeObj
             this.cadPoint.TryRemove();
         }
 
-        public string ToString()
+        public override string ToString()
         {
             return $"{this.ID}:{this.X.ToString()} {this.Y.ToString()}";
         }

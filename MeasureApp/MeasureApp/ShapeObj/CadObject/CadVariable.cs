@@ -27,7 +27,7 @@ namespace MeasureApp.ShapeObj
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
 
-        public string ToString() => this._value.ToString();
+        public override string ToString() => this._value.ToString();
 
 
         public CadVariable(double Value)

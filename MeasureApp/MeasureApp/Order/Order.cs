@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using MeasureApp.Data;
+using SQLite;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
@@ -6,56 +8,77 @@ namespace MeasureApp.Orders
 {
     public class Order : INotifyPropertyChanged
     {
+        public OrderDataItem DataItem { get; }
+
+        public Order()
+        {
+            this.DataItem = new OrderDataItem()
+            {
+                ID = 0,
+                Name = "Templ",
+                Details = "Templ",
+                Location = string.Empty,
+                XmlUrl = string.Empty,
+                ImageUrl = string.Empty
+            };
+        }
+
+        public Order(OrderDataItem orderDataItem)
+        {
+            this.DataItem = orderDataItem;
+        }
         /// <summary>
         /// Name or other label
         /// </summary>
+        /// 
+        public int ID { get => this.DataItem.ID; }
+
         public string Name
         {
-            get => this._name;
+            get => this.DataItem.Name;
             set
             {
-                this._name = value;
+                this.DataItem.Name = value;
                 OnPropertyChanged("Name");
             }
         }
-        private string _name = string.Empty;
 
         /// <summary>
         /// Url image for picker
         /// </summary>
         public string ImageUrl
         {
-            get => this._imageurl;
+            get => this.DataItem.ImageUrl;
             set
             {
-                this._imageurl = value;
+                this.DataItem.ImageUrl = value;
             }
         }
-        private string _imageurl;
+
 
         /// <summary>
         /// Location order.
         /// </summary>
         public string Location
         {
-            get => this._location;
+            get => this.DataItem.Location;
             set
             {
-                this._location = value;
+                this.DataItem.Location = value;
             }
         }
-        private string _location;
+
 
         public string Details
         {
-            get => this._details;
+            get => this.DataItem.Details;
             set
             {
-                this._details = value;
+                this.DataItem.Details = value;
                 OnPropertyChanged("Details");
             }
         }
-        private string _details;
+
 
         public List<Contour> Contours = new List<Contour>();
 

@@ -1,5 +1,4 @@
-﻿using App1;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace MeasureApp.ShapeObj.LabelObject

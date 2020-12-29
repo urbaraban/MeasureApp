@@ -1,4 +1,5 @@
 ﻿using InTheHand.Bluetooth;
+using MeasureApp.Data;
 using MeasureApp.Orders;
 using MeasureApp.ShapeObj;
 using MeasureApp.ShapeObj.LabelObject;
@@ -11,10 +12,40 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
-namespace App1
+namespace MeasureApp
 {
     public partial class AppShell : Xamarin.Forms.Shell
     {
+        private static Order selectorder;
+
+        public static Order SelectOrder
+        {
+            get
+            {
+                if (selectorder == null) return new Order();
+                return selectorder;
+            }
+            set
+            {
+                selectorder = value;
+                UpdatedOrder(null, selectorder);
+            }
+        }
+
+        private static OrdersDataBase ordersDataBase;
+
+        public static OrdersDataBase OrdersDB
+        {
+            get
+            {
+                if (ordersDataBase == null)
+                {
+                    ordersDataBase = new OrdersDataBase();
+                }
+                return ordersDataBase;
+            }
+        }
+
         public static event EventHandler UpdatedDevice;
         public static event EventHandler<Tuple<double, double>> LenthUpdated;
         public static event EventHandler<Order> UpdatedOrder;
@@ -91,12 +122,12 @@ namespace App1
 
             AppShell.Instance = this;
 
-            AdressListPage.UpdatedOrder += AdressListPage_UpdatedOrder;
+            AdressListPage.SelectedOrderItem += AdressListPage_UpdatedOrder;
         }
 
         private void AdressListPage_UpdatedOrder(object sender, Order e)
         {
-            UpdatedOrder(this, e);
+            AppShell.SelectOrder = e;
         }
 
         private async void OnMenuItemClicked(object sender, EventArgs e)

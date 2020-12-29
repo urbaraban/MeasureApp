@@ -92,14 +92,20 @@ namespace MeasureApp.Orders
         /// </summary>
         /// <param name="Name"></param>
         /// <returns></returns>
-        public CadPoint GetPoint(string Name)
+        public CadPoint GetPointByName(string ID)
         {
             foreach (CadPoint cadPoint in this.Points)
             {
-                if (cadPoint.ID == Name)
-                {
-                    return cadPoint;
-                }
+                if (cadPoint.ID == ID) return cadPoint;
+            }
+            return null;
+        }
+
+        public ConstraintLenth GetLenthByName(string ID)
+        {
+            foreach (ConstraintLenth constraintLenth in this.Lenths)
+            {
+                if (constraintLenth.ID == ID) return constraintLenth;
             }
             return null;
         }
@@ -201,6 +207,11 @@ namespace MeasureApp.Orders
                     }
                     this.BaseLenthConstrait = lenthConstrait;
                 }
+            }
+            else
+            {
+                BasePoint = BasePoint == sender ? null : BasePoint;
+                BaseLenthConstrait = BaseLenthConstrait == sender ? null : BaseLenthConstrait;
             }
         }
 

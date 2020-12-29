@@ -19,8 +19,9 @@
 
   <ItemGroup>
     <PackageReference Include="InTheHand.BluetoothLE" Version="4.0.17" />
-    <PackageReference Include="Xamarin.Forms" Version="4.8.0.1687" />
-    <PackageReference Include="Xamarin.Essentials" Version="1.5.3.2" />
+    <PackageReference Include="sqlite-net-pcl" Version="1.7.335" />
+    <PackageReference Include="Xamarin.Forms" Version="4.8.0.1821" />
+    <PackageReference Include="Xamarin.Essentials" Version="1.6.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -39,7 +40,7 @@
     <EmbeddedResource Update="View\OrderPage\AdressListPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="View\OrderPage\CadCanvasPage.xaml">
+    <EmbeddedResource Update="View\OrderPage\Canvas\CadCanvasPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="View\OrderPage\ContourInfoPage.xaml">
@@ -57,6 +58,5 @@
   <ItemGroup>
     <Folder Include="images\logo\" />
     <Folder Include="View\BLEDevice\Pages\" />
-    <Folder Include="View\Controls\" />
   </ItemGroup>
 </Project>

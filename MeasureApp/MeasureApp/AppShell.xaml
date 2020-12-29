@@ -4,7 +4,7 @@
        xmlns:local="clr-namespace:MeasureApp.View"
        xmlns:orderPage="clr-namespace:MeasureApp.View.OrderPage"
        Title="MeasureApp"
-       x:Class="App1.AppShell"
+       x:Class="MeasureApp.AppShell"
        WidthRequest="200">
 
     <!--

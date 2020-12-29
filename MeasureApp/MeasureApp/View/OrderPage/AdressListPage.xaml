@@ -11,13 +11,20 @@
     </Shell.SearchHandler>
     
     <ContentPage.Content>
+        <AbsoluteLayout>
+            <ScrollView Orientation="Vertical">
+                <ListView x:Name="listView" Margin="20" ItemSelected="OnListItemSelected"/>
+            </ScrollView>
+            <StackLayout AbsoluteLayout.LayoutBounds="0.98, 0.98, -1, -1" 
+                AbsoluteLayout.LayoutFlags="PositionProportional" WidthRequest="70"
 
-
-        <CollectionView Margin="20"
-                    ItemsSource="{x:Static data:OrdersData.Orders}"
-                    ItemTemplate="{StaticResource OrderTemplate}"
-                    SelectionMode="Single"
-                    SelectionChanged="OnCollectionViewSelectionChanged" />
-
+        VerticalOptions="End" HorizontalOptions="End">
+                <Button x:Name="AddBtn" Text="Add" Clicked="AddBtn_Clicked"/>
+                <Button x:Name="RemoveBtn" Text="Remove" Clicked="RemoveBtn_Clicked"/>
+                <Button x:Name="ClearBtn" Text="Clear" Clicked="ClearBtn_Clicked"/>
+            </StackLayout>
+        </AbsoluteLayout>
     </ContentPage.Content>
+
+    
 </ContentPage>

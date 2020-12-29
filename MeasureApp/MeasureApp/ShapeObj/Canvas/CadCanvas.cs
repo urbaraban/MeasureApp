@@ -3,6 +3,7 @@ using MeasureApp.ShapeObj.Constraints;
 using MeasureApp.ShapeObj.Interface;
 using MeasureApp.ShapeObj.LabelObject;
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Essentials;
@@ -205,13 +206,6 @@ namespace MeasureApp.ShapeObj
         {
             if (this.ObjectLayout.Children.Count > 0)
             {
-                double startWidth = this.GroupLayout.Width * this.GroupLayout.Scale;
-                Point startCenterPoint = new Point()
-                {
-                    X = (this.MainLayout.Width / 2 - this.GroupLayout.TranslationX) / this.GroupLayout.Scale,
-                    Y = (this.MainLayout.Height / 2 - this.GroupLayout.TranslationY) / this.GroupLayout.Scale
-                };
-
                 double minX = double.MaxValue, maxX = double.MinValue, minY = double.MaxValue, maxY = double.MinValue;
 
                 foreach (VisualElement visualElement in this.ObjectLayout.Children)
@@ -230,7 +224,7 @@ namespace MeasureApp.ShapeObj
                 this.GroupLayout.TranslationX = -(this.GroupLayout.Width / 2 - (this.GroupLayout.Width / 2 - minX) * this.GroupLayout.Scale) + Math.Abs(maxX - minX) * this.GroupLayout.Scale * 0.1 + 50;
                 this.GroupLayout.TranslationY = -(this.GroupLayout.Height / 2 - (this.GroupLayout.Height / 2 - minY) * this.GroupLayout.Scale) + Math.Abs(maxY - minY) * this.GroupLayout.Scale * 0.1 + 50;
 
-                Console.WriteLine($"{this.GroupLayout.TranslationX} {this.GroupLayout.TranslationY}");
+                Debug.WriteLine($"Fit{this.GroupLayout.TranslationX - this.MainLayout.Width / 2 / this.GroupLayout.Scale}:{this.GroupLayout.TranslationY - this.MainLayout.Width / 2 / this.GroupLayout.Scale}");
 
                 CadCanvas.canvasscale = this.GroupLayout.Scale;
                 CallRegularSize();
@@ -391,14 +385,21 @@ namespace MeasureApp.ShapeObj
             }
             if (e.Status == GestureStatus.Running)
             {
-                double StartWidth = this.GroupLayout.Width * this.GroupLayout.Scale;
 
+                //start center position
+                double FromCenterPosX = Math.Abs(this.GroupLayout.TranslationX - this.MainLayout.Width / this.GroupLayout.Scale / 2) - this.GroupLayout.Width / 2;
+                double FromCenterPosY = Math.Abs(this.GroupLayout.TranslationY - this.MainLayout.Height / this.GroupLayout.Scale / 2) - this.GroupLayout.Height / 2;
+
+                //setup new scale
                 startScale = this.GroupLayout.Scale;
                 // Apply scale factor.
                 this.GroupLayout.Scale = startScale * (1 - ((1 - e.Scale) * startProp));
 
-                this.GroupLayout.TranslationX += (this.GroupLayout.Width * this.GroupLayout.Scale - StartWidth) / 2;
-                this.GroupLayout.TranslationY += (this.GroupLayout.Width * this.GroupLayout.Scale - StartWidth) / 2;
+                //find new center position from start position
+                this.GroupLayout.TranslationX -= (FromCenterPosX * this.GroupLayout.Scale / startScale - FromCenterPosX);
+                this.GroupLayout.TranslationY -= (FromCenterPosY * this.GroupLayout.Scale / startScale - FromCenterPosY);
+
+                Debug.WriteLine($"Pinch{this.GroupLayout.TranslationX}:{this.GroupLayout.TranslationY}");
             }
             if (e.Status == GestureStatus.Completed)
             {

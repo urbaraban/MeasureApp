@@ -50,7 +50,7 @@ namespace MeasureApp.ShapeObj.Constraints
             return RuntimeConstraits.Contains(cadConstraint) || FixedPoint.Contains(cadAnchor);
         }
         #endregion
-        public event EventHandler<bool> Selected;
+        public virtual event EventHandler<bool> Selected;
         public virtual event EventHandler<bool> Fixed;
         public virtual event EventHandler<bool> Supported;
 
@@ -69,7 +69,7 @@ namespace MeasureApp.ShapeObj.Constraints
 
         public virtual string ID { get; set; }
 
-        public bool IsSelect
+        public virtual bool IsSelect
         {
             get => this._isselect;
             set
@@ -91,7 +91,7 @@ namespace MeasureApp.ShapeObj.Constraints
         }
         private bool _isfix = false;
 
-        public bool IsSupport
+        public virtual bool IsSupport
         {
             get => this._issupprot;
             set

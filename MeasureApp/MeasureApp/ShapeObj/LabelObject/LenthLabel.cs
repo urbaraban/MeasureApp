@@ -1,5 +1,4 @@
-﻿using App1;
-using MeasureApp.ShapeObj.Constraints;
+﻿using MeasureApp.ShapeObj.Constraints;
 using MeasureApp.Tools;
 using MeasureApp.View.OrderPage;
 using System;
@@ -28,31 +27,31 @@ namespace MeasureApp.ShapeObj.LabelObject
             string callresult = await AppShell.Instance.DisplayPromtDialog(_lenthConstrait.Variable.Name, _lenthConstrait.Variable.Value.ToString());
             this._lenthConstrait.Variable.Value = double.Parse(callresult);
         });
-        private ICommand Measure => new Command(async () =>
+        private ICommand Measure => new Command(() =>
         {
             AppShell.MeasireVariable = this.Variable;
         });
-        private ICommand SupportLine => new Command(async () =>
+        private ICommand SupportLine => new Command(() =>
         {
             this._lenthConstrait.IsSupport = !this._lenthConstrait.IsSupport;
         });
-        private ICommand Verical => new Command(async () =>
+        private ICommand Verical => new Command(() =>
         {
             this._lenthConstrait.Orientation = Orientaton.Vertical;
         });
-        private ICommand Horizontal => new Command(async () =>
+        private ICommand Horizontal => new Command(() =>
         {
             this._lenthConstrait.Orientation = Orientaton.Horizontal;
         });
-        private ICommand Free_Orientation => new Command(async () =>
+        private ICommand Free_Orientation => new Command(() =>
         {
             this._lenthConstrait.Orientation = Orientaton.OFF;
         });
-        private ICommand Fix => new Command(async () =>
+        private ICommand Fix => new Command(() =>
         {
             this._lenthConstrait.Fix(true);
         });
-        private ICommand Remove => new Command(async () =>
+        private ICommand Remove => new Command(() =>
         {
             this._lenthConstrait.TryRemove();
         });
@@ -109,7 +108,7 @@ namespace MeasureApp.ShapeObj.LabelObject
             this.Update();
         }
 
-        public void Update()
+        public override void Update()
         {
             this.TranslationX = (this._lenthConstrait.Point2.OX + this._lenthConstrait.Point1.OX) / 2;
             this.TranslationY = (this._lenthConstrait.Point2.OY + this._lenthConstrait.Point1.OY) / 2;

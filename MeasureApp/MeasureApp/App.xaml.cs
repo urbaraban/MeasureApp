@@ -1,5 +1,4 @@
-﻿using App1;
-using Xamarin.Forms;
+﻿using Xamarin.Forms;
 
 namespace MeasureApp
 {

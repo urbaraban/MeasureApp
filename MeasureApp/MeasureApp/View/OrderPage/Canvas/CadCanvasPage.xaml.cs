@@ -1,8 +1,8 @@
-﻿using App1;
-using MeasureApp.Orders;
+﻿using MeasureApp.Orders;
 using MeasureApp.ShapeObj;
 using MeasureApp.ShapeObj.Constraints;
 using MeasureApp.Tools;
+using MeasureApp.View.OrderPage.Canvas;
 using System;
 using System.Diagnostics;
 using System.Windows.Input;
@@ -59,7 +59,7 @@ namespace MeasureApp.View.OrderPage
                 cadPoint2.IsFix = true;
                 this.contour.Add(new ConstraintLenth(cadPoint1, cadPoint2, Lenth), 0);
             }
-            else
+            else if (this.contour.BasePoint != null)
             {
                 CadPoint point1 = this.contour.BaseLenthConstrait.GetNotThisPoint(this.contour.BasePoint);
                 if (point1 == null) return;
@@ -78,8 +78,19 @@ namespace MeasureApp.View.OrderPage
                     // this.Contour.Add(new ConstraintAngle(this.Contour.LastLenthConstrait, lenthConstrait, Angle), 0);
                 }
             }
+            else
+            {
+                PoolDimLabel poolDimLabel = new PoolDimLabel($"{Lenth}&{Angle}", this.Height);
+                poolDimLabel.Removed += PoolDimLabel_Removed;
+                SizePool.Children.Add(poolDimLabel);
+            }
+
         }
 
+        private void PoolDimLabel_Removed(object sender, EventArgs e)
+        {
+            SizePool.Children.Remove((ContentView)sender);
+        }
 
         private void AppShell_LenthUpdated(object sender, Tuple<double, double> e)
         {
@@ -99,21 +110,6 @@ namespace MeasureApp.View.OrderPage
                 ContourPicker.ItemsSource = order.Contours;
                 ContourPicker.SelectedItem = order.Contours[0];
 
-                /*
-                Xamarin.Forms.Device.InvokeOnMainThreadAsync(() =>
-                {
-                    Binding binding = new Binding()
-                    {
-                        Source = this.contour,
-                        Path = "Method",
-                        Mode = BindingMode.OneWay,
-                        Converter = new ToStringConverter()
-                    };
-
-                    DrawMethodLabel.Text = this.contour.Method.ToString();
-                    DrawMethodLabel.BindingContext = this.contour.Method;
-                    DrawMethodLabel.SetBinding(Label.TextProperty, binding);
-                });*/
             }
         }
 
@@ -164,23 +160,6 @@ namespace MeasureApp.View.OrderPage
         }
 
 
-
-        private void RadioStep_CheckedChanged(object sender, CheckedChangedEventArgs e)
-        {
-            if (this.contour != null)
-            {
-                this.contour.Method = DrawMethod.FromPoint;
-            }
-        }
-
-        private void RadioPoint_CheckedChanged(object sender, CheckedChangedEventArgs e)
-        {
-            if (this.contour != null)
-            {
-                this.contour.Method = DrawMethod.FromPoint;
-            }
-        }
-
         private void ContourAddBtn_Clicked(object sender, EventArgs e)
         {
             Contour tempContor = new Contour("Test");
@@ -188,6 +167,15 @@ namespace MeasureApp.View.OrderPage
             ContourPicker.ItemsSource = null;
             ContourPicker.ItemsSource = this.order.Contours;
             ContourPicker.SelectedItem = tempContor;
+        }
+
+        private void Switch_Toggled(object sender, ToggledEventArgs e)
+        {
+            if (this.contour != null && sender is Xamarin.Forms.Switch sw)
+            {
+                this.contour.Method = sw.IsToggled == true ? DrawMethod.FromPoint : DrawMethod.StepByStep;
+            }
+            
         }
     }
 }

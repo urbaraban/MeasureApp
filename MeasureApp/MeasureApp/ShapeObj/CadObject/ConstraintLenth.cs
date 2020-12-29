@@ -8,8 +8,8 @@ namespace MeasureApp.ShapeObj.Constraints
     {
         public event EventHandler Changed;
         public event EventHandler<bool> Removed;
-        public event EventHandler<bool> Selected;
-        public event EventHandler<bool> Supported;
+        public override event EventHandler<bool> Selected;
+        public override event EventHandler<bool> Supported;
         public event EventHandler<bool> LastObject;
 
         public Orientaton Orientation = Orientaton.OFF; // -1 — Off, 0 — Vetical, 1 — Horizontal
@@ -31,7 +31,7 @@ namespace MeasureApp.ShapeObj.Constraints
             }
         }
 
-        public bool IsSelect
+        public override bool IsSelect
         {
             get => this._isselect;
             set
@@ -42,7 +42,7 @@ namespace MeasureApp.ShapeObj.Constraints
         }
         private bool _isselect = false;
 
-        public bool IsSupport
+        public override bool IsSupport
         {
             get => this._issupport;
             set
@@ -132,7 +132,7 @@ namespace MeasureApp.ShapeObj.Constraints
             return null;
         }
 
-        public string ToString()
+        public override string ToString()
         {
             return $"{this.ID}:{Lenth.ToString()}";
         }
