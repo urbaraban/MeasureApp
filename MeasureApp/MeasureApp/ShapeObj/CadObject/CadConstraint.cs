@@ -103,6 +103,8 @@ namespace MeasureApp.ShapeObj.Constraints
         private bool _issupprot = false;
         #endregion
 
+        public virtual bool Running { get; set; } = false;
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         public void OnPropertyChanged([CallerMemberName] string prop = "")

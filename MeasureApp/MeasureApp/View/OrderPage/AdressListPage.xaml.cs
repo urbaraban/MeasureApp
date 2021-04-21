@@ -22,7 +22,7 @@ namespace MeasureApp.View.OrderPage
         {
             InitializeComponent();
 
-            listView.ItemTemplate = new DataTemplate(() =>
+           /* listView.ItemTemplate = new DataTemplate(() =>
             {
                 var label = new Label
                 {
@@ -40,7 +40,7 @@ namespace MeasureApp.View.OrderPage
                 };
 
                 return new ViewCell { View = stackLayout };
-            });
+            });*/
         }
 
         protected override async void OnAppearing()

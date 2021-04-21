@@ -23,9 +23,11 @@ namespace MeasureApp.OrderPage.Controls
             }
             else
             {
+
                 ItemsSource = Orders
                     .Where(Order => Order.Name.ToLower().Contains(newValue.ToLower()))
                     .ToList<Order>();
+
             }
         }
 

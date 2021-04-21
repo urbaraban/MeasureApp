@@ -1,7 +1,9 @@
 ﻿using MeasureApp.Orders;
 using MeasureApp.ShapeObj;
+using MeasureApp.ShapeObj.Canvas;
 using MeasureApp.ShapeObj.Constraints;
 using MeasureApp.Tools;
+using MeasureApp.View.BLEDevice.Extensions;
 using MeasureApp.View.OrderPage.Canvas;
 using System;
 using System.Diagnostics;
@@ -30,17 +32,37 @@ namespace MeasureApp.View.OrderPage
             AddBtn.Clicked += AddBtn_Clicked;
             ClearBtn.Clicked += ClearBtn_Clicked;
             FitBtn.Clicked += FitBtn_Clicked;
+            GetBtn.Clicked += GetBtn_Clicked;
 
+            this.MainCanvas.Droped += MainCanvas_Droped;
             this.BindingContextChanged += CadCanvasPage_BindingContextChanged;
             ContourPicker.SelectedIndexChanged += ContourPicker_SelectedIndexChanged;
             AppShell.LenthUpdated += AppShell_LenthUpdated;
-            
+
             if (this.MainCanvas.BindingContext != null)
+            {
                 Debug.WriteLine(this.MainCanvas.BindingContext.ToString());
+            }
             this.BindingContext = new Order();
 
             AppShell.UpdatedOrder += AppShell_UpdatedOrder;
             
+        }
+
+        private void GetBtn_Clicked(object sender, EventArgs e)
+        {
+           // AppShell.GattCharacteristic(CodeUtils.HiCRCTable);
+        }
+
+        private void MainCanvas_Droped(object sender, DropEventArgs e)
+        {
+            if (sender is CadCanvas)
+            {
+                if (e.Data.Properties["Message"] != null)
+                {
+                    BuildLine(ConvertDimMessage(e.Data.Properties["Message"].ToString()), true);
+                }
+            }
         }
 
         private void AppShell_UpdatedOrder(object sender, Order e)
@@ -48,25 +70,41 @@ namespace MeasureApp.View.OrderPage
             this.BindingContext = e;
         }
 
-        public void BuildLine(double Lenth, double Angle)
+        /// <summary>
+        /// Make line with anchor on canvas.
+        /// </summary>
+        /// <param name="tuple">item1 - lenth, item2 - angle</param>
+        /// <param name="Forced">Make line from label</param>
+        public void BuildLine(Tuple<double, double> tuple, bool Forced = false)
         {
             //Если у нас нет линии привязки
-            if (this.contour.BaseLenthConstrait == null)
+            if ((this.contour.BaseLenthConstrait == null) || (Forced == true))
             {
                 CadPoint cadPoint1 = (CadPoint)this.contour.Add(new CadPoint(0, 0, this.contour.GetNewPointName()), 0);
-                cadPoint1.IsFix = true;
-                CadPoint cadPoint2 = (CadPoint)this.contour.Add(new CadPoint(0, 0 + Lenth, this.contour.GetNewPointName()), 0);
-                cadPoint2.IsFix = true;
-                this.contour.Add(new ConstraintLenth(cadPoint1, cadPoint2, Lenth), 0);
+                cadPoint1.IsFix = !Forced;
+                CadPoint cadPoint2 = (CadPoint)this.contour.Add(new CadPoint(0, 0 + tuple.Item1, this.contour.GetNewPointName()), 0);
+                cadPoint2.IsFix = !Forced;
+                this.contour.Add(new ConstraintLenth(cadPoint2, cadPoint1, tuple.Item1), 0);
             }
             else if (this.contour.BasePoint != null)
             {
+                ConstraintLenth lastLenthConstr = this.contour.BaseLenthConstrait;
+
                 CadPoint point1 = this.contour.BaseLenthConstrait.GetNotThisPoint(this.contour.BasePoint);
                 if (point1 == null) return;
 
-                Point point = Sizing.GetPositionLineFromAngle(point1, this.contour.BasePoint, Lenth, Angle < 0 ? 90 : Angle);
+                CadPoint point = Sizing.GetPositionLineFromAngle(point1, this.contour.BasePoint, tuple.Item1, tuple.Item2 < 0 ? 90 : tuple.Item2);
                 CadPoint cadPoint2 = new CadPoint(point.X, point.Y, this.contour.GetNewPointName());
-                ConstraintLenth lenthConstrait = (ConstraintLenth)this.contour.Add(new ConstraintLenth(this.contour.BasePoint, cadPoint2, Lenth), 0);
+
+                ConstraintLenth lenthConstrait = 
+                    (ConstraintLenth)this.contour.Add(
+                        new ConstraintLenth(this.contour.BasePoint, cadPoint2, tuple.Item1, 
+                        this.contour.Method == DrawMethod.FromPoint && this.contour.BasePoint != this.contour.LastPoint), 0);
+
+                ConstraintAngle constraintAngle = 
+                    (ConstraintAngle)this.contour.Add(
+                        new ConstraintAngle(lastLenthConstr, lenthConstrait, tuple.Item2), 0);
+
 
                 CadPoint last = this.contour.LastPoint;
                 CadPoint point2 = (CadPoint)this.contour.Add(cadPoint2, 0);
@@ -74,13 +112,13 @@ namespace MeasureApp.View.OrderPage
                 if (this.contour.Method == DrawMethod.FromPoint && this.contour.BasePoint != this.contour.LastPoint)
                 {
                     lenthConstrait.IsSupport = true;
-                    this.contour.Add(new ConstraintLenth(last, point2, -1, true), 0);
+                    this.contour.Add(new ConstraintLenth(last, point2, -1, false), 0);
                     // this.Contour.Add(new ConstraintAngle(this.Contour.LastLenthConstrait, lenthConstrait, Angle), 0);
                 }
             }
             else
             {
-                PoolDimLabel poolDimLabel = new PoolDimLabel($"{Lenth}&{Angle}", this.Height);
+                PoolDimLabel poolDimLabel = new PoolDimLabel($"{tuple.Item1}&{tuple.Item2}", this.Height);
                 poolDimLabel.Removed += PoolDimLabel_Removed;
                 SizePool.Children.Add(poolDimLabel);
             }
@@ -94,7 +132,7 @@ namespace MeasureApp.View.OrderPage
 
         private void AppShell_LenthUpdated(object sender, Tuple<double, double> e)
         {
-            BuildLine(e.Item1, e.Item2);
+            BuildLine(e);
         }
 
 
@@ -143,22 +181,26 @@ namespace MeasureApp.View.OrderPage
 
             string result = await DisplayPromptAsync("Добавить линию", "Мне нужны твоя длинна и угол", "Add", "Cancel", "0000&00", -1, Keyboard.Numeric, $"{random.Next(250, 1000)}&{random.Next(45, 270)}");
 
-            if (string.IsNullOrEmpty(result) == false)
-            {
-                string[] strings = result.Split('&');
+            BuildLine(ConvertDimMessage(result));
+        }
 
-                double LineLenth = double.Parse(strings[0]);
-                double LineAngle = -1;
+        private Tuple<double, double> ConvertDimMessage(string message)
+        {
+            double LineLenth = -1;
+            double LineAngle = -1;
+
+            if (string.IsNullOrEmpty(message) == false)
+            {
+                string[] strings = message.Split('&');
+                LineLenth = double.Parse(strings[0]);
+                LineAngle = -1;
                 if (strings.Length > 1)
                 {
                     LineAngle = double.Parse(strings[1]);
                 }
-
-                BuildLine(LineLenth, LineAngle);
             }
-
+            return new Tuple<double, double>(LineLenth, LineAngle);
         }
-
 
         private void ContourAddBtn_Clicked(object sender, EventArgs e)
         {

@@ -2,7 +2,6 @@
 using MeasureApp.Data;
 using MeasureApp.Orders;
 using MeasureApp.ShapeObj;
-using MeasureApp.ShapeObj.LabelObject;
 using MeasureApp.View.OrderPage;
 using System;
 using System.Collections.Generic;
@@ -199,35 +198,23 @@ namespace MeasureApp
             {
                 var servs = await device.Gatt.GetPrimaryServicesAsync();
 
+                //Service
                 foreach (var serv in servs)
                 {
-                    var rssi = await device.Gatt.ReadRssi();
-                    Debug.WriteLine($"{rssi} {serv.Uuid} Primary:{serv.IsPrimary}");
-
-                    Debug.Indent();
-
                     if (serv.Uuid.ToString() == "FFB0")
                     {
                         var characteristics = await serv.GetCharacteristicsAsync();
 
-
+                        //Characteristic
                         foreach (var characteristic in characteristics)
                         {
-                            Debug.WriteLine($"{characteristic.Uuid} UserDescription:{characteristic.UserDescription} Properties:{characteristic.Properties}");
-
-                            Debug.Indent();
-
+                            //Subcribe on service
                             if (characteristic.Uuid.ToString() == "FFB2")
                             {
                                 if (characteristic.Properties.HasFlag(GattCharacteristicProperties.Notify))
                                 {
-                                    //var notifyResult = await characteristic.WriteValueWithoutResponseAsync();
                                     AppShell.GattCharacteristic = characteristic;
-
-                                    // await characteristic.StartNotificationsAsync();
-                                    // characteristic.WriteValueWithoutResponseAsync(Encoding.ASCII.GetBytes("1"));
                                 }
-
 
                                 foreach (var descriptors in await characteristic.GetDescriptorsAsync())
                                 {
@@ -255,7 +242,6 @@ namespace MeasureApp
                             Debug.Unindent();
                         }
                     }
-                    Debug.Unindent();
                 }
             }
         }

@@ -1,5 +1,5 @@
-﻿using MeasureApp.ShapeObj.Interface;
-using MeasureApp.ShapeObj.LabelObject;
+﻿using MeasureApp.ShapeObj.Canvas;
+using MeasureApp.ShapeObj.Interface;
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;

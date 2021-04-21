@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MeasureApp.ShapeObj.Canvas;
+using System;
 using System.Collections.Generic;
 using System.Windows.Input;
 using Xamarin.Forms;
@@ -64,11 +65,11 @@ namespace MeasureApp.ShapeObj
 
             this.Stroke = cadPoint.IsSelect == true ? Brush.Orange : Brush.Blue;
 
-            this.SheetMenu = new LabelObject.SheetMenu(new List<LabelObject.SheetMenuItem>()
+            this.SheetMenu = new SheetMenu(new List<SheetMenuItem>()
             {
-                new LabelObject.SheetMenuItem(Fix, "{FIX}"),
-                new LabelObject.SheetMenuItem(Remove, "{REMOVE}"),
-                new LabelObject.SheetMenuItem(LastPoint, "{LASTPOINT}")
+                new SheetMenuItem(Fix, "{FIX}"),
+                new SheetMenuItem(Remove, "{REMOVE}"),
+                new SheetMenuItem(LastPoint, "{LASTPOINT}")
             });
         }
 

@@ -14,7 +14,7 @@ namespace MeasureApp.Tools
            return Math.Round(Math.Sqrt(Math.Pow(cadPoint2.X - cadPoint1.X, 2) + Math.Pow(cadPoint2.Y - cadPoint1.Y, 2)), 2);
         }
 
-        public static Point GetPositionLineFromAngle(CadPoint Point1, CadPoint Point2, double newLenth, double angle)
+        public static CadPoint GetPositionLineFromAngle(CadPoint Point1, CadPoint Point2, double newLenth, double angle)
         {
             double Lenth = PtPLenth(Point1, Point2);
 
@@ -23,7 +23,7 @@ namespace MeasureApp.Tools
             double angleInRadians = angle * (Math.PI / 180);
             double cosTheta = Math.Cos(angleInRadians);
             double sinTheta = Math.Sin(angleInRadians);
-            return new Point()
+            return new CadPoint()
             {
                 X =
                     (double)

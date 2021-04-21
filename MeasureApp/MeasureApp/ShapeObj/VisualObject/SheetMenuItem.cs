@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace MeasureApp.ShapeObj.LabelObject
+namespace MeasureApp.ShapeObj
 {
     public class SheetMenuItem : ICommand
     {

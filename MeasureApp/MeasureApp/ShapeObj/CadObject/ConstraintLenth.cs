@@ -1,6 +1,7 @@
 ﻿using MeasureApp.ShapeObj.Interface;
 using MeasureApp.Tools;
 using System;
+using System.Diagnostics;
 
 namespace MeasureApp.ShapeObj.Constraints
 {
@@ -116,13 +117,11 @@ namespace MeasureApp.ShapeObj.Constraints
         public void UnSubAnchor(CadPoint cadPoint)
         {
             cadPoint.PropertyChanged -= Point_PropertyChanged;
-            cadPoint.Constraints.Remove(this);
         }
 
         public void SubAnchor(CadPoint cadPoint)
         {
             cadPoint.PropertyChanged += Point_PropertyChanged;
-            cadPoint.Constraints.Add(this);
         }
 
         public CadPoint GetNotThisPoint(CadPoint cadPoint)
@@ -149,32 +148,40 @@ namespace MeasureApp.ShapeObj.Constraints
 
         private void MakeMagic(CadPoint cadPoint1, CadPoint cadPoint2)
         {
-            if (cadPoint2.IsFix == false)
-            {
-                if (this.Variable.Value > -1 &&
-                    this.Variable.Value != Sizing.PtPLenth(cadPoint1, cadPoint2) &&
-                    CadConstraint.RuntimeConstraits.Contains(this) == false &&
-                    CadConstraint.FixedPoint.Contains(cadPoint1) == false)
-                {
-                    CadConstraint.AddRunConstrait(this, cadPoint1);
-                    if (this.Orientation == Orientaton.OFF)
-                    {
-                        cadPoint2.Update(Sizing.GetPostionOnLine(cadPoint1, cadPoint2, this.Lenth), true);
-                    }
-                    else
-                    {
-                        int vectorX = cadPoint1.X < cadPoint2.X ? 1 : -1;
-                        int vectorY = cadPoint1.Y < cadPoint2.Y ? 1 : -1;
-                        cadPoint2.Update(this.Orientation == Orientaton.Vertical ? cadPoint1.X : cadPoint1.X + this.Lenth * vectorX,
-                            this.Orientation == Orientaton.Vertical ? cadPoint1.Y + this.Lenth * vectorY : cadPoint1.Y, true);
-                    }
-                    CadConstraint.RemoveRunConstrait(this, cadPoint1);
-                }
-            }
-            else
-            {
-                MakeMagic(cadPoint2, cadPoint1);
+            //Debug.WriteLine($"MakeMagicLine {cadPoint1.ID}{cadPoint2.ID}");
 
+            if (this.Running == false)
+            {
+                this.Running = true;
+                if (cadPoint2.IsFix == false)
+                {
+                    if (this.Variable.Value > -1 &&
+                        this.Variable.Value != Sizing.PtPLenth(cadPoint1, cadPoint2) &&
+                        CadConstraint.RuntimeConstraits.Contains(this) == false &&
+                        CadConstraint.FixedPoint.Contains(cadPoint1) == false)
+                    {
+                        CadConstraint.AddRunConstrait(this, cadPoint1);
+                        if (this.Orientation == Orientaton.OFF)
+                        {
+                            cadPoint2.Update(Sizing.GetPostionOnLine(cadPoint1, cadPoint2, this.Lenth), true);
+                        }
+                        else
+                        {
+                            int vectorX = cadPoint1.X < cadPoint2.X ? 1 : -1;
+                            int vectorY = cadPoint1.Y < cadPoint2.Y ? 1 : -1;
+                            cadPoint2.Update(this.Orientation == Orientaton.Vertical ? cadPoint1.X : cadPoint1.X + this.Lenth * vectorX,
+                                this.Orientation == Orientaton.Vertical ? cadPoint1.Y + this.Lenth * vectorY : cadPoint1.Y, true);
+                        }
+                        CadConstraint.RemoveRunConstrait(this, cadPoint1);
+                    }
+                }
+                else if (cadPoint1.IsFix == false)
+                {
+                    this.Running = false;
+                    MakeMagic(cadPoint2, cadPoint1);
+
+                }
+                this.Running = false;
             }
 
             this.Changed?.Invoke(this, null);

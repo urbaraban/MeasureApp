@@ -12,12 +12,17 @@ namespace MeasureApp.ShapeObj.Constraints
         public event EventHandler<bool> Removed;
         public event EventHandler<bool> LastObject;
 
+        public CadPoint Point1;
+        public CadPoint Point2;
+        public CadPoint Point3;
+
         public double Angle
         {
             get => this.Variable.Value > -1 ? this.Variable.Value : Sizing.AngleThreePoint(this.anchorAnchor1.Point1, this.anchorAnchor1.Point2, this.anchorAnchor2.Point2);
             set
             {
                 this.Variable.Value = value;
+                OnPropertyChanged("Angle");
             }
         }
         public double RadAngle => this.Angle * (Math.PI / 180);
@@ -34,17 +39,25 @@ namespace MeasureApp.ShapeObj.Constraints
             this.anchorAnchor1 = AnchorAnchor1;
             this.anchorAnchor2 = AnchorAnchor2;
 
+            if (anchorAnchor1.Point1 != anchorAnchor2.Point1 && anchorAnchor1.Point1 != anchorAnchor2.Point2)
+            {
+                this.Point1 = anchorAnchor1.Point1;
+                this.Point2 = anchorAnchor1.Point2;
+                this.Point3 = anchorAnchor2.GetNotThisPoint(this.Point2);
+            }
+            else
+            {
+                this.Point1 = anchorAnchor1.Point2;
+                this.Point2 = anchorAnchor1.Point1;
+                this.Point3 = anchorAnchor2.GetNotThisPoint(this.Point2);
+            }
+
             this.Variable = new CadVariable(Angle);
             this.Variable.PropertyChanged += Angle_PropertyChanged;
 
             this.anchorAnchor2.Point1.PropertyChanged += CadanchorMiddle_PropertyChanged;
             this.anchorAnchor2.Point2.PropertyChanged += CadanchorEnd_PropertyChanged;
-
-            this.anchorAnchor1.Point1.Constraints.Add(this);
-            this.anchorAnchor1.Point2.Constraints.Add(this);
-            this.anchorAnchor2.Point2.Constraints.Add(this);
         }
-
 
         public void Remove()
         {
@@ -52,17 +65,13 @@ namespace MeasureApp.ShapeObj.Constraints
 
             this.anchorAnchor2.Point1.PropertyChanged -= CadanchorMiddle_PropertyChanged;
             this.anchorAnchor2.Point2.PropertyChanged -= CadanchorEnd_PropertyChanged;
-
-            this.anchorAnchor1.Point1.Constraints.Remove(this);
-            this.anchorAnchor1.Point2.Constraints.Remove(this);
-            this.anchorAnchor2.Point2.Constraints.Remove(this);
         }
 
         private void Angle_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (this.anchorAnchor2.Orientation == Orientaton.OFF || this.anchorAnchor1.Orientation != Orientaton.OFF)
             {
-                MakeMagic(this.anchorAnchor1.Point1, this.anchorAnchor1.Point2, this.anchorAnchor2.Point2, this.anchorAnchor2.Lenth, this.Variable.Value);
+                MakeMagic(this.anchorAnchor1.Point1, this.anchorAnchor1.Point2, this.anchorAnchor2.Point2, this.Variable.Value);
             }
         }
 
@@ -72,7 +81,7 @@ namespace MeasureApp.ShapeObj.Constraints
             {
                 if (this.anchorAnchor2.Orientation == Orientaton.OFF || this.anchorAnchor1.Orientation != Orientaton.OFF)
                 {
-                    MakeMagic(this.anchorAnchor1.Point1, this.anchorAnchor1.Point2, this.anchorAnchor2.Point2, this.anchorAnchor2.Lenth, this.Variable.Value);
+                    MakeMagic(this.Point1, this.Point2, this.Point3, this.Variable.Value);
                 }
             }
         }
@@ -83,29 +92,31 @@ namespace MeasureApp.ShapeObj.Constraints
             {
                 if (this.anchorAnchor2.Orientation == Orientaton.OFF || this.anchorAnchor1.Orientation != Orientaton.OFF)
                 {
-                    MakeMagic(this.anchorAnchor2.Point2, this.anchorAnchor1.Point2, this.anchorAnchor1.Point1, this.anchorAnchor1.Lenth, 360 - this.Variable.Value);
+                    MakeMagic(this.Point3, this.Point2, this.Point1, 360 - this.Variable.Value);
                 }
             }       
         }
 
-        private void MakeMagic(CadPoint FirstPoint, CadPoint MiddlePoint, CadPoint LastPoint, double lenth, double angle)
+        private void MakeMagic(CadPoint FirstPoint, CadPoint MiddlePoint, CadPoint LastPoint, double angle)
         {
-            if (this.Variable.Value > -1 && CheckConstraitOrAnchor(this, LastPoint) == false)
+            if (this.Running == false && this.Variable.Value > -1)
             {
-                CadConstraint.AddRunConstrait(this, LastPoint);
-                LastPoint.Update(Sizing.GetPositionLineFromAngle(FirstPoint, MiddlePoint, lenth, angle));
-                foreach (CadConstraint cadConstraint in LastPoint.Constraints)
+                this.Running = true;
+
+                if (LastPoint.IsFix == false)
                 {
-                    if (cadConstraint is ConstraintLenth lenthAnchor)
-                    {
-                        if ((lenthAnchor.Point1 == MiddlePoint || lenthAnchor.Point2 == MiddlePoint) && (lenthAnchor.Point1 == LastPoint || lenthAnchor.Point2 == LastPoint))
-                        {
-                            CadConstraint.AddRunConstrait(lenthAnchor, LastPoint);
-                        }
-                    }
+                    double lenth = Sizing.PtPLenth(MiddlePoint, LastPoint);
+                    LastPoint.Update(Sizing.GetPositionLineFromAngle(FirstPoint, MiddlePoint, lenth, angle));
                 }
-                CadConstraint.RemoveRunConstrait(this, LastPoint);
+                else
+                {
+                    double lenth = Sizing.PtPLenth(MiddlePoint, FirstPoint);
+                    FirstPoint.Update(Sizing.GetPositionLineFromAngle(LastPoint, MiddlePoint, lenth, 360 - angle));
+                }
+
+                this.Running = false;
             }
+            OnPropertyChanged("Point");
         }
 
         public void TryRemove()

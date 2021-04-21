@@ -2,7 +2,7 @@
 using System;
 using Xamarin.Forms;
 
-namespace MeasureApp.ShapeObj.LabelObject
+namespace MeasureApp.ShapeObj
 {
     public abstract class  ConstraitLabel : Label, CanvasObject, ActiveObject
     {

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
-             xmlns:shapeobj="clr-namespace:MeasureApp.ShapeObj"
+             xmlns:shapeobj="clr-namespace:MeasureApp.ShapeObj.Canvas"
              x:Class="MeasureApp.View.OrderPage.CadCanvasPage"
              Title="Drawing">
     <ContentPage.Content>
@@ -19,7 +19,7 @@
                              Orientation="Vertical">
                         <Grid Margin=" 10">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="3*"/>
+                                <ColumnDefinition Width="2*"/>
                                 <ColumnDefinition Width="1*"/>
                                 <ColumnDefinition Width="1*"/>
                             </Grid.ColumnDefinitions>
@@ -27,8 +27,7 @@
                                 Title="Select contour"
                                 TitleColor="Wheat"
                                 ItemDisplayBinding="{Binding Path=ID}"
-                                Grid.Column="0"
-                        />
+                                Grid.Column="0"/>
                             <Button x:Name="ContourAddBtn" Text="+" Grid.Column="1" Clicked="ContourAddBtn_Clicked" />
                             <Button Text="—" Grid.Column="2"/>
                         </Grid>
@@ -46,7 +45,7 @@
                     <Picker x:Name="PathPicker" Title="Path" 
                             HorizontalTextAlignment="Center" 
                             Margin="0,0,0,100"/>
-
+                    <Button x:Name="GetBtn" Text="Get"/>
                     <Button x:Name="AddBtn" Text="Add"/>
                     <Button x:Name="FitBtn" Text="Fit"/>
                     <Button x:Name="ClearBtn" Text="Clear"/>

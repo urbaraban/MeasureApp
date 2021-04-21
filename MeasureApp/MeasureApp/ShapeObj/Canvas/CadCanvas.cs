@@ -1,15 +1,14 @@
 ﻿using MeasureApp.Orders;
 using MeasureApp.ShapeObj.Constraints;
 using MeasureApp.ShapeObj.Interface;
-using MeasureApp.ShapeObj.LabelObject;
 using System;
 using System.Diagnostics;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Essentials;
 using Xamarin.Forms;
+using Xamarin.Forms.Shapes;
 
-namespace MeasureApp.ShapeObj
+namespace MeasureApp.ShapeObj.Canvas
 {
     public class CadCanvas : ContentView
     {
@@ -20,6 +19,7 @@ namespace MeasureApp.ShapeObj
 
         public static event EventHandler<double> DragSize;
         public static event EventHandler<bool> SellectAll;
+       
         public static double DragSizeKoeff = 1.5;
         public static event EventHandler<double> RegularSize;
         public static double RegularAnchorSize = 10;
@@ -42,16 +42,12 @@ namespace MeasureApp.ShapeObj
         private AbsoluteLayout GroupLayout;
         private AbsoluteLayout ObjectLayout;
         private AbsoluteLayout AnchorLayout;
+        private DynamicBackground BackgroundLayout;
         #endregion
 
-        /// <summary>
-        /// Drawing method parametr
-        /// </summary>
-
+        public event EventHandler<DropEventArgs> Droped;
 
         private PanGestureRecognizer panGesture = new PanGestureRecognizer();
-        private double startScale = 1;
-        private double startProp = 1;
         private Point startPoint = new Point(0, 0);
 
         public DrawMethod Method
@@ -99,20 +95,44 @@ namespace MeasureApp.ShapeObj
                 HeightRequest = CadCanvas.Height,
             };
 
+
+            this.BackgroundLayout = new DynamicBackground(this.GroupLayout, this.MainLayout)
+            {
+                VerticalOptions = LayoutOptions.StartAndExpand,
+                HorizontalOptions = LayoutOptions.EndAndExpand,
+                WidthRequest = CadCanvas.Width,
+                HeightRequest = CadCanvas.Height,
+            };
+
             //Gestured
+            //Tap
+
+            //Pinch
             PinchGestureRecognizer pinchGestureRecognizer = new PinchGestureRecognizer();
             pinchGestureRecognizer.PinchUpdated += PinchGestureRecognizer_PinchUpdated;
             this.GestureRecognizers.Add(pinchGestureRecognizer);
+            //Pan
             panGesture.PanUpdated += PanGesture_PanUpdated;
             this.GestureRecognizers.Add(panGesture);
 
             this.Content = this.MainLayout;
             this.MainLayout.Children.Add(GroupLayout);
+            this.Add(this.BackgroundLayout);
             this.Add(this.ObjectLayout);
             this.Add(this.AnchorLayout);
             this.GroupLayout.TranslationX = -ZeroPoint.X + 100;
             this.GroupLayout.TranslationY = -ZeroPoint.Y + 100;
             this.BindingContextChanged += CadCanvas_BindingContextChanged;
+
+            //Drop
+            DropGestureRecognizer dropGestureRecognizer = new DropGestureRecognizer();
+            dropGestureRecognizer.Drop += DropGestureRecognizer_Drop;
+            this.GestureRecognizers.Add(dropGestureRecognizer);
+        }
+
+        private void DropGestureRecognizer_Drop(object sender, DropEventArgs e)
+        {
+            Droped?.Invoke(this, e);
         }
 
         private void CadCanvas_BindingContextChanged(object sender, EventArgs e)
@@ -158,7 +178,7 @@ namespace MeasureApp.ShapeObj
             if (Object is ConstraintLenth lenthConstrait)
             {
                 this.Add(new LenthLabel(lenthConstrait));
-                this.Add(new VisualLine(lenthConstrait, false)
+                this.Add(new VisualLine(lenthConstrait)
                 {
                     StrokeThickness = 5 * 1 / this.GroupLayout.Scale,
                 });
@@ -216,6 +236,13 @@ namespace MeasureApp.ShapeObj
                         maxX = Math.Max(maxX, cadLine.Bounds.Right);
                         minY = Math.Min(minY, cadLine.Bounds.Top);
                         maxY = Math.Max(maxY, cadLine.Bounds.Bottom);
+                    }
+                    else
+                    {
+                        minX = Math.Min(minX, visualElement.TranslationX + visualElement.Bounds.Left);
+                        maxX = Math.Max(maxX, visualElement.TranslationX + visualElement.Bounds.Right);
+                        minY = Math.Min(minY, visualElement.TranslationY + visualElement.Bounds.Top);
+                        maxY = Math.Max(maxY, visualElement.TranslationY + visualElement.Bounds.Bottom);
                     }
                 }
                 double scale = Math.Min(this.MainLayout.Width / (maxX - minX), this.MainLayout.Height / (maxY - minY));
@@ -374,6 +401,7 @@ namespace MeasureApp.ShapeObj
                 this.GroupLayout.TranslationY = startPoint.Y - e.TotalY;
             }
 
+            //Moved(null, null);
             //Console.WriteLine($"{this.GroupLayout.TranslationX} {this.GroupLayout.TranslationY}");
         }
 
@@ -381,25 +409,24 @@ namespace MeasureApp.ShapeObj
         {
             if (e.Status == GestureStatus.Started)
             {
-                startProp = this.MainLayout.Width / (this.GroupLayout.Width * this.GroupLayout.Scale) * 30;
+                
             }
             if (e.Status == GestureStatus.Running)
             {
 
                 //start center position
-                double FromCenterPosX = Math.Abs(this.GroupLayout.TranslationX - this.MainLayout.Width / this.GroupLayout.Scale / 2) - this.GroupLayout.Width / 2;
-                double FromCenterPosY = Math.Abs(this.GroupLayout.TranslationY - this.MainLayout.Height / this.GroupLayout.Scale / 2) - this.GroupLayout.Height / 2;
+                double FromCenterPosX = ((this.MainLayout.Width / 2 - this.GroupLayout.TranslationX) -
+                    (this.GroupLayout.Width * (1 - this.GroupLayout.Scale) / 2)) / this.GroupLayout.Scale;
+                double FromCenterPosY = ((this.MainLayout.Height / 2 - this.GroupLayout.TranslationY) -
+                    (this.GroupLayout.Height * (1 - this.GroupLayout.Scale) / 2)) / this.GroupLayout.Scale; ;
+
 
                 //setup new scale
-                startScale = this.GroupLayout.Scale;
                 // Apply scale factor.
-                this.GroupLayout.Scale = startScale * (1 - ((1 - e.Scale) * startProp));
+                this.GroupLayout.Scale *= e.Scale;
 
                 //find new center position from start position
-                this.GroupLayout.TranslationX -= (FromCenterPosX * this.GroupLayout.Scale / startScale - FromCenterPosX);
-                this.GroupLayout.TranslationY -= (FromCenterPosY * this.GroupLayout.Scale / startScale - FromCenterPosY);
-
-                Debug.WriteLine($"Pinch{this.GroupLayout.TranslationX}:{this.GroupLayout.TranslationY}");
+                TranslateToPoint(new Point(FromCenterPosX, FromCenterPosY));
             }
             if (e.Status == GestureStatus.Completed)
             {
@@ -408,8 +435,13 @@ namespace MeasureApp.ShapeObj
             }
         }
 
-
-
+        private void TranslateToPoint(Point point)
+        {
+            this.GroupLayout.TranslationX = -((this.GroupLayout.Width * (1 - this.GroupLayout.Scale)) / 2) - 
+                (point.X * this.GroupLayout.Scale - this.MainLayout.Width / 2 );
+            this.GroupLayout.TranslationY = -((this.GroupLayout.Height * (1 - this.GroupLayout.Scale)) / 2) -
+                (point.Y * this.GroupLayout.Scale - this.MainLayout.Height / 2);
+        }
     }
 
     public enum DrawMethod

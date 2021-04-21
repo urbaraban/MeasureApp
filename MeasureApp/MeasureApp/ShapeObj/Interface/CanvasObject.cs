@@ -1,5 +1,4 @@
-﻿using MeasureApp.ShapeObj.LabelObject;
-using System;
+﻿using System;
 
 namespace MeasureApp.ShapeObj.Interface
 {

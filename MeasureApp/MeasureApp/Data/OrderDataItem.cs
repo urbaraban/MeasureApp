@@ -4,6 +4,9 @@ namespace MeasureApp.Data
 {
     public class OrderDataItem
     {
+        private string imageUrl = string.Empty;
+        private string location = string.Empty;
+
         [PrimaryKey, AutoIncrement]
         /// <summary>
         /// Name or other label
@@ -16,12 +19,22 @@ namespace MeasureApp.Data
         /// <summary>
         /// Url image for picker
         /// </summary>
-        public string ImageUrl { get; set; }
+        public string ImageUrl { get => imageUrl == string.Empty ? "SureMeasureLogo.png": imageUrl;
+            set
+            {
+                imageUrl = value;
+            }
+        }  
 
         /// <summary>
         /// Location order.
         /// </summary>
-        public string Location { get; set; }
+        public string Location { get => location == string.Empty ? "{Location_empty}" : location;
+            set 
+            {
+                location = value;
+            }
+        }
 
         public string Details { get; set; }
 

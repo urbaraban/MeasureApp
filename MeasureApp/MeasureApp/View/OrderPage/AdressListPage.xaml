@@ -13,7 +13,37 @@
     <ContentPage.Content>
         <AbsoluteLayout>
             <ScrollView Orientation="Vertical">
-                <ListView x:Name="listView" Margin="20" ItemSelected="OnListItemSelected"/>
+                <CollectionView x:Name="listView" SelectionMode="Single" VerticalOptions="Start" Margin="20" VerticalScrollBarVisibility="Always" SelectionChanged="OnListItemSelected">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Padding="10">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Image Grid.RowSpan="2"
+                       Source="{Binding ImageUrl}"
+                       Aspect="AspectFill"
+                       HeightRequest="60"
+                       WidthRequest="60"
+                                       Margin="0,0,10,0"/>
+                                <Label Grid.Column="1"
+                       Text="{Binding Name}"
+                       FontAttributes="Bold" />
+                                <Label Grid.Row="1"
+                       Grid.Column="1"
+                       Text="{Binding Location}"
+                       FontAttributes="Italic"
+                       VerticalOptions="End"
+                                       TextColor="DimGray"/>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
             </ScrollView>
             <StackLayout AbsoluteLayout.LayoutBounds="0.98, 0.98, -1, -1" 
                 AbsoluteLayout.LayoutFlags="PositionProportional" WidthRequest="70"

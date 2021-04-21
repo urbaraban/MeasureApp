@@ -1,11 +1,12 @@
-﻿using MeasureApp.ShapeObj.Constraints;
+﻿using MeasureApp.ShapeObj.Canvas;
+using MeasureApp.ShapeObj.Constraints;
 using MeasureApp.Tools;
 using MeasureApp.View.OrderPage;
 using System;
 using System.Windows.Input;
 using Xamarin.Forms;
 
-namespace MeasureApp.ShapeObj.LabelObject
+namespace MeasureApp.ShapeObj
 {
     public enum LineMenuItems
     {

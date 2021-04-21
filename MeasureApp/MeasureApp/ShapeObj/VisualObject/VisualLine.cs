@@ -1,4 +1,5 @@
-﻿using MeasureApp.ShapeObj.Constraints;
+﻿using MeasureApp.ShapeObj.Canvas;
+using MeasureApp.ShapeObj.Constraints;
 using MeasureApp.ShapeObj.Interface;
 using System;
 using Xamarin.Forms;
@@ -21,16 +22,16 @@ namespace MeasureApp.ShapeObj
         /// Visualize line between two anchor
         /// </summary>
         /// <param name="anchorAnchorLenth"></param>
-        public VisualLine(ConstraintLenth anchorAnchorLenth, bool TempFlag)
+        public VisualLine(ConstraintLenth anchorAnchorLenth)
         {
             this.HorizontalOptions = LayoutOptions.Start;
             this.VerticalOptions = LayoutOptions.Start;
-            this.Stroke = anchorAnchorLenth.IsSelect == true ? Brush.Orange : Brush.Blue;
             this.StrokeThickness = 5;
-            this.Fill = Brush.Blue;
+
+            this.Stroke = anchorAnchorLenth.IsSupport == true ? Brush.LightGray : Brush.Blue;
+            this.StrokeDashArray = anchorAnchorLenth.IsSupport == true ? new DoubleCollection() { 1, 2 } : new DoubleCollection() { 1 };
 
             this.AnchorsConstrait = anchorAnchorLenth;
-            this.AnchorsConstrait.IsSupport = TempFlag;
             this.AnchorsConstrait.Changed += Anchors_Changed;
             this.AnchorsConstrait.Removed += AnchorsConstrait_Removed;
             this.AnchorsConstrait.Supported += AnchorsConstrait_Supported;
@@ -43,7 +44,7 @@ namespace MeasureApp.ShapeObj
         private void AnchorsConstrait_Selected(object sender, bool e)
         {
             Xamarin.Forms.Device.BeginInvokeOnMainThread(() => {
-                this.Stroke = e == true ? Brush.Orange : Brush.Blue;
+                this.Stroke = (e == true ? Brush.Orange : Brush.Blue);
             });
         }
 
@@ -71,29 +72,22 @@ namespace MeasureApp.ShapeObj
         /// </summary>
         public void Update()
         {
-
-            double Offset = 10;
-
             double MinX = Math.Min(this.AnchorsConstrait.Point1.OX, this.AnchorsConstrait.Point2.OX);
             double MinY = Math.Min(this.AnchorsConstrait.Point1.OY, this.AnchorsConstrait.Point2.OY);
             double MaxX = Math.Max(this.AnchorsConstrait.Point2.OX, this.AnchorsConstrait.Point1.OX) + CadCanvas.RegularAnchorSize;
             double MaxY = Math.Max(this.AnchorsConstrait.Point2.OY, this.AnchorsConstrait.Point1.OY) + CadCanvas.RegularAnchorSize;
 
-            Xamarin.Forms.Device.InvokeOnMainThreadAsync(() => {
-                this.Layout(new Xamarin.Forms.Rectangle(0, 0, MaxX, MaxY));
-            });
-
-            /*
-            this.TranslationX = MinX - Offset;
-            this.TranslationY = MinY - Offset;
-            */
-
-            this.Data = new LineGeometry()
+            LineGeometry lineGeometry = new LineGeometry()
             {
                 StartPoint = new Point(this.AnchorsConstrait.Point1.OX, this.AnchorsConstrait.Point1.OY),
                 EndPoint = new Point(this.AnchorsConstrait.Point2.OX, this.AnchorsConstrait.Point2.OY)
             };
- 
+
+            Xamarin.Forms.Device.InvokeOnMainThreadAsync(() => {
+                this.Layout(new Xamarin.Forms.Rectangle(0, 0, MaxX, MaxY));
+            });
+
+            this.Data = lineGeometry;
         }
 
         private void CadCanvas_RegularSize(object sender, double e)

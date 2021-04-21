@@ -1,11 +1,12 @@
-﻿using MeasureApp.ShapeObj.Constraints;
+﻿using MeasureApp.ShapeObj.Canvas;
+using MeasureApp.ShapeObj.Constraints;
 using MeasureApp.Tools;
 using System;
 using System.Collections.Generic;
 using System.Windows.Input;
 using Xamarin.Forms;
 
-namespace MeasureApp.ShapeObj.LabelObject
+namespace MeasureApp.ShapeObj
 {
     public class AngleLabel : ConstraitLabel
     {
@@ -30,17 +31,16 @@ namespace MeasureApp.ShapeObj.LabelObject
         public AngleLabel(ConstraintAngle AngleConstrait) : base(AngleConstrait.Variable)
         {
             this._angleConstrait = AngleConstrait;
-            Point point = Sizing.GetPositionLineFromAngle(this._angleConstrait.anchorAnchor1.Point1, this._angleConstrait.anchorAnchor1.Point2, 10, this._angleConstrait.Angle / 2d);
-            this.TranslationX = point.X;
-            this.TranslationY = point.Y;
+            CadPoint point = Sizing.GetPositionLineFromAngle(this._angleConstrait.Point1, this._angleConstrait.Point2, 10, this._angleConstrait.Angle / 2d);
+            this.TranslationX = point.OX;
+            this.TranslationY = point.OY;
             this.Text = this._angleConstrait.Angle.ToString();
+            this.BackgroundColor = Color.Yellow;
             this.ScaleY = -1;
             this.HorizontalTextAlignment = TextAlignment.Center;
             this.VerticalTextAlignment = TextAlignment.End;
             this.BackgroundColor = Color.Yellow;
-            this._angleConstrait.anchorAnchor1.Point1.PropertyChanged += Anchor_PropertyChanged;
-            this._angleConstrait.anchorAnchor1.Point2.PropertyChanged += Anchor_PropertyChanged;
-            this._angleConstrait.anchorAnchor2.Point2.PropertyChanged += Anchor_PropertyChanged;
+            this._angleConstrait.PropertyChanged += AngleConstrait_PropertyChanged;
             CadCanvas.RegularSize += CadCanvas_RegularSize;
 
             this.commands.Add(new SheetMenuItem(CallValueDialog, "{CALL_VALUE_DIALOG}"));
@@ -50,18 +50,16 @@ namespace MeasureApp.ShapeObj.LabelObject
             this.SheetMenu = new SheetMenu(this.commands);
         }
 
-
+        private void AngleConstrait_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            CadPoint point = Sizing.GetPositionLineFromAngle(this._angleConstrait.anchorAnchor1.Point1, this._angleConstrait.anchorAnchor1.Point2, 10, this._angleConstrait.Angle / 2d);
+            this.TranslationX = point.OX;
+            this.TranslationY = point.OY;
+        }
 
         private void CadCanvas_RegularSize(object sender, double e)
         {
             this.Scale = 1 /e;
-        }
-
-        private void Anchor_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            Point point = Sizing.GetPositionLineFromAngle(this._angleConstrait.anchorAnchor1.Point1, this._angleConstrait.anchorAnchor1.Point2, 10, this._angleConstrait.Angle / 2d);
-            this.TranslationX = point.X;
-            this.TranslationY = point.Y;
         }
     }
 }

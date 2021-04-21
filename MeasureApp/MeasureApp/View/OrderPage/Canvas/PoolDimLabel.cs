@@ -1,4 +1,5 @@
 ﻿using MeasureApp.ShapeObj;
+using MeasureApp.ShapeObj.Canvas;
 using System;
 using System.Diagnostics;
 using System.Windows.Input;

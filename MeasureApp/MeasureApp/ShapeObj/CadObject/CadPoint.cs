@@ -1,4 +1,5 @@
-﻿using MeasureApp.ShapeObj.Constraints;
+﻿using MeasureApp.ShapeObj.Canvas;
+using MeasureApp.ShapeObj.Constraints;
 using MeasureApp.ShapeObj.Interface;
 using System;
 using System.Collections.Generic;
@@ -139,7 +140,7 @@ namespace MeasureApp.ShapeObj
         }
         private string _id;
 
-        public List<CadConstraint> Constraints = new List<CadConstraint>();
+        //public List<CadConstraint> Constraints = new List<CadConstraint>();
 
         public CadPoint()
         {
@@ -160,15 +161,21 @@ namespace MeasureApp.ShapeObj
         }
         public void Update(CadPoint cadPoint, bool Constraint = false)
         {
-            this._x = cadPoint.X;
-            this._y = cadPoint.Y;
+            if (this.IsFix == false)
+            {
+                this._x = cadPoint.X;
+                this._y = cadPoint.Y;
+            }
             OnPropertyChanged("Point");
         }
 
         public void Update(Point Point, bool Constraint = false)
         {
-            this._x = Point.X;
-            this._y = Point.Y;
+            if (this.IsFix == false)
+            {
+                this._x = Point.X;
+                this._y = Point.Y;
+            }
             OnPropertyChanged("Point");
         }
 
@@ -192,10 +199,9 @@ namespace MeasureApp.ShapeObj
 
         public void TryRemove()
         {
-            if (Constraints.Count < 2)
-            {
-                Removed?.Invoke(this, true);
-            }
+
+            Removed?.Invoke(this, true);
+            
         }
 
         public void MakeLast()

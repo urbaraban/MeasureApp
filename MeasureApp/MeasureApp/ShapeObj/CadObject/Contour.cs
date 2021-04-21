@@ -1,4 +1,5 @@
 ﻿using MeasureApp.ShapeObj;
+using MeasureApp.ShapeObj.Canvas;
 using MeasureApp.ShapeObj.Constraints;
 using MeasureApp.ShapeObj.Interface;
 using System;
@@ -140,8 +141,10 @@ namespace MeasureApp.Orders
             else if (Object is ConstraintLenth lenthConstrait)
             {
                 this.Lenths.Add(lenthConstrait);
-                if (Last == true && (Method == DrawMethod.StepByStep || this.BaseLenthConstrait == null)) 
+                if (Last == true && (Method == DrawMethod.StepByStep || this.BaseLenthConstrait == null))
+                {
                     lenthConstrait.IsSelect = true;
+                }
                 ObjectAdded?.Invoke(this, Object);
                 return Object;
             }
@@ -150,6 +153,10 @@ namespace MeasureApp.Orders
                 this.Angles.Add(angleConstrait);
                 ObjectAdded?.Invoke(this, Object);
                 return Object;
+            }
+            else if (Object is ConstraitLabel constraitLabel)
+            {
+                this.ObjectAdded(this, constraitLabel);
             }
             return null;
         }
