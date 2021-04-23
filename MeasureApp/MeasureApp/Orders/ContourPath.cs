@@ -1,5 +1,7 @@
-﻿using MeasureApp.ShapeObj.Constraints;
+﻿using MeasureApp.CadObjects;
+using MeasureApp.ShapeObj.Constraints;
 using MeasureApp.Tools;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -21,9 +23,9 @@ namespace MeasureApp.Orders
                 double area = 0;
                 if (IsClosed == true)
                 {
-                    for (int i = 1; i <= this.Points.Count; i += 1)
+                    for (int i = 1; i <= this.Points.Length; i += 1)
                     {
-                        area += (Points[i - 1].X + Points[i % (Points.Count - 1)].X) * (Points[i % (Points.Count - 1)].Y + Points[i - 1].Y);
+                        area += (Points[i - 1].X + Points[i % (Points.Length - 1)].X) * (Points[i % (Points.Length - 1)].Y + Points[i - 1].Y);
                     }
                 }
                 return area / 2;
@@ -35,15 +37,15 @@ namespace MeasureApp.Orders
             get
             {
                 double lenth = 0;
-                if (Points.Count > 1)
+                if (Points.Length > 1)
                 {
-                    for (int i = 1; i < Points.Count; i += 1)
+                    for (int i = 1; i < Points.Length; i += 1)
                     {
                         lenth += Sizing.PtPLenth(Points[i - 1], Points[i]);
                     }
                     if (this.IsClosed == true)
                     {
-                        lenth += Sizing.PtPLenth(Points[0], Points[Points.Count - 1]);
+                        lenth += Sizing.PtPLenth(Points[0], Points[Points.Length - 1]);
                     }
                 }
                 return lenth;
@@ -72,6 +74,22 @@ namespace MeasureApp.Orders
         public List<ConstraintLenth> Lenths = new List<ConstraintLenth>();
 
         public CadPoint[] Points
+        {
+            get
+            {
+                if (this.Lenths.Count > 0)
+                {
+                    CadPoint[] points = new CadPoint[this.Lenths.Count];
+                    
+                    for (int i = 0; i < Lenths.Count; i += 1)
+                    {
+                        points[i] = this.Lenths[0].Point1;
+                    }
+                    return points;
+                }
+                return null;
+            }
+        }
 
         public void SortLenth()
         {
@@ -97,5 +115,18 @@ namespace MeasureApp.Orders
         }
 
         public override string ToString() => this.ID;
+
+        internal bool CheckInsertLenth(ConstraintLenth constraintLenth)
+        {
+            foreach (ConstraintLenth constraint in this.Lenths)
+            {
+                if (constraintLenth.Point1.ID == constraint.Point1.ID ||
+                    constraintLenth.Point2.ID == constraint.Point1.ID ||
+                    constraintLenth.Point1.ID == constraint.Point2.ID ||
+                    constraintLenth.Point2.ID == constraint.Point2.ID)
+                    return true;
+            }
+            return false;
+        }
     }
 }

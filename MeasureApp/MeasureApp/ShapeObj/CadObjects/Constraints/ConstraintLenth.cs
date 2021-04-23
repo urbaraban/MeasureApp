@@ -1,7 +1,7 @@
-﻿using MeasureApp.ShapeObj.Interface;
+﻿using MeasureApp.CadObjects;
+using MeasureApp.CadObjects.Interface;
 using MeasureApp.Tools;
 using System;
-using System.Diagnostics;
 
 namespace MeasureApp.ShapeObj.Constraints
 {

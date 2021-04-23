@@ -1,5 +1,7 @@
 ﻿using IxMilia.Dxf;
 using IxMilia.Dxf.Entities;
+using MeasureApp.CadObjects;
+using MeasureApp.CadObjects.Constraints;
 using MeasureApp.Orders;
 using MeasureApp.ShapeObj;
 using MeasureApp.ShapeObj.Canvas;
@@ -29,7 +31,6 @@ namespace MeasureApp.View.OrderPage
 
         private Order order => (Order)this.BindingContext;
         private Contour contour => (Contour)ContourPicker.SelectedItem;
-        private ContourPath contourPath => (ContourPath)PathPicker.SelectedItem;
 
         public CadCanvasPage()
         {
@@ -48,10 +49,18 @@ namespace MeasureApp.View.OrderPage
             {
                 Debug.WriteLine(this.MainCanvas.BindingContext.ToString());
             }
-            this.BindingContext = new Order();
+            this.BindingContext = AppShell.SelectOrder;
 
             AppShell.UpdatedOrder += AppShell_UpdatedOrder;
             
+        }
+
+        protected override async void OnAppearing()
+        {
+            base.OnAppearing();
+            this.MainCanvas.Clear();
+            this.MainCanvas.DrawContour(this.contour);
+
         }
 
         private void GetBtn_Clicked(object sender, EventArgs e)
@@ -86,7 +95,7 @@ namespace MeasureApp.View.OrderPage
                 cadPoint1.IsFix = !Forced;
                 CadPoint cadPoint2 = (CadPoint)this.contour.Add(new CadPoint(0, 0 + tuple.Item1, this.contour.GetNewPointName()), 0);
                 cadPoint2.IsFix = !Forced;
-                this.contour.Add(new ConstraintLenth(cadPoint2, cadPoint1, tuple.Item1), 0);
+                this.contour.Add(new ConstraintLenth(cadPoint1, cadPoint2, tuple.Item1), 0);
             }
             else if (this.contour.BasePoint != null)
             {
@@ -189,8 +198,10 @@ namespace MeasureApp.View.OrderPage
             Random random = new Random();
 
             string result = await DisplayPromptAsync("Добавить линию", "Мне нужны твоя длинна и угол", "Add", "Cancel", "0000&00", -1, Keyboard.Numeric, $"{random.Next(250, 1000)}&{random.Next(45, 270)}");
-
-            BuildLine(ConvertDimMessage(result));
+            if (string.IsNullOrEmpty(result) == false)
+            {
+                BuildLine(ConvertDimMessage(result));
+            }
         }
 
         private Tuple<double, double> ConvertDimMessage(string message)

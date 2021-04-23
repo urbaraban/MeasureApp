@@ -1,8 +1,10 @@
-﻿using MeasureApp.ShapeObj.Interface;
+﻿using MeasureApp.CadObjects.Interface;
+using MeasureApp.ShapeObj;
+using MeasureApp.ShapeObj.Constraints;
 using MeasureApp.Tools;
 using System;
 
-namespace MeasureApp.ShapeObj.Constraints
+namespace MeasureApp.CadObjects.Constraints
 {
     public class ConstraintAngle : CadConstraint, CadObject
     {

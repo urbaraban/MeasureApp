@@ -1,5 +1,6 @@
-﻿using MeasureApp.Orders;
-using MeasureApp.ShapeObj;
+﻿using MeasureApp.CadObjects;
+using MeasureApp.CadObjects.Constraints;
+using MeasureApp.Orders;
 using MeasureApp.ShapeObj.Constraints;
 using System.Globalization;
 using System.IO;
@@ -29,25 +30,20 @@ namespace MeasureApp.Data
                     Contour contour = new Contour(XContour.Attribute("ID").Value);
                     order.Contours.Add(contour);
                     //Add Paths
-                    XElement XPaths = XContour.Element("Paths");
-                    foreach (XElement XPath in XPaths.Descendants("Path"))
+
+                    foreach (XElement XPoint in XContour.Descendants("Point"))
                     {
-                        ContourPath contourPath = new ContourPath(XPath.Attribute("ID").Value);
-                        foreach(XElement XPoint in XPath.Descendants("Point"))
+                        contour.Points.Add(new CadPoint()
                         {
-                            contourPath.Points.Add(new CadPoint()
-                            {
-                                ID = XPoint.Attribute("ID").Value,
-                                X = double.Parse(XPoint.Attribute("X").Value, xmlrw.dblfrm),
-                                Y = double.Parse(XPoint.Attribute("Y").Value, xmlrw.dblfrm),
-                                IsSupport = bool.Parse(XPoint.Attribute("Support").Value)
-                            });
-                        }
-                        contour.Paths.Add(contourPath);
+                            ID = XPoint.Attribute("ID").Value,
+                            X = double.Parse(XPoint.Attribute("X").Value, xmlrw.dblfrm),
+                            Y = double.Parse(XPoint.Attribute("Y").Value, xmlrw.dblfrm),
+                            IsSupport = bool.Parse(XPoint.Attribute("Support").Value)
+                        });
                     }
                     //add lenth constraint
                     XElement XLenths = XContour.Element("Lenths");
-                    foreach (XElement XLenth in XLenths.Descendants("Lenth"))
+                    foreach (XElement XLenth in XLenths.Elements("Lenth"))
                     {
                         contour.Lenths.Add(new ConstraintLenth(
                             contour.GetPointByName(XLenth.Attribute("P1").Value),
@@ -57,7 +53,7 @@ namespace MeasureApp.Data
                     }
                     //add angle constraint
                     XElement XAngles = XContour.Element("Angles");
-                    foreach (XElement XAngle in XAngles.Descendants("Angle"))
+                    foreach (XElement XAngle in XAngles.Elements("Angle"))
                     {
                         contour.Angles.Add(new ConstraintAngle(
                             contour.GetLenthByName(XAngle.Attribute("Lenth1").Value),
@@ -65,7 +61,17 @@ namespace MeasureApp.Data
                             double.Parse(XAngle.Attribute("Angle").Value, xmlrw.dblfrm)
                             ));
                     }
-                    
+
+                    XElement XPaths = XContour.Element("Paths");
+                    foreach (XElement XPath in XPaths.Elements("Path"))
+                    {
+                        ContourPath contourPath = new ContourPath(XPath.Attribute("ID").Value);
+                        foreach(XElement Xlenth in XPath.Descendants("Lenth"))
+                        {
+                            contourPath.Lenths.Add(contour.GetLenthByName(Xlenth.Attribute("ID").Value));
+                        }
+                        contour.Paths.Add(contourPath);
+                    }
                 }
 
                 return order;
@@ -93,24 +99,18 @@ namespace MeasureApp.Data
                 XElement XContour = new XElement("Contour", new XAttribute("ID", contour.ID));
                 //Add contour element
 
-                //add path and point
-                XElement XPaths = new XElement("Paths");
-                foreach (ContourPath contourPath in contour.Paths)
+                XElement XPoints = new XElement("Points");
+                foreach (CadPoint cadPoint in contour.Points)
                 {
-                    XElement XPath = new XElement("Path", new XAttribute("ID", contourPath.ID));
-                    foreach(CadPoint cadPoint in contourPath.Points)
-                    {
-                        XPath.Add(new XElement("Point",
-                            new XAttribute("ID", cadPoint.ID),
-                            new XAttribute("X", cadPoint.X),
-                            new XAttribute("Y", cadPoint.Y),
-                            new XAttribute("Support", cadPoint.IsSupport)));
-                    }
-                    XPaths.Add(XPath);
+                    XPoints.Add(new XElement("Point",
+                        new XAttribute("ID", cadPoint.ID),
+                        new XAttribute("X", cadPoint.X),
+                        new XAttribute("Y", cadPoint.Y),
+                        new XAttribute("Support", cadPoint.IsSupport)));
                 }
-                XContour.Add(XPaths);
+                XContour.Add(XPoints);
 
-                //add lenth
+                 //add lenth
                 XElement XLenths = new XElement("Lenths");
                 foreach (ConstraintLenth lenth in contour.Lenths)
                 {
@@ -132,6 +132,19 @@ namespace MeasureApp.Data
                         new XAttribute("Angle", Angle.Value)));
                 }
                 XContour.Add(Angles);
+
+                //add path and point
+                XElement XPaths = new XElement("Paths");
+                foreach (ContourPath contourPath in contour.Paths)
+                {
+                    XElement XPath = new XElement("Path", new XAttribute("ID", contourPath.ID));
+                    foreach(ConstraintLenth lenth in contourPath.Lenths)
+                    {
+                        XPath.Add(new XElement("Lenth", new XAttribute("ID", lenth.ID)));
+                    }
+                    XPaths.Add(XPath);
+                }
+                XContour.Add(XPaths);
 
                 Contours.Add(XContour);
             }

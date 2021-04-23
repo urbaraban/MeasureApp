@@ -1,4 +1,5 @@
-﻿using MeasureApp.ShapeObj.Canvas;
+﻿using MeasureApp.CadObjects;
+using MeasureApp.ShapeObj.Canvas;
 using System;
 using System.Collections.Generic;
 using System.Windows.Input;

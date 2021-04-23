@@ -21,7 +21,6 @@ namespace MeasureApp.View.OrderPage
         public AdressListPage()
         {
             InitializeComponent();
-
             listView.SelectionChanged += ListView_SelectionChanged;
         }
 
@@ -31,7 +30,7 @@ namespace MeasureApp.View.OrderPage
             {
                 if (AppShell.SelectOrder.DataItem != dataItem && AppShell.SelectOrder.Contours.Count > 0)
                 {
-                    if (AppShell.SelectOrder.Contours[0].Lenths.Count > 0)
+                    if (AppShell.SelectOrder.IsAlive == true)
                     {
                         if (await AppShell.Instance.AlertDialog("Сохранить текущий?", string.Empty) == true)
                         {
@@ -42,24 +41,33 @@ namespace MeasureApp.View.OrderPage
 
                 Order order = xmlrw.Read(dataItem);
                 SelectedOrderItem(this, order == null ? new Order(dataItem) : order);
-
-                listView.Dispatcher.BeginInvokeOnMainThread(async () =>
-                {
-                    listView.ItemsSource = await AppShell.OrdersDB.GetItemsAsync();
-                });
-
             }
         }
 
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            listView.ItemsSource = await AppShell.OrdersDB.GetItemsAsync();
+            if (AppShell.SelectOrder.IsAlive == true)
+            {
+                await AppShell.OrdersDB.SaveItemAsync(AppShell.SelectOrder);
+            }
+            UpdateList(AppShell.SelectOrder);
         }
 
         private async void AddBtn_Clicked(object sender, EventArgs e)
         {
-            await AppShell.OrdersDB.SaveItemAsync(AppShell.SelectOrder);
+            Order order = new Order();
+            await AppShell.OrdersDB.SaveItemAsync(new Order());
+            UpdateList(order);
+        }
+
+        private void UpdateList(Order SelectOrder)
+        {
+            listView.Dispatcher.BeginInvokeOnMainThread(async () =>
+            {
+                listView.ItemsSource = await AppShell.OrdersDB.GetItemsAsync();
+                listView.SelectedItem = SelectOrder;
+            });
         }
 
         private async void RemoveBtn_Clicked(object sender, EventArgs e)
@@ -68,8 +76,8 @@ namespace MeasureApp.View.OrderPage
             {
                 xmlrw.Remove(dataItem.XmlUrl);
                 await AppShell.OrdersDB.DeleteItemAsync(dataItem);
-                listView.ItemsSource = await AppShell.OrdersDB.GetItemsAsync();
             }
+            UpdateList(AppShell.SelectOrder);
         }
 
         private async void ClearBtn_Clicked(object sender, EventArgs e)
@@ -78,7 +86,7 @@ namespace MeasureApp.View.OrderPage
             {
                 await AppShell.OrdersDB.DeleteItemAsync(dataItem);
             }
-            listView.ItemsSource = await AppShell.OrdersDB.GetItemsAsync();
+            UpdateList(null);
         }
 
         private void CallButton_Clicked(object sender, EventArgs e)

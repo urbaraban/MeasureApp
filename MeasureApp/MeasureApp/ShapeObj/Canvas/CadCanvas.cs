@@ -1,4 +1,6 @@
-﻿using MeasureApp.Orders;
+﻿using MeasureApp.CadObjects;
+using MeasureApp.CadObjects.Constraints;
+using MeasureApp.Orders;
 using MeasureApp.ShapeObj.Constraints;
 using MeasureApp.ShapeObj.Interface;
 using System;

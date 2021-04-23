@@ -1,7 +1,9 @@
-﻿using MeasureApp.ShapeObj;
+﻿using MeasureApp.CadObjects;
+using MeasureApp.CadObjects.Constraints;
+using MeasureApp.CadObjects.Interface;
+using MeasureApp.ShapeObj;
 using MeasureApp.ShapeObj.Canvas;
 using MeasureApp.ShapeObj.Constraints;
-using MeasureApp.ShapeObj.Interface;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -97,7 +99,8 @@ namespace MeasureApp.Orders
         {
             foreach (CadPoint cadPoint in this.Points)
             {
-                if (cadPoint.ID == ID) return cadPoint;
+                if (cadPoint.ID == ID) 
+                    return cadPoint;
             }
             return null;
         }
@@ -145,6 +148,7 @@ namespace MeasureApp.Orders
                 {
                     lenthConstrait.IsSelect = true;
                 }
+                FindContourForLenth(lenthConstrait);
                 ObjectAdded?.Invoke(this, Object);
                 return Object;
             }
@@ -159,6 +163,32 @@ namespace MeasureApp.Orders
                 this.ObjectAdded(this, constraitLabel);
             }
             return null;
+        }
+
+        private void FindContourForLenth (ConstraintLenth constraintLenth)
+        {
+            bool WithoutContour = true;
+            if (constraintLenth.IsSupport == false)
+            {
+                foreach (ContourPath contourPath in this.Paths)
+                {
+                    if (contourPath.IsClosed == false)
+                    {
+                        if (contourPath.CheckInsertLenth(constraintLenth) == true)
+                        {
+                            contourPath.Lenths.Add(constraintLenth);
+                            WithoutContour = false;
+                        }
+                    }
+                }
+                if (WithoutContour == true)
+                {
+                    this.Paths.Add(new ContourPath(this.Paths.Count.ToString())
+                    {
+                        Lenths = new List<ConstraintLenth>() { constraintLenth }
+                    });
+                }
+            }
         }
 
         private void CadObject_LastObject(object sender, bool e)
@@ -264,15 +294,10 @@ namespace MeasureApp.Orders
         public string GetNewPointName()
         {
             string result = string.Empty;
-            int count = 0;
-            foreach (ContourPath contourPath in this.Paths)
-            {
-                count += contourPath.Lenths.Count + 1;
-            }
 
-            result = $"{Convert.ToChar(65 * ((count / 678) > 0 ? 1 : 0) + count / 678)}" +
-                $"{Convert.ToChar(65 * ((count / 26) > 0 ? 1 : 0) + count / 26)}" +
-                $"{Convert.ToChar(65 + count % 26)}";
+            result = $"{Convert.ToChar(65 * ((Points.Count / 678) > 0 ? 1 : 0) + Points.Count / 678)}" +
+                $"{Convert.ToChar(65 * ((Points.Count / 26) > 0 ? 1 : 0) + Points.Count / 26)}" +
+                $"{Convert.ToChar(65 + Points.Count % 26)}";
 
             return result.Trim('\0');
         }

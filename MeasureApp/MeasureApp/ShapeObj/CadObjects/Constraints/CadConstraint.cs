@@ -1,4 +1,4 @@
-﻿using MeasureApp.ShapeObj.Interface;
+﻿using MeasureApp.CadObjects;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

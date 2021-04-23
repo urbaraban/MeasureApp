@@ -10,6 +10,21 @@ namespace MeasureApp.Orders
 {
     public class Order : INotifyPropertyChanged
     {
+        public bool IsAlive
+        {
+            get
+            {
+                foreach (Contour contour in this.Contours)
+                {
+                    foreach(ContourPath contourPath in contour.Paths)
+                    {
+                        if (contourPath.Lenths.Count > 0) return true;
+                    }
+                }
+                return false;
+            }
+        }
+
         public OrderDataItem DataItem { get; }
 
         public Order()
@@ -37,7 +52,7 @@ namespace MeasureApp.Orders
         /// 
         public int ID { get => this.DataItem.ID; }
 
-        public string Date => this.DataItem.Date.ToString("d:M:y");
+        public string Date => this.DataItem.Date.ToLocalTime().ToString("d:M:y");
 
         public string Name
         {

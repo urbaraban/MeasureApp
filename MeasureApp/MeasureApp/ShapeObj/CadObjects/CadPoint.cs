@@ -1,4 +1,5 @@
-﻿using MeasureApp.ShapeObj.Canvas;
+﻿using MeasureApp.CadObjects.Interface;
+using MeasureApp.ShapeObj.Canvas;
 using MeasureApp.ShapeObj.Constraints;
 using MeasureApp.ShapeObj.Interface;
 using System;
@@ -7,7 +8,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Xamarin.Forms;
 
-namespace MeasureApp.ShapeObj
+namespace MeasureApp.CadObjects
 {
     public class CadPoint : INotifyPropertyChanged, CadObject
     {

@@ -15,15 +15,11 @@ namespace MeasureApp
 {
     public partial class AppShell : Shell
     {
-        private static Order selectorder;
+        private static Order selectorder = new Order();
 
         public static Order SelectOrder
         {
-            get
-            {
-                if (selectorder == null) return new Order();
-                return selectorder;
-            }
+            get => selectorder;
             set
             {
                 selectorder = value;

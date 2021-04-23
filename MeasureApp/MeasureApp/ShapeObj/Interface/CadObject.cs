@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MeasureApp.ShapeObj.Interface
+namespace MeasureApp.CadObjects.Interface
 {
     public interface CadObject
     {
