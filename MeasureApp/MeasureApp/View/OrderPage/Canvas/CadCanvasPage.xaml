@@ -4,6 +4,9 @@
              xmlns:shapeobj="clr-namespace:MeasureApp.ShapeObj.Canvas"
              x:Class="MeasureApp.View.OrderPage.CadCanvasPage"
              Title="Drawing">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Icon="search.png" Text="Share" Clicked="ShareBtn_Clicked"/>
+    </ContentPage.ToolbarItems>
     <ContentPage.Content>
         <StackLayout Orientation="Vertical" VerticalOptions="FillAndExpand">
             <AbsoluteLayout BackgroundColor="White"  VerticalOptions="FillAndExpand">

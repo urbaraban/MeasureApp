@@ -1,8 +1,10 @@
 ﻿using MeasureApp.Data;
 using SQLite;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Xamarin.Essentials;
 
 namespace MeasureApp.Orders
 {
@@ -15,11 +17,13 @@ namespace MeasureApp.Orders
             this.DataItem = new OrderDataItem()
             {
                 ID = 0,
+                Date = DateTime.Now,
                 Name = "Templ",
                 Details = "Templ",
-                Location = string.Empty,
+                PhoneNumber = "+7923251320",
+                Location = new Location(),
                 XmlUrl = string.Empty,
-                ImageUrl = string.Empty
+                ImagesUrls = string.Empty
             };
         }
 
@@ -32,6 +36,8 @@ namespace MeasureApp.Orders
         /// </summary>
         /// 
         public int ID { get => this.DataItem.ID; }
+
+        public string Date => this.DataItem.Date.ToString("d:M:y");
 
         public string Name
         {
@@ -46,12 +52,12 @@ namespace MeasureApp.Orders
         /// <summary>
         /// Url image for picker
         /// </summary>
-        public string ImageUrl
+        public List<string> ImagesUrls
         {
-            get => this.DataItem.ImageUrl;
+            get => new List<string>(this.DataItem.ImagesUrls.Split('%'));
             set
             {
-                this.DataItem.ImageUrl = value;
+                this.DataItem.ImagesUrls = string.Concat(value, '%');
             }
         }
 
@@ -59,7 +65,7 @@ namespace MeasureApp.Orders
         /// <summary>
         /// Location order.
         /// </summary>
-        public string Location
+        public Location Location
         {
             get => this.DataItem.Location;
             set
@@ -67,7 +73,6 @@ namespace MeasureApp.Orders
                 this.DataItem.Location = value;
             }
         }
-
 
         public string Details
         {
@@ -79,6 +84,41 @@ namespace MeasureApp.Orders
             }
         }
 
+        public string Phone
+        {
+            get => this.DataItem.PhoneNumber == null ? "+7999999" : this.DataItem.PhoneNumber;
+            set
+            {
+                this.DataItem.PhoneNumber = value;
+                OnPropertyChanged("Phone");
+            }
+        }
+
+        public double Perimetr
+        {
+            get
+            {
+                double perimetr = 0;
+                foreach (Contour contour in this.Contours)
+                {
+                    perimetr += contour.Perimetr;
+                }
+                return Math.Round(perimetr / 1000, 1);
+            }
+        }
+
+        public double Sqare
+        {
+            get
+            {
+                double sqare = 0;
+                foreach (Contour contour in this.Contours)
+                {
+                    sqare += contour.Area;
+                }
+                return Math.Round(sqare, 1);
+            }
+        }
 
         public List<Contour> Contours = new List<Contour>();
 

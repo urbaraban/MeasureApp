@@ -63,6 +63,16 @@ namespace MeasureApp.ShapeObj.Constraints
             set
             {
                 this._variable = value;
+                OnPropertyChanged("Variable");
+            }
+        }
+
+        public virtual double Value
+        {
+            get => this.Variable.Value;
+            set
+            {
+                this.Variable.Value = value;
                 OnPropertyChanged("Value");
             }
         }

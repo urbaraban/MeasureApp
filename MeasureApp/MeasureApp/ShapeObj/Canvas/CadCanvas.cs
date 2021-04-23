@@ -197,12 +197,9 @@ namespace MeasureApp.ShapeObj.Canvas
         {
             if (contour.Paths != null)
             {
-                foreach (ContourPath contourPath in contour.Paths)
+                foreach (CadPoint point in contour.Points)
                 {
-                    foreach (CadPoint point in contour.Points)
-                    {
-                        DrawObject(point);
-                    }
+                    DrawObject(point);
                 }
 
                 foreach (ConstraintLenth constraintLenth in contour.Lenths)
@@ -211,7 +208,7 @@ namespace MeasureApp.ShapeObj.Canvas
                 }
 
                 foreach (ConstraintAngle constraintAngle in contour.Angles)
-                { 
+                {
                     DrawObject(constraintAngle);
                 }
 

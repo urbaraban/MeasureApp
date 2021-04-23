@@ -15,43 +15,43 @@ namespace MeasureApp.Orders
 
         public string ID { get; set; } = "Contour";
 
-        public List<ConstraintLenth> Lenths = new List<ConstraintLenth>();
+        public List<ConstraintLenth> Lenths { get; set; } = new List<ConstraintLenth>();
 
-        public List<ConstraintAngle> Angles = new List<ConstraintAngle>();
+        public List<ConstraintAngle> Angles { get; set; } = new List<ConstraintAngle>();
 
-        public List<ContourPath> Paths = new List<ContourPath>();
+        public List<ContourPath> Paths { get; set; } = new List<ContourPath>();
 
-        public List<CadPoint> Points
-        {
-            get
-            {
-                List<CadPoint> cadPoints = new List<CadPoint>();
-                foreach (ContourPath contourPath in Paths)
-                {
-                    cadPoints.AddRange(contourPath.Points);
-                }
-                return cadPoints;
-            }
-        }
+        public List<CadPoint> Points { get; set; } = new List<CadPoint>();
 
         /// <summary>
         /// Perimetr controur
         /// </summary>
-        public double Perimetr => CalcPerimetr();
-
-        private double CalcPerimetr()
-        {
-            double lenth = 0;
-
-            foreach (ConstraintLenth lenthConstrait in Lenths)
+        public double Perimetr {
+            get 
             {
-                if (lenthConstrait.IsSupport == false)
+                double lenth = 0;
+
+                foreach (ContourPath contourPath in Paths)
                 {
-                    lenth += lenthConstrait.Lenth;
+                    lenth += contourPath.Perimeter;
                 }
-            }
-            return lenth;
+                return lenth;
+            } 
         }
+
+        public double Area
+        {
+            get
+            {
+                double area = 0;
+                foreach (ContourPath contourPath in Paths)
+                {
+                    area += contourPath.Area;
+                }
+                return 0;
+            }
+        }
+
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -122,7 +122,7 @@ namespace MeasureApp.Orders
 
             if (Object is CadPoint cadPoint)
             {
-                this.Paths[PathIndex].Points.Add(cadPoint);
+                this.Points.Add(cadPoint);
                 if (Last == true)
                 {
                     if (this._method == DrawMethod.StepByStep || this.BasePoint == null)
@@ -236,10 +236,7 @@ namespace MeasureApp.Orders
 
             if (Object is CadPoint cadPoint)
             {
-                foreach( ContourPath contourPath in this.Paths)
-                {
-                    contourPath.Points.Remove(cadPoint);
-                }
+                this.Points.Remove(cadPoint);
                 this.LastPoint = this.LastPoint == cadPoint ? null : this.LastPoint;
                 this.BasePoint = this.BasePoint == cadPoint ? null : this.BasePoint;
             }
@@ -270,7 +267,7 @@ namespace MeasureApp.Orders
             int count = 0;
             foreach (ContourPath contourPath in this.Paths)
             {
-                count += contourPath.Points.Count;
+                count += contourPath.Lenths.Count + 1;
             }
 
             result = $"{Convert.ToChar(65 * ((count / 678) > 0 ? 1 : 0) + count / 678)}" +
@@ -280,9 +277,6 @@ namespace MeasureApp.Orders
             return result.Trim('\0');
         }
 
-        public override string ToString()
-        {
-            return this.ID;
-        }
+        public override string ToString() => this.ID;
     }
 }

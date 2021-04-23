@@ -81,8 +81,9 @@ namespace MeasureApp.Data
             info.Add(new XElement("ID", order.ID));
             info.Add(new XElement("Name", order.Name));
             info.Add(new XElement("Details", order.Details));
+            info.Add(new XElement("Phone", order.Phone));
             info.Add(new XElement("Location", order.Location));
-            info.Add(new XElement("ImageUrl", order.ImageUrl));
+            info.Add(new XElement("ImagesUrls", order.ImagesUrls));
             Measure.Add(info);
 
             XElement Contours = new XElement("Contours");
@@ -128,7 +129,7 @@ namespace MeasureApp.Data
                     Angles.Add(new XElement("Angle",
                         new XAttribute("Lenth1", Angle.anchorAnchor1.ID),
                         new XAttribute("Lenth2", Angle.anchorAnchor2.ID),
-                        new XAttribute("Angle", Angle.Angle)));
+                        new XAttribute("Angle", Angle.Value)));
                 }
                 XContour.Add(Angles);
 

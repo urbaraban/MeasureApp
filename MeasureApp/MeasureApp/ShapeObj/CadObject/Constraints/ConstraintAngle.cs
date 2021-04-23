@@ -16,16 +16,16 @@ namespace MeasureApp.ShapeObj.Constraints
         public CadPoint Point2;
         public CadPoint Point3;
 
-        public double Angle
+        public override double Value
         {
-            get => this.Variable.Value > -1 ? this.Variable.Value : Sizing.AngleThreePoint(this.anchorAnchor1.Point1, this.anchorAnchor1.Point2, this.anchorAnchor2.Point2);
+            get => this.Variable.Value > -1 ? this.Variable.Value : Sizing.AngleThreePoint(this.Point1, this.Point2, this.Point3);
             set
             {
                 this.Variable.Value = value;
                 OnPropertyChanged("Angle");
             }
         }
-        public double RadAngle => this.Angle * (Math.PI / 180);
+        public double RadAngle => this.Value * (Math.PI / 180);
 
         /// <summary>
         /// Constrait angle
@@ -52,7 +52,7 @@ namespace MeasureApp.ShapeObj.Constraints
                 this.Point3 = anchorAnchor2.GetNotThisPoint(this.Point2);
             }
 
-            this.Variable = new CadVariable(Angle);
+            this.Variable = new CadVariable(Angle, false);
             this.Variable.PropertyChanged += Angle_PropertyChanged;
 
             this.anchorAnchor2.Point1.PropertyChanged += CadanchorMiddle_PropertyChanged;
@@ -110,6 +110,14 @@ namespace MeasureApp.ShapeObj.Constraints
                 }
                 else
                 {
+                    if (anchorAnchor1.GetNotThisPoint(FirstPoint) is CadPoint cadPoint1)
+                    {
+                        anchorAnchor1.MakeMagic(cadPoint1, FirstPoint);
+                    }
+                    else if (anchorAnchor2.GetNotThisPoint(FirstPoint) is CadPoint cadPoint2)
+                    {
+                        anchorAnchor1.MakeMagic(cadPoint2, FirstPoint);
+                    }
                     double lenth = Sizing.PtPLenth(MiddlePoint, FirstPoint);
                     FirstPoint.Update(Sizing.GetPositionLineFromAngle(LastPoint, MiddlePoint, lenth, 360 - angle));
                 }

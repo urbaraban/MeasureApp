@@ -1,4 +1,5 @@
-﻿using MeasureApp.ShapeObj.Interface;
+﻿using MeasureApp.ShapeObj.Constraints;
+using MeasureApp.ShapeObj.Interface;
 using System;
 using Xamarin.Forms;
 
@@ -9,7 +10,7 @@ namespace MeasureApp.ShapeObj
         public virtual event EventHandler<object> Dropped;
         public virtual event EventHandler<bool> Removed;
 
-        public CadVariable Variable;
+        public CadConstraint Constraint;
 
         public virtual bool IsSelect
         {
@@ -27,10 +28,10 @@ namespace MeasureApp.ShapeObj
         public  virtual SheetMenu SheetMenu { get => this._sheetMenu; set => this._sheetMenu = value; }
         private SheetMenu _sheetMenu;
 
-        public ConstraitLabel(CadVariable Variable)
+        public ConstraitLabel(CadConstraint Constraint)
         {
-            this.Variable = Variable;
-            this.Variable.PropertyChanged += Value_PropertyChanged;
+            this.Constraint = Constraint;
+            this.Constraint.PropertyChanged += Value_PropertyChanged;
 
             TapGestureRecognizer tapGestureRecognizer = new TapGestureRecognizer();
             tapGestureRecognizer.Tapped += TapGestureRecognizer_Tapped;
@@ -55,7 +56,7 @@ namespace MeasureApp.ShapeObj
         public virtual void Update()
         {
             Xamarin.Forms.Device.InvokeOnMainThreadAsync(() => {
-                this.Text = this.Variable.ToString();
+                this.Text = Math.Round(this.Constraint.Value, 1).ToString();
             });
         }
 

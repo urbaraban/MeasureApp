@@ -2,44 +2,80 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:controls="clr-namespace:MeasureApp.OrderPage.Controls"
              x:Class="MeasureApp.View.OrderPage.AdressListPage"
-             xmlns:data="clr-namespace:MeasureApp.Data"
-             Title="Orders">
+             Title="Orders"
+             WidthRequest="100"
+             >
     <Shell.SearchHandler>
         <controls:OrderSearchHandler Placeholder="Enter search term"
                                          ShowsResults="true"
-                                        DisplayMemberName="Name" />
+                                        DisplayMemberName="Name"/>
     </Shell.SearchHandler>
     
     <ContentPage.Content>
-        <AbsoluteLayout>
-            <ScrollView Orientation="Vertical">
-                <CollectionView x:Name="listView" SelectionMode="Single" VerticalOptions="Start" Margin="20" VerticalScrollBarVisibility="Always" SelectionChanged="OnListItemSelected">
+        <AbsoluteLayout >
+            <ScrollView Orientation="Vertical" HorizontalOptions="FillAndExpand" >
+                <CollectionView x:Name="listView" SelectionMode="Single" HorizontalOptions="FillAndExpand" Margin="10"  VerticalScrollBarVisibility="Always">
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
-                            <Grid Padding="10">
+                            <Grid Padding="5">
                                 <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
-                                <Image Grid.RowSpan="2"
-                       Source="{Binding ImageUrl}"
-                       Aspect="AspectFill"
-                       HeightRequest="60"
-                       WidthRequest="60"
-                                       Margin="0,0,10,0"/>
-                                <Label Grid.Column="1"
-                       Text="{Binding Name}"
+                                <Label Grid.Column="0"
+                       Text="{Binding Date}"
                        FontAttributes="Bold" />
+                                <!--<Image 
+                                       Grid.RowSpan="2"
+                                       Grid.Row="1"   
+                                       Source="{Binding ImagesUrls}"
+                                       Aspect="AspectFill"
+                                       HeightRequest="60"
+                                       WidthRequest="60"
+                                       Margin="0,0,10,0"
+                                       BackgroundColor="Aqua"/>-->
+                                <Label Grid.Column="1"
+                                   Text="{Binding Name}"
+                                   FontAttributes="Bold" />
                                 <Label Grid.Row="1"
-                       Grid.Column="1"
-                       Text="{Binding Location}"
-                       FontAttributes="Italic"
-                       VerticalOptions="End"
+                                       Grid.RowSpan="1"
+                                       Grid.Column="1"
+                                       Text="{Binding Details}"
+                                       FontAttributes="Italic"
+                                       VerticalOptions="Start"
                                        TextColor="DimGray"/>
+                                
+                                <Label Grid.Row="2"
+                                       Grid.RowSpan="1"
+                                       Grid.Column="1"
+                                       Text="{Binding Adress}"
+                                       FontAttributes="Italic"
+                                       VerticalOptions="Start"
+                                       TextColor="DimGray"/>
+                                <Button
+                                    Text="✆"
+                                    FontSize="Body"
+                                    Grid.Column="2"
+                                    Grid.RowSpan="3"
+                                    WidthRequest="40"
+                                    BindingContext="{Binding Phone}"
+                                    Clicked="CallButton_Clicked"
+                                    />
+                                <Button
+                                    Text="Way"
+                                    Grid.Column="3"
+                                    Grid.RowSpan="3"
+                                    BindingContext="{Binding Location}"
+                                    WidthRequest="40"
+                                    Clicked="WayButton_Clicked"
+                                    />
                             </Grid>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>

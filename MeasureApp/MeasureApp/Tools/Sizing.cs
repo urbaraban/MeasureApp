@@ -99,7 +99,7 @@ namespace MeasureApp.Tools
                                 Math.Pow(c.Y - p1.Y, 2)); // p1->c (a)
             var p0p1 = Math.Sqrt(Math.Pow(p1.X - p0.X, 2) +
                                  Math.Pow(p1.Y - p0.Y, 2)); // p0->p1 (c)
-            return Math.Acos((p1c * p1c + p0c * p0c - p0p1 * p0p1) / (2 * p1c * p0c)) * 180 / Math.PI;
+            return (Math.Acos((p1c * p1c + p0c * p0c - p0p1 * p0p1) / (2 * p1c * p0c)) * 180 / Math.PI);
         }
     }
 }

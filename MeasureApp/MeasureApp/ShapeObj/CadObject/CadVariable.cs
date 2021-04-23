@@ -19,6 +19,11 @@ namespace MeasureApp.ShapeObj
 
         public string Name = string.Empty;
 
+        /// <summary>
+        /// Lenth or Angle flag
+        /// </summary>
+        public bool IsLenth { get; private set; }
+
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -30,15 +35,17 @@ namespace MeasureApp.ShapeObj
         public override string ToString() => this._value.ToString();
 
 
-        public CadVariable(double Value)
+        public CadVariable(double Value, bool IsLenth)
         {
             this._value = Value;
+            this.IsLenth = IsLenth;
         }
 
-        public CadVariable(double Value, string Name)
+        public CadVariable(double Value, string Name, bool IsLenth)
         {
             this._value = Value;
             this.Name = Name;
+            this.IsLenth = IsLenth;
         }
 
         public void Update(double Value)

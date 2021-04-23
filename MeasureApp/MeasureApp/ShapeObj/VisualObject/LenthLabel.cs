@@ -30,7 +30,8 @@ namespace MeasureApp.ShapeObj
         });
         private ICommand Measure => new Command(() =>
         {
-            AppShell.MeasireVariable = this.Variable;
+            CadCanvasPage.MeasureVariable = this._lenthConstrait.Variable;
+            AppShell.BLEDevice.OnDevice();
         });
         private ICommand SupportLine => new Command(() =>
         {
@@ -70,7 +71,7 @@ namespace MeasureApp.ShapeObj
 
         private ConstraintLenth _lenthConstrait;
 
-        public LenthLabel(ConstraintLenth lenthConstrait) : base(lenthConstrait.Variable)
+        public LenthLabel(ConstraintLenth lenthConstrait) : base(lenthConstrait)
         {
             this.HorizontalTextAlignment = TextAlignment.Center;
             this.VerticalTextAlignment = TextAlignment.Center;

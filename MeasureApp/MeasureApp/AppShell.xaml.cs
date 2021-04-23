@@ -2,18 +2,18 @@
 using MeasureApp.Data;
 using MeasureApp.Orders;
 using MeasureApp.ShapeObj;
+using MeasureApp.View.BLEDevice;
 using MeasureApp.View.OrderPage;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace MeasureApp
 {
-    public partial class AppShell : Xamarin.Forms.Shell
+    public partial class AppShell : Shell
     {
         private static Order selectorder;
 
@@ -49,67 +49,27 @@ namespace MeasureApp
         public static event EventHandler<Tuple<double, double>> LenthUpdated;
         public static event EventHandler<Order> UpdatedOrder;
 
-        public static AppShell Instance;
-        public static BluetoothLEScan scan;
+        public static AppShell Instance { get; set; }
 
-        public static CadVariable MeasireVariable = null;
-
-        private static BluetoothDevice _device;
-
-        public static BluetoothDevice Device
+        public static LaserDistanceMeter BLEDevice
         {
-            get => AppShell._device;
+            get => AppShell._bledevice;
             set
             {
-                _device = value;
-                if (Device != null)
+                if (_bledevice != null)
                 {
-                    AppShell._device.GattServerDisconnected += Device_GattServerDisconnected;
+                    _bledevice.LenthUpdated -= _bledevice_LenthUpdated;
+                }
+                _bledevice = value;
+                if (_bledevice != null)
+                {
+                    AppShell._bledevice.LenthUpdated += _bledevice_LenthUpdated; ;
                 }
             }
         }
+        private static void _bledevice_LenthUpdated(object sender, Tuple<double, double> e) => LenthUpdated(null, e);
 
-        private static GattCharacteristic _gattCharacteristic;
-
-        public static GattCharacteristic GattCharacteristic
-        {
-            get => AppShell._gattCharacteristic;
-            set
-            {
-                AppShell._gattCharacteristic = value;
-                AppShell._gattCharacteristic.CharacteristicValueChanged += _gattCharacteristic_CharacteristicValueChanged;
-                AppShell.GattCharacteristic.StartNotificationsAsync();
-            }
-        }
-
-        private static void _gattCharacteristic_CharacteristicValueChanged(object sender, GattCharacteristicValueChangedEventArgs e)
-        {
-            if (e.Value != null)
-            {
-                string value = Encoding.ASCII.GetString(e.Value);
-
-                Regex regex = new Regex(@"[^\d]");
-
-                double lenth = double.Parse(regex.Replace(value, ""));
-
-                if (MeasireVariable != null)
-                {
-                    MeasireVariable.Value = lenth;
-                    MeasireVariable = null;
-                }
-                else
-                {
-                    LenthUpdated?.Invoke(null, new Tuple<double, double>(lenth, -1));
-                }
-            }
-        }
-
-        private static async void Device_GattServerDisconnected(object sender, EventArgs e)
-        {
-            UpdatedDevice?.Invoke(null, null);
-            var device = sender as BluetoothDevice;
-            await device.Gatt.ConnectAsync();
-        }
+        private static LaserDistanceMeter _bledevice;
 
         private List<BluetoothDevice> Devices = new List<BluetoothDevice>();
 
@@ -147,39 +107,26 @@ namespace MeasureApp
             return result;
         }
 
-        public async Task<bool> AlertDialog(string Title,string Message, string CanselStr)
+        public async Task<bool> AlertDialog(string Title,string Message)
         {
             return await DisplayAlert(Title, Message, "Yes", "Cancel");
         }
 
         private async Task LoadBleScan()
         {
-            //listView.ItemsSource = Devices;
-
-            bool availability = false;
-
-            while (!availability)
-            {
-                availability = await Bluetooth.GetAvailabilityAsync();
-                await Task.Delay(500);
-            }
-
-            foreach (var d in await Bluetooth.GetPairedDevicesAsync())
-            {
-                Devices.Add(d);
-                Debug.WriteLine($"{d.Id} {d.Name}");
-            }
-
-            Bluetooth.AdvertisementReceived += Bluetooth_AdvertisementReceived;
-            AppShell.scan = await Bluetooth.RequestLEScanAsync();
-
             RequestDeviceOptions options = new RequestDeviceOptions();
             options.AcceptAllDevices = true;
             BluetoothDevice device = await Bluetooth.RequestDeviceAsync(options);
 
             if (device != null)
             {
-                LoadDevice(device);
+                switch (device.Name)
+                {
+                    case "Laser Distance Meter":
+                        BLEDevice = new ChinesDistanceMeter(device);
+                        break;
+                }
+
             }
         }
 
@@ -187,63 +134,6 @@ namespace MeasureApp
         {
             Devices.Add(e.Device);
             Debug.WriteLine($"Name:{e.Name} Rssi:{e.Rssi}");
-        }
-
-
-        private async void LoadDevice(BluetoothDevice device)
-        {
-            await device.Gatt.ConnectAsync();
-
-            if (device.Gatt.IsConnected == true)
-            {
-                var servs = await device.Gatt.GetPrimaryServicesAsync();
-
-                //Service
-                foreach (var serv in servs)
-                {
-                    if (serv.Uuid.ToString() == "FFB0")
-                    {
-                        var characteristics = await serv.GetCharacteristicsAsync();
-
-                        //Characteristic
-                        foreach (var characteristic in characteristics)
-                        {
-                            //Subcribe on service
-                            if (characteristic.Uuid.ToString() == "FFB2")
-                            {
-                                if (characteristic.Properties.HasFlag(GattCharacteristicProperties.Notify))
-                                {
-                                    AppShell.GattCharacteristic = characteristic;
-                                }
-
-                                foreach (var descriptors in await characteristic.GetDescriptorsAsync())
-                                {
-                                    Debug.WriteLine($"Descriptor:{descriptors.Uuid}");
-
-                                    var val2 = await descriptors.ReadValueAsync();
-
-                                    if (descriptors.Uuid == GattDescriptorUuids.ClientCharacteristicConfiguration)
-                                    {
-                                        Debug.WriteLine($"Notifying:{val2[0] > 0}");
-                                    }
-                                    else if (descriptors.Uuid == GattDescriptorUuids.CharacteristicUserDescription)
-                                    {
-                                        Debug.WriteLine($"UserDescription:{ByteArrayToString(val2)}");
-                                    }
-                                    else
-                                    {
-                                        Debug.WriteLine(ByteArrayToString(val2));
-                                    }
-
-                                }
-
-                            }
-
-                            Debug.Unindent();
-                        }
-                    }
-                }
-            }
         }
 
         private static string ByteArrayToString(byte[] data)
@@ -261,9 +151,9 @@ namespace MeasureApp
             return sb.ToString();
         }
 
-        private async void MenuItem_Clicked(object sender, EventArgs e)
+        private async void DeviceItem_Clicked(object sender, EventArgs e)
         {
-          LoadBleScan();
+            LoadBleScan();
         }
     }
 }

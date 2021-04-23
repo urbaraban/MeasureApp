@@ -98,7 +98,7 @@
 
     <MenuItem Text="Device"
               IconImageSource="random.png"
-              Clicked="MenuItem_Clicked" />
+              Clicked="DeviceItem_Clicked" />
 
     <FlyoutItem Title="About" Icon="icon_about.png">
         <ShellContent Route="AboutPage" ContentTemplate="{DataTemplate local:AboutPage}" />

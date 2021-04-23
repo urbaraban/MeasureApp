@@ -1,13 +1,17 @@
-﻿using MeasureApp.Orders;
+﻿using IxMilia.Dxf;
+using IxMilia.Dxf.Entities;
+using MeasureApp.Orders;
 using MeasureApp.ShapeObj;
 using MeasureApp.ShapeObj.Canvas;
 using MeasureApp.ShapeObj.Constraints;
 using MeasureApp.Tools;
-using MeasureApp.View.BLEDevice.Extensions;
 using MeasureApp.View.OrderPage.Canvas;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Windows.Input;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -16,6 +20,8 @@ namespace MeasureApp.View.OrderPage
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class CadCanvasPage : ContentPage
     {
+        public static CadVariable MeasureVariable;
+
         public ICommand AddContour => new Command(async () =>
         {
             this.order.Contours.Add(new Contour("Test"));
@@ -27,7 +33,6 @@ namespace MeasureApp.View.OrderPage
 
         public CadCanvasPage()
         {
-            
             InitializeComponent();
             AddBtn.Clicked += AddBtn_Clicked;
             ClearBtn.Clicked += ClearBtn_Clicked;
@@ -51,7 +56,7 @@ namespace MeasureApp.View.OrderPage
 
         private void GetBtn_Clicked(object sender, EventArgs e)
         {
-           // AppShell.GattCharacteristic(CodeUtils.HiCRCTable);
+            AppShell.BLEDevice.OnDevice();
         }
 
         private void MainCanvas_Droped(object sender, DropEventArgs e)
@@ -65,10 +70,7 @@ namespace MeasureApp.View.OrderPage
             }
         }
 
-        private void AppShell_UpdatedOrder(object sender, Order e)
-        {
-            this.BindingContext = e;
-        }
+        private void AppShell_UpdatedOrder(object sender, Order e) => this.BindingContext = e;
 
         /// <summary>
         /// Make line with anchor on canvas.
@@ -122,7 +124,6 @@ namespace MeasureApp.View.OrderPage
                 poolDimLabel.Removed += PoolDimLabel_Removed;
                 SizePool.Children.Add(poolDimLabel);
             }
-
         }
 
         private void PoolDimLabel_Removed(object sender, EventArgs e)
@@ -132,7 +133,15 @@ namespace MeasureApp.View.OrderPage
 
         private void AppShell_LenthUpdated(object sender, Tuple<double, double> e)
         {
-            BuildLine(e);
+            if (MeasureVariable != null)
+            {
+                MeasureVariable.Value = MeasureVariable.IsLenth == true ? e.Item1 : e.Item2;
+                MeasureVariable = null;
+            }
+            else
+            {
+                BuildLine(e);
+            }
         }
 
 
@@ -218,6 +227,47 @@ namespace MeasureApp.View.OrderPage
                 this.contour.Method = sw.IsToggled == true ? DrawMethod.FromPoint : DrawMethod.StepByStep;
             }
             
+        }
+
+        private async void ShareBtn_Clicked(object sender, EventArgs e)
+        {
+            List<string> paths = new List<string>();
+
+            foreach (Contour contour in this.order.Contours) 
+            {
+                DxfFile dxfFile = new DxfFile();
+                dxfFile.Header.SetDefaults();
+                dxfFile.Header.AlternateDimensioningScaleFactor = 1;
+                dxfFile.Header.DrawingUnits = DxfDrawingUnits.Metric;
+                dxfFile.Header.UnitFormat = DxfUnitFormat.Decimal;
+                dxfFile.Header.DefaultDrawingUnits = DxfUnits.Millimeters;
+                dxfFile.Header.AlternateDimensioningUnits = DxfUnitFormat.Decimal;
+                dxfFile.ViewPorts.Clear();
+                foreach (ConstraintLenth constraintLenth in contour.Lenths)
+                {
+                    if (constraintLenth.IsSupport == false)
+                    {
+                        dxfFile.Entities.Add(new DxfLine(
+                            new DxfPoint(constraintLenth.Point1.X, constraintLenth.Point1.Y, 0),
+                            new DxfPoint(constraintLenth.Point2.X, constraintLenth.Point2.Y, 0)));
+                    }
+                }
+                string path = Path.ChangeExtension(Path.Combine(FileSystem.CacheDirectory, Path.GetTempFileName()), ".dxf");
+                dxfFile.Save(path);
+                paths.Add(path);
+            }
+
+            List<ShareFile> shareFiles = new List<ShareFile>();
+            foreach(string str in paths)
+            {
+                shareFiles.Add(new ShareFile(str));
+            }
+
+            await Share.RequestAsync(new ShareMultipleFilesRequest
+            {
+                Title = "Отправить чертеж",
+                Files = shareFiles
+            });
         }
     }
 }

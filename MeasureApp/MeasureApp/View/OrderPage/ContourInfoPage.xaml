@@ -4,11 +4,150 @@
              x:Class="MeasureApp.View.OrderPage.ContourInfoPage"
              Title="Detail">
     <ContentPage.Content>
-        <StackLayout>
-            <Label Text="Welcome to Xamarin.Forms!"
-                VerticalOptions="CenterAndExpand" 
-                HorizontalOptions="CenterAndExpand"
-                 />
-        </StackLayout>
+        <ScrollView>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <!--Name-->
+                <Frame 
+                    Grid.Row="0"
+                    Grid.ColumnSpan="2"
+                    BorderColor="LightGray">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                        </Grid.ColumnDefinitions>
+                        <Entry Text="{Binding Name}"/>
+                    </Grid>
+                </Frame>
+                <Frame 
+                    Grid.Row="1"
+                    Grid.ColumnSpan="2"
+                    BorderColor="LightGray">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                        </Grid.ColumnDefinitions>
+                        <Picker x:Name="ContourPicker" ItemDisplayBinding="{Binding Path=ID}"/>
+                    </Grid>
+                </Frame>
+                <!--SqarePerimetr-->
+                <Frame 
+                    Grid.Row="2"
+                    Grid.Column="0"
+                    BorderColor="LightGray">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Label
+                            Grid.Column="0"
+                            Text="S" 
+                            FontSize="48"/>
+                        <Label 
+                            Grid.Column="1"
+                            Text="{Binding Sqare}"
+                            HorizontalTextAlignment="End"
+                            FontSize="48"/>
+                    </Grid>
+                </Frame>
+                <Frame 
+                    Grid.Row="2"
+                    Grid.Column="1"
+                    BorderColor="LightGray">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Label
+                            Grid.Column="0"
+                            Text="P" 
+                            FontSize="48"/>
+                        <Label 
+                            Grid.Column="1"
+                            Text="{Binding Perimetr}" 
+                            HorizontalTextAlignment="End"
+                            FontSize="48"/>
+                    </Grid>
+                </Frame>
+                <!--Location-->
+                <Frame 
+                    Grid.Row="3"
+                    Grid.ColumnSpan="2"
+                    BorderColor="LightGray">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Entry Text="{Binding Adress}"/>
+                        <Button 
+                            Grid.Column="1"
+                            Text="Taget"/>
+                    </Grid>
+                </Frame>
+                <!--Phone-->
+                <Frame 
+                    Grid.Row="4"
+                    Grid.ColumnSpan="2"
+                    BorderColor="LightGray">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Entry Text="{Binding Phone}"/>
+                        <Button 
+                            Grid.Column="1"
+                            Text="Call"/>
+                    </Grid>
+                </Frame>
+                <!--Photo-->
+                <Frame
+                    Grid.Row="5"
+                    Grid.ColumnSpan="2"
+                    BorderColor="LightGray">
+                    <StackLayout Grid.Row="0" Orientation="Horizontal" HeightRequest="100">
+                        <Button 
+                            Text="Photo" 
+                            WidthRequest="90"
+                            Clicked="PhotoButton_Clicked"
+                            />
+                        <ScrollView  Orientation="Horizontal" HorizontalOptions="Start" VerticalOptions="Start">
+                            <CollectionView>
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Image BackgroundColor="Bisque" HeightRequest="100"/>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                        </ScrollView>
+                    </StackLayout>
+                </Frame>
+                <!--Detail-->
+                <Frame 
+                    Grid.Row="6"
+                    Grid.ColumnSpan="2">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Editor Text="{Binding Detail}"/>
+                    </Grid>
+                </Frame>
+            </Grid>
+        </ScrollView>
     </ContentPage.Content>
 </ContentPage>

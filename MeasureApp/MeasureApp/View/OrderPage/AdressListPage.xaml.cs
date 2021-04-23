@@ -1,8 +1,8 @@
 ﻿using MeasureApp.Data;
 using MeasureApp.Orders;
 using System;
-using System.Linq;
 using System.Windows.Input;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -22,45 +22,39 @@ namespace MeasureApp.View.OrderPage
         {
             InitializeComponent();
 
-           /* listView.ItemTemplate = new DataTemplate(() =>
+            listView.SelectionChanged += ListView_SelectionChanged;
+        }
+
+        private async void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.CurrentSelection[0] is OrderDataItem dataItem)
             {
-                var label = new Label
+                if (AppShell.SelectOrder.DataItem != dataItem && AppShell.SelectOrder.Contours.Count > 0)
                 {
-                    VerticalTextAlignment = TextAlignment.Center,
-                    HorizontalOptions = LayoutOptions.StartAndExpand
-                };
-                label.SetBinding(Label.TextProperty, "Name");
+                    if (AppShell.SelectOrder.Contours[0].Lenths.Count > 0)
+                    {
+                        if (await AppShell.Instance.AlertDialog("Сохранить текущий?", string.Empty) == true)
+                        {
+                            await AppShell.OrdersDB.SaveItemAsync(AppShell.SelectOrder);
+                        }
+                    }
+                }
 
-                var stackLayout = new StackLayout
+                Order order = xmlrw.Read(dataItem);
+                SelectedOrderItem(this, order == null ? new Order(dataItem) : order);
+
+                listView.Dispatcher.BeginInvokeOnMainThread(async () =>
                 {
-                    Margin = new Thickness(20, 0, 0, 0),
-                    Orientation = StackOrientation.Horizontal,
-                    HorizontalOptions = LayoutOptions.FillAndExpand,
-                    Children = { label }
-                };
+                    listView.ItemsSource = await AppShell.OrdersDB.GetItemsAsync();
+                });
 
-                return new ViewCell { View = stackLayout };
-            });*/
+            }
         }
 
         protected override async void OnAppearing()
         {
             base.OnAppearing();
             listView.ItemsSource = await AppShell.OrdersDB.GetItemsAsync();
-        }
-
-        async void OnListItemSelected(object sender, SelectedItemChangedEventArgs e)
-        {
-            if (e.SelectedItem is OrderDataItem dataItem && AppShell.SelectOrder.DataItem != dataItem)
-            {
-                if (AppShell.SelectOrder != null)
-                {
-                    await AppShell.OrdersDB.SaveItemAsync(AppShell.SelectOrder);
-                }
-
-                Order order = xmlrw.Read(dataItem);
-                SelectedOrderItem(this, order == null ? new Order(dataItem) : order);
-            }
         }
 
         private async void AddBtn_Clicked(object sender, EventArgs e)
@@ -85,6 +79,28 @@ namespace MeasureApp.View.OrderPage
                 await AppShell.OrdersDB.DeleteItemAsync(dataItem);
             }
             listView.ItemsSource = await AppShell.OrdersDB.GetItemsAsync();
+        }
+
+        private void CallButton_Clicked(object sender, EventArgs e)
+        {
+            if (sender is Button button)
+            {
+                if (button.BindingContext == null) 
+                    PhoneDialer.Open("+79999999999");
+                else
+                PhoneDialer.Open((string)button.BindingContext);
+            }
+            
+        }
+
+        private async void WayButton_Clicked(object sender, EventArgs e)
+        {
+            if (sender is Button button)
+            {
+                //var location = new Location(latitude, longitude);
+                var options = new MapLaunchOptions { NavigationMode = NavigationMode.Driving };
+                await Map.OpenAsync(new Location(55.045258, 82.867106), options);
+            }
         }
     }
 }

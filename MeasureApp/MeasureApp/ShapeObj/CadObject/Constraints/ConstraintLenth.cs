@@ -61,7 +61,7 @@ namespace MeasureApp.ShapeObj.Constraints
             this.Point1 = point1;
             this.Point2 = point2;
 
-            this.Variable = new CadVariable(Lenth);
+            this.Variable = new CadVariable(Lenth, true);
             this.IsSupport = isSupport;
 
             SubAnchor(this.Point1);
@@ -146,7 +146,7 @@ namespace MeasureApp.ShapeObj.Constraints
             MakeMagic((CadPoint)sender, sender != this.Point2 ? this.Point2 : this.Point1);
         }
 
-        private void MakeMagic(CadPoint cadPoint1, CadPoint cadPoint2)
+        public void MakeMagic(CadPoint cadPoint1, CadPoint cadPoint2)
         {
             //Debug.WriteLine($"MakeMagicLine {cadPoint1.ID}{cadPoint2.ID}");
 

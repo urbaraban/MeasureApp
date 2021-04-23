@@ -1,11 +1,14 @@
 ﻿using SQLite;
+using System;
+using System.Collections.Generic;
+using Xamarin.Essentials;
 
 namespace MeasureApp.Data
 {
     public class OrderDataItem
     {
-        private string imageUrl = string.Empty;
-        private string location = string.Empty;
+        private string imagesUrls = string.Empty;
+
 
         [PrimaryKey, AutoIncrement]
         /// <summary>
@@ -14,29 +17,34 @@ namespace MeasureApp.Data
         /// 
         public int ID { get; set; }
 
+        public DateTime Date { get; set; }
+
         public string Name { get; set; }
 
         /// <summary>
         /// Url image for picker
         /// </summary>
-        public string ImageUrl { get => imageUrl == string.Empty ? "SureMeasureLogo.png": imageUrl;
+        public string ImagesUrls
+        {
+            get => imagesUrls == string.Empty ? "SureMeasureLogo.png" : imagesUrls;
             set
             {
-                imageUrl = value;
+                imagesUrls = string.Concat(value,'%');
             }
         }  
 
         /// <summary>
         /// Location order.
         /// </summary>
-        public string Location { get => location == string.Empty ? "{Location_empty}" : location;
-            set 
-            {
-                location = value;
-            }
+        public string Adress 
+        {
+            get => Location == null ? "Empty" : Location.Latitude.ToString();
         }
+        public Location Location;
 
         public string Details { get; set; }
+
+        public string PhoneNumber { get; set; }
 
         /// <summary>
         /// Url to xml file
