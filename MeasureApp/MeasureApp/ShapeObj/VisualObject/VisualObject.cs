@@ -1,12 +1,12 @@
-﻿using MeasureApp.ShapeObj.Canvas;
-using MeasureApp.ShapeObj.Interface;
+﻿using SureMeasure.ShapeObj.Canvas;
+using SureMeasure.ShapeObj.Interface;
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Xamarin.Forms;
 using Xamarin.Forms.Shapes;
 
-namespace MeasureApp.ShapeObj
+namespace SureMeasure.ShapeObj
 {
     public abstract class VisualObject : Path, INotifyPropertyChanged, CanvasObject, ActiveObject
     {

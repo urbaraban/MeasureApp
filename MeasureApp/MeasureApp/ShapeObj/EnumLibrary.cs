@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MeasureApp.ShapeObj
+namespace SureMeasure.ShapeObj
 {
         public enum Orientaton : int
         {

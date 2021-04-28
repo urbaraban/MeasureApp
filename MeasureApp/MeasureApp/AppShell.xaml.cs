@@ -1,9 +1,9 @@
 ﻿using InTheHand.Bluetooth;
-using MeasureApp.Data;
-using MeasureApp.Orders;
-using MeasureApp.ShapeObj;
-using MeasureApp.View.BLEDevice;
-using MeasureApp.View.OrderPage;
+using SureMeasure.Data;
+using SureMeasure.Orders;
+using SureMeasure.ShapeObj;
+using SureMeasure.BLEDevice;
+using SureMeasure.View.OrderPage;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -11,11 +11,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
-namespace MeasureApp
+namespace SureMeasure
 {
     public partial class AppShell : Shell
     {
-        private static Order selectorder = new Order();
+        private static Order selectorder;
 
         public static Order SelectOrder
         {
@@ -23,7 +23,7 @@ namespace MeasureApp
             set
             {
                 selectorder = value;
-                UpdatedOrder(null, selectorder);
+                UpdatedOrder?.Invoke(null, selectorder);
             }
         }
 
@@ -41,7 +41,6 @@ namespace MeasureApp
             }
         }
 
-        public static event EventHandler UpdatedDevice;
         public static event EventHandler<Tuple<double, double>> LenthUpdated;
         public static event EventHandler<Order> UpdatedOrder;
 
@@ -63,7 +62,7 @@ namespace MeasureApp
                 }
             }
         }
-        private static void _bledevice_LenthUpdated(object sender, Tuple<double, double> e) => LenthUpdated(null, e);
+        private static void _bledevice_LenthUpdated(object sender, Tuple<double, double> e) => LenthUpdated?.Invoke(null, e);
 
         private static LaserDistanceMeter _bledevice;
 
@@ -72,10 +71,11 @@ namespace MeasureApp
         public AppShell()
         {
             InitializeComponent();
-            Routing.RegisterRoute(nameof(MeasureApp.View.OrderPage.AdressListPage), typeof(MeasureApp.View.OrderPage.AdressListPage));
+            Routing.RegisterRoute(nameof(AdressListPage), typeof(AdressListPage));
             //Routing.RegisterRoute(nameof(NewItemPage), typeof(NewItemPage));
 
             AppShell.Instance = this;
+            AppShell.SelectOrder = new Order();
 
             AdressListPage.SelectedOrderItem += AdressListPage_UpdatedOrder;
         }
@@ -108,7 +108,7 @@ namespace MeasureApp
             return await DisplayAlert(Title, Message, "Yes", "Cancel");
         }
 
-        private async Task LoadBleScan()
+        public async Task LoadBleScan()
         {
             RequestDeviceOptions options = new RequestDeviceOptions();
             options.AcceptAllDevices = true;
@@ -119,7 +119,7 @@ namespace MeasureApp
                 switch (device.Name)
                 {
                     case "Laser Distance Meter":
-                        BLEDevice = new ChinesDistanceMeter(device);
+                        BLEDevice = new lomvumM40(device);
                         break;
                 }
 

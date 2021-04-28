@@ -1,12 +1,12 @@
-﻿using MeasureApp.CadObjects;
-using MeasureApp.ShapeObj;
+﻿using SureMeasure.CadObjects;
+using SureMeasure.ShapeObj;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
 using Xamarin.Forms;
 
-namespace MeasureApp.Tools
+namespace SureMeasure.Tools
 {
     public static class Sizing
     {

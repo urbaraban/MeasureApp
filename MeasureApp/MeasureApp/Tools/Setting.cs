@@ -1,6 +1,6 @@
 ﻿using Xamarin.Essentials;
 
-namespace MeasureApp.Tools
+namespace SureMeasure.Tools
 {
     class Setting
     {

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Application xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="MeasureApp.App">
+             x:Class="SureMeasure.App">
     <Application.Resources>
         <ResourceDictionary>
             <Color x:Key="Primary">#2196F3</Color>
@@ -25,32 +25,5 @@
                 </Setter>
             </Style>
         </ResourceDictionary>
-
-        <DataTemplate x:Key="OrderTemplate">
-            <Grid Padding="10">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <Image Grid.RowSpan="2" 
-                       Source="{Binding ImagesUrls}" 
-                       Aspect="AspectFill"
-                       HeightRequest="60" 
-                       WidthRequest="60" />
-                <Label Grid.Column="1" 
-                       Text="{Binding Name}" 
-                       FontAttributes="Bold" />
-                <Label Grid.Row="1"
-                       Grid.Column="1" 
-                       Text="{Binding Location}"
-                       FontAttributes="Italic" 
-                       VerticalOptions="End" />
-            </Grid>
-        </DataTemplate>
-
     </Application.Resources>
 </Application>

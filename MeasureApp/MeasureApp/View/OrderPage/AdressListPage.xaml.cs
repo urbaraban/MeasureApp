@@ -1,12 +1,12 @@
-﻿using MeasureApp.Data;
-using MeasureApp.Orders;
+﻿using SureMeasure.Data;
+using SureMeasure.Orders;
 using System;
 using System.Windows.Input;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-namespace MeasureApp.View.OrderPage
+namespace SureMeasure.View.OrderPage
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class AdressListPage : ContentPage
@@ -47,16 +47,13 @@ namespace MeasureApp.View.OrderPage
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            if (AppShell.SelectOrder.IsAlive == true)
-            {
-                await AppShell.OrdersDB.SaveItemAsync(AppShell.SelectOrder);
-            }
+
             UpdateList(AppShell.SelectOrder);
         }
 
         private async void AddBtn_Clicked(object sender, EventArgs e)
         {
-            Order order = new Order();
+            Order order = (Order)listView.SelectedItem;
             await AppShell.OrdersDB.SaveItemAsync(new Order());
             UpdateList(order);
         }
@@ -66,7 +63,10 @@ namespace MeasureApp.View.OrderPage
             listView.Dispatcher.BeginInvokeOnMainThread(async () =>
             {
                 listView.ItemsSource = await AppShell.OrdersDB.GetItemsAsync();
-                listView.SelectedItem = SelectOrder;
+                if (SelectOrder != null)
+                {
+                    listView.SelectedItem = SelectOrder;
+                }
             });
         }
 

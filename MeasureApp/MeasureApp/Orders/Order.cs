@@ -1,4 +1,4 @@
-﻿using MeasureApp.Data;
+﻿using SureMeasure.Data;
 using SQLite;
 using System;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Xamarin.Essentials;
 
-namespace MeasureApp.Orders
+namespace SureMeasure.Orders
 {
     public class Order : INotifyPropertyChanged
     {
@@ -18,7 +18,7 @@ namespace MeasureApp.Orders
                 {
                     foreach(ContourPath contourPath in contour.Paths)
                     {
-                        if (contourPath.Lenths.Count > 0) return true;
+                        if (contourPath.Count > 0) return true;
                     }
                 }
                 return false;
@@ -73,6 +73,7 @@ namespace MeasureApp.Orders
             set
             {
                 this.DataItem.ImagesUrls = string.Concat(value, '%');
+                OnPropertyChanged("ImagesUrls");
             }
         }
 
@@ -122,16 +123,16 @@ namespace MeasureApp.Orders
             }
         }
 
-        public double Sqare
+        public double Area
         {
             get
             {
-                double sqare = 0;
+                double area = 0;
                 foreach (Contour contour in this.Contours)
                 {
-                    sqare += contour.Area;
+                    area += contour.Area;
                 }
-                return Math.Round(sqare, 1);
+                return Math.Round(area / 1000000, 2, MidpointRounding.ToEven);
             }
         }
 
@@ -142,6 +143,12 @@ namespace MeasureApp.Orders
         public void OnPropertyChanged([CallerMemberName] string prop = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+        }
+
+        public void UpdateBinding()
+        {
+            OnPropertyChanged("Area");
+            OnPropertyChanged("Perimetr");
         }
 
         public override string ToString()

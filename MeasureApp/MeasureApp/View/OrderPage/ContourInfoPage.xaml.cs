@@ -1,4 +1,4 @@
-﻿using MeasureApp.Orders;
+﻿using SureMeasure.Orders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Windows.Input;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-namespace MeasureApp.View.OrderPage
+namespace SureMeasure.View.OrderPage
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class ContourInfoPage : ContentPage
@@ -20,6 +20,7 @@ namespace MeasureApp.View.OrderPage
             InitializeComponent();
             AppShell.UpdatedOrder += AppShell_UpdatedOrder;
             this.BindingContextChanged += ContourInfoPage_BindingContextChanged;
+            this.BindingContext = AppShell.SelectOrder;
         }
 
         private void ContourInfoPage_BindingContextChanged(object sender, EventArgs e)
@@ -32,6 +33,20 @@ namespace MeasureApp.View.OrderPage
         private void PhotoButton_Clicked(object sender, EventArgs e)
         {
 
+        }
+
+        protected override void OnAppearing()
+        {
+            this.GetOrder.UpdateBinding();
+        }
+
+        protected override async void OnDisappearing()
+        {
+            base.OnDisappearing();
+            if (AppShell.SelectOrder.IsAlive == true)
+            {
+                await AppShell.OrdersDB.SaveItemAsync(AppShell.SelectOrder);
+            }
         }
     }
 }

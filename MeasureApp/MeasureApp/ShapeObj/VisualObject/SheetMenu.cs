@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MeasureApp.ShapeObj
+namespace SureMeasure.ShapeObj
 {
     public class SheetMenu
     {

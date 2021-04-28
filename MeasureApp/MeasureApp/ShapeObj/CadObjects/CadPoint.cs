@@ -1,14 +1,14 @@
-﻿using MeasureApp.CadObjects.Interface;
-using MeasureApp.ShapeObj.Canvas;
-using MeasureApp.ShapeObj.Constraints;
-using MeasureApp.ShapeObj.Interface;
+﻿using SureMeasure.CadObjects.Interface;
+using SureMeasure.ShapeObj.Canvas;
+using SureMeasure.ShapeObj.Constraints;
+using SureMeasure.ShapeObj.Interface;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Xamarin.Forms;
 
-namespace MeasureApp.CadObjects
+namespace SureMeasure.CadObjects
 {
     public class CadPoint : INotifyPropertyChanged, CadObject
     {
@@ -19,15 +19,17 @@ namespace MeasureApp.CadObjects
         public event EventHandler<bool> Removed;
 
         public event EventHandler<CadPoint> ChangedPoint;
-        public event EventHandler<bool> LastObject;
 
-        public  bool IsSelect
+        public event EventHandler<bool> BaseObject;
+
+        public bool IsSelect
         {
             get => this._isselect;
             set
             {
                 this._isselect = value;
                 Selected?.Invoke(this, this._isselect);
+                OnPropertyChanged("IsSelect");
             }
         }
         private bool _isselect = false;
@@ -126,9 +128,22 @@ namespace MeasureApp.CadObjects
             {
                 this._issupprot = value;
                 Supported?.Invoke(this, this._issupprot);
+                OnPropertyChanged("IsSelect");
             }
         }
         private bool _issupprot = false;
+
+        public bool IsBase 
+        { 
+            get => this._isbase;
+            set
+            {
+                this._isbase = value;
+                BaseObject?.Invoke(this, value);
+                OnPropertyChanged("IsBase");
+            }
+        }
+        private bool _isbase = false;
 
         public string ID
         {
@@ -200,14 +215,7 @@ namespace MeasureApp.CadObjects
 
         public void TryRemove()
         {
-
             Removed?.Invoke(this, true);
-            
-        }
-
-        public void MakeLast()
-        {
-            this.LastObject(this, true);
         }
     }
 }

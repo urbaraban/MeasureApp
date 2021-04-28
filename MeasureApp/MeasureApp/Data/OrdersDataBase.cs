@@ -1,11 +1,11 @@
-﻿using MeasureApp.Orders;
+﻿using SureMeasure.Orders;
 using SQLite;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MeasureApp.Data
+namespace SureMeasure.Data
 {
     public class OrdersDataBase
     {

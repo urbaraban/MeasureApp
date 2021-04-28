@@ -1,7 +1,7 @@
 ﻿using Xamarin.Forms;
 using Xamarin.Forms.Shapes;
 
-namespace MeasureApp.ShapeObj.Canvas
+namespace SureMeasure.ShapeObj.Canvas
 {
     public class DynamicBackground : AbsoluteLayout
     {

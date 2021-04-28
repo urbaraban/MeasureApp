@@ -1,13 +1,13 @@
 ﻿using IxMilia.Dxf;
 using IxMilia.Dxf.Entities;
-using MeasureApp.CadObjects;
-using MeasureApp.CadObjects.Constraints;
-using MeasureApp.Orders;
-using MeasureApp.ShapeObj;
-using MeasureApp.ShapeObj.Canvas;
-using MeasureApp.ShapeObj.Constraints;
-using MeasureApp.Tools;
-using MeasureApp.View.OrderPage.Canvas;
+using SureMeasure.CadObjects;
+using SureMeasure.CadObjects.Constraints;
+using SureMeasure.Orders;
+using SureMeasure.ShapeObj;
+using SureMeasure.ShapeObj.Canvas;
+using SureMeasure.ShapeObj.Constraints;
+using SureMeasure.Tools;
+using SureMeasure.View.OrderPage.Canvas;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -17,7 +17,7 @@ using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-namespace MeasureApp.View.OrderPage
+namespace SureMeasure.View.OrderPage
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class CadCanvasPage : ContentPage
@@ -58,9 +58,18 @@ namespace MeasureApp.View.OrderPage
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            this.MainCanvas.Clear();
+            this.MainCanvas.VisualClear();
             this.MainCanvas.DrawContour(this.contour);
 
+        }
+
+        protected override async void OnDisappearing()
+        {
+            base.OnDisappearing();
+            if (AppShell.SelectOrder.IsAlive == true)
+            {
+                await AppShell.OrdersDB.SaveItemAsync(AppShell.SelectOrder);
+            }
         }
 
         private void GetBtn_Clicked(object sender, EventArgs e)
@@ -91,11 +100,12 @@ namespace MeasureApp.View.OrderPage
             //Если у нас нет линии привязки
             if ((this.contour.BaseLenthConstrait == null) || (Forced == true))
             {
-                CadPoint cadPoint1 = (CadPoint)this.contour.Add(new CadPoint(0, 0, this.contour.GetNewPointName()), 0);
+                CadPoint cadPoint1 = (CadPoint)this.contour.Add(new CadPoint(0, 0, this.contour.GetNewPointName()), false);
                 cadPoint1.IsFix = !Forced;
-                CadPoint cadPoint2 = (CadPoint)this.contour.Add(new CadPoint(0, 0 + tuple.Item1, this.contour.GetNewPointName()), 0);
+                CadPoint cadPoint2 = (CadPoint)this.contour.Add(new CadPoint(0, 0 + tuple.Item1, this.contour.GetNewPointName()), true);
+                cadPoint2.IsBase = this.contour.DrawMethod == DrawMethod.FromPoint;
                 cadPoint2.IsFix = !Forced;
-                this.contour.Add(new ConstraintLenth(cadPoint1, cadPoint2, tuple.Item1), 0);
+                this.contour.Add(new ConstraintLenth(cadPoint1, cadPoint2, tuple.Item1), true);
             }
             else if (this.contour.BasePoint != null)
             {
@@ -110,20 +120,21 @@ namespace MeasureApp.View.OrderPage
                 ConstraintLenth lenthConstrait = 
                     (ConstraintLenth)this.contour.Add(
                         new ConstraintLenth(this.contour.BasePoint, cadPoint2, tuple.Item1, 
-                        this.contour.Method == DrawMethod.FromPoint && this.contour.BasePoint != this.contour.LastPoint), 0);
+                        this.contour.DrawMethod == DrawMethod.FromPoint), this.contour.DrawMethod != DrawMethod.FromPoint);
 
                 ConstraintAngle constraintAngle = 
                     (ConstraintAngle)this.contour.Add(
-                        new ConstraintAngle(lastLenthConstr, lenthConstrait, tuple.Item2), 0);
+                        new ConstraintAngle(lastLenthConstr, lenthConstrait, tuple.Item2), false);
 
 
-                CadPoint last = this.contour.LastPoint;
-                CadPoint point2 = (CadPoint)this.contour.Add(cadPoint2, 0);
+                CadPoint point2 = (CadPoint)this.contour.Add(cadPoint2, true);
+                point2.IsSelect = true;
 
-                if (this.contour.Method == DrawMethod.FromPoint && this.contour.BasePoint != this.contour.LastPoint)
+                if (this.contour.DrawMethod == DrawMethod.FromPoint && this.contour.BasePoint != this.contour.LastPoint)
                 {
                     lenthConstrait.IsSupport = true;
-                    this.contour.Add(new ConstraintLenth(last, point2, -1, false), 0);
+                    this.contour.Add(new ConstraintLenth(this.contour.LastPoint, point2, -1), false);
+                    
                     // this.Contour.Add(new ConstraintAngle(this.Contour.LastLenthConstrait, lenthConstrait, Angle), 0);
                 }
             }
@@ -235,7 +246,7 @@ namespace MeasureApp.View.OrderPage
         {
             if (this.contour != null && sender is Xamarin.Forms.Switch sw)
             {
-                this.contour.Method = sw.IsToggled == true ? DrawMethod.FromPoint : DrawMethod.StepByStep;
+                this.contour.DrawMethod = sw.IsToggled == true ? DrawMethod.FromPoint : DrawMethod.StepByStep;
             }
             
         }

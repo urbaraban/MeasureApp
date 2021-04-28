@@ -1,6 +1,6 @@
 ﻿using Xamarin.Forms;
 
-namespace MeasureApp.Tools
+namespace SureMeasure.Tools
 {
     public static class DragDrop
     {

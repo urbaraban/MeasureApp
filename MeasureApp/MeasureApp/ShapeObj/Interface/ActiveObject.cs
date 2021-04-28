@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MeasureApp.ShapeObj.Interface
+namespace SureMeasure.ShapeObj.Interface
 {
     public interface ActiveObject
     {

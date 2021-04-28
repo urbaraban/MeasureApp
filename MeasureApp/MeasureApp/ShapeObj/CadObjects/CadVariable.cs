@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace MeasureApp.CadObjects
+namespace SureMeasure.CadObjects
 {
     public class CadVariable : INotifyPropertyChanged
     {

@@ -1,4 +1,4 @@
-﻿using MeasureApp.Orders;
+﻿using SureMeasure.Orders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
-namespace MeasureApp.OrderPage.Controls
+namespace SureMeasure.OrderPage.Controls
 {
     public class OrderSearchHandler : SearchHandler
     {

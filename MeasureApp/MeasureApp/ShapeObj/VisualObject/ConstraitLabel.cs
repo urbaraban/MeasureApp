@@ -1,9 +1,9 @@
-﻿using MeasureApp.ShapeObj.Constraints;
-using MeasureApp.ShapeObj.Interface;
+﻿using SureMeasure.ShapeObj.Constraints;
+using SureMeasure.ShapeObj.Interface;
 using System;
 using Xamarin.Forms;
 
-namespace MeasureApp.ShapeObj
+namespace SureMeasure.ShapeObj
 {
     public abstract class  ConstraitLabel : Label, CanvasObject, ActiveObject
     {
@@ -14,13 +14,13 @@ namespace MeasureApp.ShapeObj
 
         public virtual bool IsSelect
         {
-            get => this._isselect;
+            get => this.Constraint.IsSelect;
             set
             {
-                this._isselect = value;
+                this.Constraint.IsSelect = value;
             }
         }
-        private bool _isselect = false;
+
 
         private int taps = 0;
         private bool runtimer = false;

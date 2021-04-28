@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MeasureApp.Orders
+namespace SureMeasure.Orders
 {
     interface OrderObjectInt
     {

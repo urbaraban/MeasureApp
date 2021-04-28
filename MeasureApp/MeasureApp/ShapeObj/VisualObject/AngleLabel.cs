@@ -1,14 +1,14 @@
-﻿using MeasureApp.CadObjects;
-using MeasureApp.CadObjects.Constraints;
-using MeasureApp.ShapeObj.Canvas;
-using MeasureApp.Tools;
-using MeasureApp.View.OrderPage;
+﻿using SureMeasure.CadObjects;
+using SureMeasure.CadObjects.Constraints;
+using SureMeasure.ShapeObj.Canvas;
+using SureMeasure.Tools;
+using SureMeasure.View.OrderPage;
 using System;
 using System.Collections.Generic;
 using System.Windows.Input;
 using Xamarin.Forms;
 
-namespace MeasureApp.ShapeObj
+namespace SureMeasure.ShapeObj
 {
     public class AngleLabel : ConstraitLabel
     {
@@ -41,7 +41,7 @@ namespace MeasureApp.ShapeObj
             CadPoint point = Sizing.GetPositionLineFromAngle(this._angleConstrait.Point1, this._angleConstrait.Point2, 10, this._angleConstrait.Value / 2d);
             this.TranslationX = point.OX;
             this.TranslationY = point.OY;
-            this.Text = this._angleConstrait.Value.ToString();
+            this.Text = Math.Round(this._angleConstrait.Value, 1).ToString();
             this.BackgroundColor = Color.Yellow;
             this.ScaleY = -1;
             this.HorizontalTextAlignment = TextAlignment.Center;

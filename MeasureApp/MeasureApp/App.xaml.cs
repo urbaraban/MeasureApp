@@ -1,6 +1,6 @@
 ﻿using Xamarin.Forms;
 
-namespace MeasureApp
+namespace SureMeasure
 {
     public partial class App : Application
     {

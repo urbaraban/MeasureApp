@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace MeasureApp.View.BLEDevice
+namespace SureMeasure.BLEDevice
 {
     public interface LaserDistanceMeter
     {

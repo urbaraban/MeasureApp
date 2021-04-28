@@ -1,21 +1,39 @@
-﻿using MeasureApp.CadObjects;
-using MeasureApp.ShapeObj.Constraints;
-using MeasureApp.Tools;
+﻿using SureMeasure.CadObjects;
+using SureMeasure.ShapeObj.Constraints;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Xamarin.Forms;
 
-
-namespace MeasureApp.Orders
+namespace SureMeasure.Orders
 {
-    public class ContourPath : INotifyPropertyChanged, OrderObjectInt
+    public class ContourPath : INotifyPropertyChanged, OrderObjectInt, IList<ConstraintLenth>
     {
         public bool IsSubstract { get; set; } = false;
 
+
+        public Rect Bounds
+        {
+            get
+            {
+                CadPoint[] cadPoints = this.Points;
+                double minX = cadPoints[0].X, minY = cadPoints[0].Y, maxX = cadPoints[0].X, maxY = cadPoints[0].Y;
+                foreach(CadPoint cadPoint in cadPoints)
+                {
+                    minX = Math.Min(minX, cadPoint.X);
+                    minY = Math.Min(minY, cadPoint.Y);
+                    maxX = Math.Min(maxX, cadPoint.X);
+                    maxY = Math.Min(maxY, cadPoint.Y);
+                }
+                return new Rect(minX, minY, maxX - minX, maxY - minY);
+            }
+        }
+
         /// <summary>
         /// Contour sqare
-        /// </summary>
+        /// </summary> 
         public double Area
         {
             get 
@@ -23,12 +41,14 @@ namespace MeasureApp.Orders
                 double area = 0;
                 if (IsClosed == true)
                 {
-                    for (int i = 1; i <= this.Points.Length; i += 1)
+                    for (int i = 0; i < this.Points.Length; i += 1)
                     {
-                        area += (Points[i - 1].X + Points[i % (Points.Length - 1)].X) * (Points[i % (Points.Length - 1)].Y + Points[i - 1].Y);
+                        int index2 = (i + 1) % (Points.Length);
+
+                        area += Points[i].X * Points[index2].Y - Points[i].Y * Points[index2].X;
                     }
                 }
-                return area / 2;
+                return Math.Abs(area) / 2d;
             }
         }
 
@@ -37,17 +57,12 @@ namespace MeasureApp.Orders
             get
             {
                 double lenth = 0;
-                if (Points.Length > 1)
+
+                for (int i = 0; i < Lenths.Count; i += 1)
                 {
-                    for (int i = 1; i < Points.Length; i += 1)
-                    {
-                        lenth += Sizing.PtPLenth(Points[i - 1], Points[i]);
-                    }
-                    if (this.IsClosed == true)
-                    {
-                        lenth += Sizing.PtPLenth(Points[0], Points[Points.Length - 1]);
-                    }
+                    lenth += Lenths[i].Lenth;
                 }
+
                 return lenth;
             }
         }
@@ -62,16 +77,18 @@ namespace MeasureApp.Orders
 
         public bool IsClosed
         {
-            get => this._isclosed;
-            set
+            get
             {
-                this._isclosed = value;
-                OnPropertyChanged("IsClosed");
+                if (this.Lenths.Count > 2)
+                {
+                   return this.Lenths[0].Point1 == this.Lenths[Lenths.Count - 1].Point2;
+                }
+                return false;
             }
         }
-        private bool _isclosed;
 
-        public List<ConstraintLenth> Lenths = new List<ConstraintLenth>();
+
+        private List<ConstraintLenth> Lenths = new List<ConstraintLenth>();
 
         public CadPoint[] Points
         {
@@ -79,23 +96,16 @@ namespace MeasureApp.Orders
             {
                 if (this.Lenths.Count > 0)
                 {
-                    CadPoint[] points = new CadPoint[this.Lenths.Count];
+                    CadPoint[] points = new CadPoint[this.Lenths.Count + (this.IsClosed == true ? 0 : 1)];
                     
                     for (int i = 0; i < Lenths.Count; i += 1)
                     {
-                        points[i] = this.Lenths[0].Point1;
+                        points[i] = this.Lenths[i].Point1;
                     }
+                    if (this.IsClosed == false) points[points.Length - 1] = this.Lenths[Lenths.Count - 1].Point2;
                     return points;
                 }
                 return null;
-            }
-        }
-
-        public void SortLenth()
-        {
-            for (int i = 0; i < Lenths.Count; i += 1)
-            {
-
             }
         }
 
@@ -103,9 +113,44 @@ namespace MeasureApp.Orders
 
         public string ID { get; set; }
 
+        public int Count => ((ICollection<ConstraintLenth>)Lenths).Count;
+
+        public bool IsReadOnly => ((ICollection<ConstraintLenth>)Lenths).IsReadOnly;
+
+        public ConstraintLenth this[int index] { get => ((IList<ConstraintLenth>)Lenths)[index]; set => ((IList<ConstraintLenth>)Lenths)[index] = value; }
+
         public ContourPath(string ID)
         {
             this.ID = ID;
+        }
+
+        public void Add(ConstraintLenth constraintLenth)
+        {
+            if (constraintLenth != null)
+            {
+                if (this.Lenths.Count > 0)
+                {
+                    for (int i = 0; i < Lenths.Count; i += 1)
+                    {
+                        if (Lenths[i].GetNotThisPoint(constraintLenth.Point1) != null)
+                        {
+                            if (i + 1 < this.Lenths.Count - 1)
+                            {
+                                Lenths.Insert(i + 1, constraintLenth);
+                            }
+                            else
+                            {
+                                Lenths.Add(constraintLenth);
+                            }
+                            return;
+                        }
+                    }
+                }
+                else
+                {
+                    this.Lenths.Add(constraintLenth);
+                }
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -127,6 +172,51 @@ namespace MeasureApp.Orders
                     return true;
             }
             return false;
+        }
+
+        public int IndexOf(ConstraintLenth item)
+        {
+            return ((IList<ConstraintLenth>)Lenths).IndexOf(item);
+        }
+
+        public void Insert(int index, ConstraintLenth item)
+        {
+            ((IList<ConstraintLenth>)Lenths).Insert(index, item);
+        }
+
+        public void RemoveAt(int index)
+        {
+            ((IList<ConstraintLenth>)Lenths).RemoveAt(index);
+        }
+
+        public void Clear()
+        {
+            ((ICollection<ConstraintLenth>)Lenths).Clear();
+        }
+
+        public bool Contains(ConstraintLenth item)
+        {
+            return ((ICollection<ConstraintLenth>)Lenths).Contains(item);
+        }
+
+        public void CopyTo(ConstraintLenth[] array, int arrayIndex)
+        {
+            ((ICollection<ConstraintLenth>)Lenths).CopyTo(array, arrayIndex);
+        }
+
+        public bool Remove(ConstraintLenth item)
+        {
+            return ((ICollection<ConstraintLenth>)Lenths).Remove(item);
+        }
+
+        public IEnumerator<ConstraintLenth> GetEnumerator()
+        {
+            return ((IEnumerable<ConstraintLenth>)Lenths).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable)Lenths).GetEnumerator();
         }
     }
 }

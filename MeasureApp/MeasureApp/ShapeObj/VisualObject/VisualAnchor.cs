@@ -1,12 +1,12 @@
-﻿using MeasureApp.CadObjects;
-using MeasureApp.ShapeObj.Canvas;
+﻿using SureMeasure.CadObjects;
+using SureMeasure.ShapeObj.Canvas;
 using System;
 using System.Collections.Generic;
 using System.Windows.Input;
 using Xamarin.Forms;
 using Xamarin.Forms.Shapes;
 
-namespace MeasureApp.ShapeObj
+namespace SureMeasure.ShapeObj
 {
     public class VisualAnchor : VisualObject
     {
@@ -20,7 +20,12 @@ namespace MeasureApp.ShapeObj
         });
         private ICommand LastPoint => new Command(async () =>
         {
-            this.cadPoint.MakeLast();
+            this.cadPoint.IsSelect = true;
+        });
+
+        private ICommand BasePoint => new Command(async () =>
+        {
+            this.cadPoint.IsBase = true;
         });
 
         public override event EventHandler<bool> Removed;
@@ -38,6 +43,8 @@ namespace MeasureApp.ShapeObj
             get => cadPoint.IsSelect;
             set => cadPoint.IsSelect = value;
         }
+
+        public bool IsBase => this.cadPoint.IsBase;
 
         public override double X { get => this.cadPoint.OX; set => this.cadPoint.OX = value; }
         public override double Y { get => this.cadPoint.OY; set => this.cadPoint.OY = value; }
@@ -70,16 +77,12 @@ namespace MeasureApp.ShapeObj
             {
                 new SheetMenuItem(Fix, "{FIX}"),
                 new SheetMenuItem(Remove, "{REMOVE}"),
-                new SheetMenuItem(LastPoint, "{LASTPOINT}")
+                new SheetMenuItem(LastPoint, "{LASTPOINT}"),
+                new SheetMenuItem(BasePoint, "{BASEPOINT}")
             });
         }
 
-        private void CadPoint_Selected(object sender, bool e)
-        {
-            Xamarin.Forms.Device.BeginInvokeOnMainThread(() => {
-                this.Stroke = (e == true ? Brush.Orange : Brush.Blue);
-            });
-        }
+        private void CadPoint_Selected(object sender, bool e) => Update();
 
         private void CadPoint_Removed(object sender, bool e)
         {
@@ -112,18 +115,24 @@ namespace MeasureApp.ShapeObj
             this.ScaleTo(1/e * 1.5, 250, Easing.Linear);
         }
 
-        private void CadPoint_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == "Point")
-            {
-                Update();
-            }
-        }
+        private void CadPoint_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) => Update();
 
         public override void Update()
         {
             this.TranslationX = this.X - CadCanvas.RegularAnchorSize - this.StrokeThickness;
             this.TranslationY = this.Y - CadCanvas.RegularAnchorSize - this.StrokeThickness;
+
+            Xamarin.Forms.Device.BeginInvokeOnMainThread(() => {
+                if (this.IsSelect == true)
+                    this.Stroke = Brush.Orange;
+                else if (this.IsBase == true)
+                    this.Stroke = Brush.DarkRed;
+                else if (this.IsFix == true)
+                    this.Stroke = Brush.Gray;
+                else
+                    this.Stroke = Brush.Blue;
+            });
+
             this.OnPropertyChanged("Point");
         }
 

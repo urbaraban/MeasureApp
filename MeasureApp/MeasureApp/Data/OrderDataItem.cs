@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using Xamarin.Essentials;
 
-namespace MeasureApp.Data
+namespace SureMeasure.Data
 {
     public class OrderDataItem
     {

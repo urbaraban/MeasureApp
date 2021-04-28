@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="MeasureApp.View.OrderPage.ContourInfoPage"
+             x:Class="SureMeasure.View.OrderPage.ContourInfoPage"
              Title="Detail">
     <ContentPage.Content>
         <ScrollView>
@@ -56,7 +56,7 @@
                             FontSize="48"/>
                         <Label 
                             Grid.Column="1"
-                            Text="{Binding Sqare}"
+                            Text="{Binding Area}"
                             HorizontalTextAlignment="End"
                             FontSize="48"/>
                     </Grid>
@@ -144,7 +144,7 @@
                             <ColumnDefinition/>
                             <ColumnDefinition Width="auto"/>
                         </Grid.ColumnDefinitions>
-                        <Editor Text="{Binding Detail}"/>
+                        <Editor Text="{Binding Details}"/>
                     </Grid>
                 </Frame>
             </Grid>

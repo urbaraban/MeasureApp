@@ -1,8 +1,8 @@
-﻿using MeasureApp.CadObjects;
-using MeasureApp.CadObjects.Constraints;
-using MeasureApp.Orders;
-using MeasureApp.ShapeObj.Constraints;
-using MeasureApp.ShapeObj.Interface;
+﻿using SureMeasure.CadObjects;
+using SureMeasure.CadObjects.Constraints;
+using SureMeasure.Orders;
+using SureMeasure.ShapeObj.Constraints;
+using SureMeasure.ShapeObj.Interface;
 using System;
 using System.Diagnostics;
 using System.Windows.Input;
@@ -10,7 +10,7 @@ using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Shapes;
 
-namespace MeasureApp.ShapeObj.Canvas
+namespace SureMeasure.ShapeObj.Canvas
 {
     public class CadCanvas : ContentView
     {
@@ -54,10 +54,10 @@ namespace MeasureApp.ShapeObj.Canvas
 
         public DrawMethod Method
         {
-            get => this.Contour.Method;
+            get => this.Contour.DrawMethod;
             set
             {
-                this.Contour.Method = value;
+                this.Contour.DrawMethod = value;
                 OnPropertyChanged("Method");
             }
         }
@@ -274,6 +274,12 @@ namespace MeasureApp.ShapeObj.Canvas
             }
         }
 
+        public void VisualClear()
+        {
+            this.AnchorLayout.Children.Clear();
+            this.ObjectLayout.Children.Clear();
+        }
+
         /// <summary>
         /// Remove object
         /// </summary>
@@ -368,7 +374,7 @@ namespace MeasureApp.ShapeObj.Canvas
                 {
                     ICommand ConnectPoint = new Command(async () =>
                     {
-                        this.Contour.Add(new ConstraintLenth(cadAnchor1.cadPoint, cadAnchor2.cadPoint, -1), 0);
+                        this.Contour.Add(new ConstraintLenth(cadAnchor1.cadPoint, cadAnchor2.cadPoint, -1), true);
                         cadAnchor1.Update();
                         cadAnchor2.Update();
                     });

@@ -1,22 +1,22 @@
-﻿using MeasureApp.ShapeObj.Canvas;
-using MeasureApp.ShapeObj.Constraints;
-using MeasureApp.ShapeObj.Interface;
+﻿using SureMeasure.ShapeObj.Canvas;
+using SureMeasure.ShapeObj.Constraints;
+using SureMeasure.ShapeObj.Interface;
 using System;
 using Xamarin.Forms;
 using Xamarin.Forms.Shapes;
 
-namespace MeasureApp.ShapeObj
+namespace SureMeasure.ShapeObj
 {
     public class VisualLine : Path, CanvasObject
     {
-        public ConstraintLenth AnchorsConstrait;
+        private ConstraintLenth constraintLenth;
         public event EventHandler<bool> Removed;
 
         public new Xamarin.Forms.Rectangle Bounds => new Xamarin.Forms.Rectangle(
-            Math.Min(AnchorsConstrait.Point1.OX, AnchorsConstrait.Point2.OX), 
-            Math.Min(AnchorsConstrait.Point1.OY, AnchorsConstrait.Point2.OY), 
-            Math.Abs(AnchorsConstrait.Point2.OX - AnchorsConstrait.Point1.OX), 
-            Math.Abs(AnchorsConstrait.Point2.OY - AnchorsConstrait.Point1.OY));
+            Math.Min(constraintLenth.Point1.OX, constraintLenth.Point2.OX), 
+            Math.Min(constraintLenth.Point1.OY, constraintLenth.Point2.OY), 
+            Math.Abs(constraintLenth.Point2.OX - constraintLenth.Point1.OX), 
+            Math.Abs(constraintLenth.Point2.OY - constraintLenth.Point1.OY));
 
         /// <summary>
         /// Visualize line between two anchor
@@ -28,27 +28,20 @@ namespace MeasureApp.ShapeObj
             this.VerticalOptions = LayoutOptions.Start;
             this.StrokeThickness = 5;
 
-            this.Stroke = anchorAnchorLenth.IsSupport == true ? Brush.LightGray : Brush.Blue;
-            this.StrokeDashArray = anchorAnchorLenth.IsSupport == true ? new DoubleCollection() { 1, 2 } : new DoubleCollection() { 1 };
-
-            this.AnchorsConstrait = anchorAnchorLenth;
-            this.AnchorsConstrait.Changed += Anchors_Changed;
-            this.AnchorsConstrait.Removed += AnchorsConstrait_Removed;
-            this.AnchorsConstrait.Supported += AnchorsConstrait_Supported;
-            this.AnchorsConstrait.Selected += AnchorsConstrait_Selected;
+            this.constraintLenth = anchorAnchorLenth;
+            this.constraintLenth.Changed += Anchors_Changed;
+            this.constraintLenth.Removed += constraintLenth_Removed;
+            this.constraintLenth.Supported += constraintLenth_Supported;
+            this.constraintLenth.Selected += constraintLenth_Selected;
             this.StrokeLineCap = PenLineCap.Round;
             CadCanvas.RegularSize += CadCanvas_RegularSize;
             Update();
         }
 
-        private void AnchorsConstrait_Selected(object sender, bool e)
-        {
-            Xamarin.Forms.Device.BeginInvokeOnMainThread(() => {
-                this.Stroke = (e == true ? Brush.Orange : Brush.Blue);
-            });
-        }
+        private void constraintLenth_Selected(object sender, bool e) => Update();
 
-        private void AnchorsConstrait_Supported(object sender, bool e)
+
+        private void constraintLenth_Supported(object sender, bool e)
         {
             if (e == true)
             {
@@ -62,7 +55,7 @@ namespace MeasureApp.ShapeObj
             }
         }
 
-        private void AnchorsConstrait_Removed(object sender, bool e)
+        private void constraintLenth_Removed(object sender, bool e)
         {
             Removed?.Invoke(this, e);
         }
@@ -72,15 +65,22 @@ namespace MeasureApp.ShapeObj
         /// </summary>
         public void Update()
         {
-            double MinX = Math.Min(this.AnchorsConstrait.Point1.OX, this.AnchorsConstrait.Point2.OX);
-            double MinY = Math.Min(this.AnchorsConstrait.Point1.OY, this.AnchorsConstrait.Point2.OY);
-            double MaxX = Math.Max(this.AnchorsConstrait.Point2.OX, this.AnchorsConstrait.Point1.OX) + CadCanvas.RegularAnchorSize;
-            double MaxY = Math.Max(this.AnchorsConstrait.Point2.OY, this.AnchorsConstrait.Point1.OY) + CadCanvas.RegularAnchorSize;
+            if (constraintLenth.IsSupport) this.Stroke = Brush.LightGray;
+            else if (constraintLenth.IsSelect) this.Stroke = Brush.DarkOrange;
+            else this.Stroke = Brush.Blue;
+
+            if (constraintLenth.IsSupport == true) this.StrokeDashArray = new DoubleCollection() { 1, 2 };
+            else new DoubleCollection() { 1 };
+
+            double MinX = Math.Min(this.constraintLenth.Point1.OX, this.constraintLenth.Point2.OX);
+            double MinY = Math.Min(this.constraintLenth.Point1.OY, this.constraintLenth.Point2.OY);
+            double MaxX = Math.Max(this.constraintLenth.Point2.OX, this.constraintLenth.Point1.OX) + CadCanvas.RegularAnchorSize;
+            double MaxY = Math.Max(this.constraintLenth.Point2.OY, this.constraintLenth.Point1.OY) + CadCanvas.RegularAnchorSize;
 
             LineGeometry lineGeometry = new LineGeometry()
             {
-                StartPoint = new Point(this.AnchorsConstrait.Point1.OX, this.AnchorsConstrait.Point1.OY),
-                EndPoint = new Point(this.AnchorsConstrait.Point2.OX, this.AnchorsConstrait.Point2.OY)
+                StartPoint = new Point(this.constraintLenth.Point1.OX, this.constraintLenth.Point1.OY),
+                EndPoint = new Point(this.constraintLenth.Point2.OX, this.constraintLenth.Point2.OY)
             };
 
             Xamarin.Forms.Device.InvokeOnMainThreadAsync(() => {

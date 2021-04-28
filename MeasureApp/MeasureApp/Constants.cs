@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace MeasureApp
+namespace SureMeasure
 {
     class Constants
     {

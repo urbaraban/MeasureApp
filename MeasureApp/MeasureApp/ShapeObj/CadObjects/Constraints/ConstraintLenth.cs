@@ -1,9 +1,9 @@
-﻿using MeasureApp.CadObjects;
-using MeasureApp.CadObjects.Interface;
-using MeasureApp.Tools;
+﻿using SureMeasure.CadObjects;
+using SureMeasure.CadObjects.Interface;
+using SureMeasure.Tools;
 using System;
 
-namespace MeasureApp.ShapeObj.Constraints
+namespace SureMeasure.ShapeObj.Constraints
 {
     public class ConstraintLenth : CadConstraint, CadObject
     {
@@ -11,7 +11,6 @@ namespace MeasureApp.ShapeObj.Constraints
         public event EventHandler<bool> Removed;
         public override event EventHandler<bool> Selected;
         public override event EventHandler<bool> Supported;
-        public event EventHandler<bool> LastObject;
 
         public Orientaton Orientation = Orientaton.OFF; // -1 — Off, 0 — Vetical, 1 — Horizontal
 
@@ -187,9 +186,9 @@ namespace MeasureApp.ShapeObj.Constraints
             this.Changed?.Invoke(this, null);
         }
 
-        public void MakeLast()
+        public ConstraintLenth GetInvertClone()
         {
-            this.LastObject(this, true);
+            return new ConstraintLenth(this.Point2, this.Point1, this.Lenth, this.IsSupport);
         }
     }
 }

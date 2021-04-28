@@ -1,10 +1,10 @@
-﻿using MeasureApp.CadObjects.Interface;
-using MeasureApp.ShapeObj;
-using MeasureApp.ShapeObj.Constraints;
-using MeasureApp.Tools;
+﻿using SureMeasure.CadObjects.Interface;
+using SureMeasure.ShapeObj;
+using SureMeasure.ShapeObj.Constraints;
+using SureMeasure.Tools;
 using System;
 
-namespace MeasureApp.CadObjects.Constraints
+namespace SureMeasure.CadObjects.Constraints
 {
     public class ConstraintAngle : CadConstraint, CadObject
     {
@@ -57,16 +57,16 @@ namespace MeasureApp.CadObjects.Constraints
             this.Variable = new CadVariable(Angle, false);
             this.Variable.PropertyChanged += Angle_PropertyChanged;
 
-            this.anchorAnchor2.Point1.PropertyChanged += CadanchorMiddle_PropertyChanged;
-            this.anchorAnchor2.Point2.PropertyChanged += CadanchorEnd_PropertyChanged;
+            this.Point1.PropertyChanged += CadanchorMiddle_PropertyChanged;
+            this.Point3.PropertyChanged += CadanchorEnd_PropertyChanged;
         }
 
         public void Remove()
         {
             this.Variable.PropertyChanged -= Angle_PropertyChanged;
 
-            this.anchorAnchor2.Point1.PropertyChanged -= CadanchorMiddle_PropertyChanged;
-            this.anchorAnchor2.Point2.PropertyChanged -= CadanchorEnd_PropertyChanged;
+            this.Point1.PropertyChanged -= CadanchorMiddle_PropertyChanged;
+            this.Point3.PropertyChanged -= CadanchorEnd_PropertyChanged;
         }
 
         private void Angle_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -118,7 +118,7 @@ namespace MeasureApp.CadObjects.Constraints
                     }
                     else if (anchorAnchor2.GetNotThisPoint(FirstPoint) is CadPoint cadPoint2)
                     {
-                        anchorAnchor1.MakeMagic(cadPoint2, FirstPoint);
+                        anchorAnchor2.MakeMagic(cadPoint2, FirstPoint);
                     }
                     double lenth = Sizing.PtPLenth(MiddlePoint, FirstPoint);
                     FirstPoint.Update(Sizing.GetPositionLineFromAngle(LastPoint, MiddlePoint, lenth, 360 - angle));
@@ -132,11 +132,6 @@ namespace MeasureApp.CadObjects.Constraints
         public void TryRemove()
         {
             Removed?.Invoke(this, true);
-        }
-
-        public void MakeLast()
-        {
-            this.LastObject(this, true);
         }
     }
 }

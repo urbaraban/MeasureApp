@@ -1,10 +1,10 @@
-﻿using MeasureApp.CadObjects;
+﻿using SureMeasure.CadObjects;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace MeasureApp.ShapeObj.Constraints
+namespace SureMeasure.ShapeObj.Constraints
 {
     public abstract class CadConstraint : INotifyPropertyChanged 
     {

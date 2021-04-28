@@ -1,13 +1,12 @@
 ﻿using InTheHand.Bluetooth;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace MeasureApp.View.BLEDevice
+namespace SureMeasure.BLEDevice
 {
-    public class ChinesDistanceMeter : LaserDistanceMeter
+    public class lomvumM40 : LaserDistanceMeter
     {
         public BluetoothDevice Device
         {
@@ -38,7 +37,7 @@ namespace MeasureApp.View.BLEDevice
 
         public event EventHandler<Tuple<double, double>> LenthUpdated;
 
-        public ChinesDistanceMeter(BluetoothDevice device)
+        public lomvumM40(BluetoothDevice device)
         {
             LoadDevice(device);
         }

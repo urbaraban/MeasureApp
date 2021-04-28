@@ -1,12 +1,12 @@
-﻿using MeasureApp.ShapeObj.Canvas;
-using MeasureApp.ShapeObj.Constraints;
-using MeasureApp.Tools;
-using MeasureApp.View.OrderPage;
+﻿using SureMeasure.ShapeObj.Canvas;
+using SureMeasure.ShapeObj.Constraints;
+using SureMeasure.Tools;
+using SureMeasure.View.OrderPage;
 using System;
 using System.Windows.Input;
 using Xamarin.Forms;
 
-namespace MeasureApp.ShapeObj
+namespace SureMeasure.ShapeObj
 {
     public enum LineMenuItems
     {
