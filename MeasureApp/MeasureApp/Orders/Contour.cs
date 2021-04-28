@@ -4,6 +4,7 @@ using SureMeasure.CadObjects.Interface;
 using SureMeasure.ShapeObj;
 using SureMeasure.ShapeObj.Canvas;
 using SureMeasure.ShapeObj.Constraints;
+using SureMeasure.Tools;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -82,10 +83,17 @@ namespace SureMeasure.Orders
             internal set
             {
                 this._baselenthconstrait = value;
-                foreach (ConstraintLenth constraintLenth in this.Lenths)
+                if (this._baselenthconstrait != null)
                 {
-                    if (constraintLenth != this._baselenthconstrait && constraintLenth.IsSelect == true) 
-                        constraintLenth.IsSelect = false;
+                    if (this._baselenthconstrait.IsSelect == false)
+                    {
+                        this._baselenthconstrait.IsSelect = true;
+                    }
+                    foreach (ConstraintLenth constraintLenth in this.Lenths)
+                    {
+                        if (constraintLenth != this._baselenthconstrait && constraintLenth.IsSelect == true)
+                            constraintLenth.IsSelect = false;
+                    }
                 }
                 OnPropertyChanged("BaseLenthConstrait");
             }
@@ -98,15 +106,21 @@ namespace SureMeasure.Orders
             internal set
             {
                 this._basepoint = value;
-
-                foreach(CadPoint cadPoint in Points)
+                if (this._basepoint != null)
                 {
-                    if (cadPoint != value && cadPoint.IsBase == true) cadPoint.IsBase = false;
-                }
+                    if (this._basepoint.IsBase == false)
+                    {
+                        this._basepoint.IsBase = true;
+                    }
 
-                if (this._lastpoint == null && this._drawmethod == DrawMethod.FromPoint)
-                {
-                    this._lastpoint = value;
+                    foreach (CadPoint cadPoint in Points)
+                    {
+                        if (cadPoint != value && cadPoint.IsBase == true) cadPoint.IsBase = false;
+                    }
+                    if (this._lastpoint == null || this._drawmethod == DrawMethod.StepByStep)
+                    {
+                        this.LastPoint = value;
+                    }
                 }
                 OnPropertyChanged("BasePoint");
             } 
@@ -119,15 +133,22 @@ namespace SureMeasure.Orders
             internal set
             {
                 this._lastpoint = value;
-
-                foreach (CadPoint cadPoint in Points)
+                if (this._lastpoint != null)
                 {
-                    if (cadPoint != value && cadPoint.IsSelect == true) cadPoint.IsSelect = false;
-                }
+                    if (this._lastpoint.IsSelect == false)
+                    {
+                        this._lastpoint.IsSelect = true;
+                    }
 
-                if (this._basepoint == null && this._drawmethod == DrawMethod.FromPoint)
-                {
-                    this.BasePoint = value;
+                    foreach (CadPoint cadPoint in Points)
+                    {
+                        if (cadPoint != value && cadPoint.IsSelect == true) cadPoint.IsSelect = false;
+                    }
+
+                    if (this._basepoint == null && this._drawmethod == DrawMethod.FromPoint)
+                    {
+                        this.BasePoint = value;
+                    }
                 }
                 OnPropertyChanged("LastPoint");
             }
@@ -181,9 +202,9 @@ namespace SureMeasure.Orders
                 this.Points.Add(cadPoint);
                 if (Last == true)
                 {
-                    if (this._drawmethod == DrawMethod.StepByStep || this.BasePoint == null)
+                    if (this._drawmethod == DrawMethod.StepByStep)
                     {
-                        cadPoint.IsSelect = true;
+                        this.BasePoint = cadPoint;
                     }
                     else
                     {
@@ -198,7 +219,7 @@ namespace SureMeasure.Orders
                 this.Lenths.Add(lenthConstrait);
                 if (Last == true && (DrawMethod == DrawMethod.StepByStep || this.BaseLenthConstrait == null))
                 {
-                    lenthConstrait.IsSelect = true;
+                    this.BaseLenthConstrait = lenthConstrait;
                     FindContourForLenth(lenthConstrait);
                 }
                 
@@ -218,12 +239,57 @@ namespace SureMeasure.Orders
             return null;
         }
 
+        /// <summary>
+        /// Make line with anchor on canvas.
+        /// </summary>
+        /// <param name="tuple">item1 - lenth, item2 - angle</param>
+        /// <param name="Forced">Make line from label</param>
+        public bool BuildLine(Tuple<double, double> tuple, bool Forced = false)
+        {
+            //Если у нас нет линии привязки
+            if ((this.BaseLenthConstrait == null) || (Forced == true))
+            {
+                CadPoint cadPoint1 = (CadPoint)this.Add(new CadPoint(0, 0, this.GetNewPointName()), false);
+                cadPoint1.IsFix = !Forced;
+                CadPoint cadPoint2 = (CadPoint)this.Add(new CadPoint(0, 0 + tuple.Item1, this.GetNewPointName()), true);
+                cadPoint2.IsFix = !Forced;
+                this.Add(new ConstraintLenth(cadPoint1, cadPoint2, tuple.Item1), true);
+                return true;
+            }
+            else if (this.BasePoint != null)
+            {
+                CadPoint point1 = this.BaseLenthConstrait.GetNotThisPoint(this.BasePoint);
+                if (point1 == null) return false;
+
+                CadPoint point2 = Sizing.GetPositionLineFromAngle(point1, this.BasePoint, tuple.Item1, tuple.Item2 < 0 ? 90 : tuple.Item2);
+                point2.ID = this.GetNewPointName();
+
+                ConstraintLenth lenthConstrait =
+                    (ConstraintLenth)this.Add(
+                        new ConstraintLenth(this.BasePoint, point2, tuple.Item1,
+                        this.DrawMethod == DrawMethod.FromPoint && this.LastPoint != this.BasePoint), 
+                        this.DrawMethod == DrawMethod.StepByStep);
+
+                ConstraintAngle constraintAngle =
+                    (ConstraintAngle)this.Add(
+                        new ConstraintAngle(this.BaseLenthConstrait, lenthConstrait, tuple.Item2), false);
+
+                if (this.DrawMethod == DrawMethod.FromPoint && this.BasePoint != this.LastPoint)
+                {
+                    this.Add(new ConstraintLenth(this.LastPoint, point2, -1), false);
+                }
+
+                this.Add(point2, true);
+                return true;
+            }
+            return false;
+        }
+
         private void CadPoint_BaseObject(object sender, bool e)
         {
             if (e == true)
             {
-                if (this.DrawMethod == DrawMethod.StepByStep) LastPoint = (CadPoint)sender;
-                else BasePoint = (CadPoint)sender;
+                BasePoint = (CadPoint)sender;
             }
         }
 
@@ -250,32 +316,6 @@ namespace SureMeasure.Orders
             }
         }
 
-        private void CadObject_LastObject(object sender, bool e)
-        {
-            if (e == true)
-            {
-                if (sender is CadPoint cadPoint)
-                {
-                    if (this._drawmethod == DrawMethod.StepByStep)
-                    {
-                        this.LastPoint = cadPoint;
-                        this.BasePoint = cadPoint;
-                    }
-                    else
-                    {
-                        this.LastPoint = cadPoint;
-                    }
-                }
-                if (sender is ConstraintLenth lenthConstrait)
-                {
-                    if (this.BaseLenthConstrait != null)
-                    {
-                        this.BaseLenthConstrait.IsSelect = false;
-                    }
-                    this.BaseLenthConstrait = lenthConstrait;
-                }
-            }
-        }
 
         private void CadObject_Removed(object sender, bool e)
         {
@@ -288,12 +328,10 @@ namespace SureMeasure.Orders
             {
                 if (sender is CadPoint cadPoint)
                 {
-                    if (this._drawmethod == DrawMethod.StepByStep || this.BasePoint == null)
-                    {
-                        if (this.BasePoint != null) this.LastPoint.IsSelect = false;
-                        this.LastPoint = cadPoint;
+                    if (_drawmethod == DrawMethod.StepByStep && this.BasePoint != cadPoint)
                         this.BasePoint = cadPoint;
-                    }
+                    else if (this.LastPoint != cadPoint)
+                        this.LastPoint = cadPoint;
                 }
                 if (sender is ConstraintLenth lenthConstrait)
                 {
@@ -302,8 +340,16 @@ namespace SureMeasure.Orders
             }
             else
             {
-                BasePoint = BasePoint == sender ? null : BasePoint;
-                BaseLenthConstrait = BaseLenthConstrait == sender ? null : BaseLenthConstrait;
+                if (LastPoint == sender) {
+                    LastPoint = null;
+                }
+                if (BasePoint == sender && BasePoint == LastPoint) {
+                    BasePoint =  null;
+                }
+                if (BaseLenthConstrait == sender) {
+                    BaseLenthConstrait = null;
+                }
+                
             }
         }
 

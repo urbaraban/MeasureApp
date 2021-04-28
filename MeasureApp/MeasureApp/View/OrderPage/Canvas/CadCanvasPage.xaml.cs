@@ -83,68 +83,14 @@ namespace SureMeasure.View.OrderPage
             {
                 if (e.Data.Properties["Message"] != null)
                 {
-                    BuildLine(ConvertDimMessage(e.Data.Properties["Message"].ToString()), true);
+                   contour.BuildLine(ConvertDimMessage(e.Data.Properties["Message"].ToString()), true);
                 }
             }
         }
 
         private void AppShell_UpdatedOrder(object sender, Order e) => this.BindingContext = e;
 
-        /// <summary>
-        /// Make line with anchor on canvas.
-        /// </summary>
-        /// <param name="tuple">item1 - lenth, item2 - angle</param>
-        /// <param name="Forced">Make line from label</param>
-        public void BuildLine(Tuple<double, double> tuple, bool Forced = false)
-        {
-            //Если у нас нет линии привязки
-            if ((this.contour.BaseLenthConstrait == null) || (Forced == true))
-            {
-                CadPoint cadPoint1 = (CadPoint)this.contour.Add(new CadPoint(0, 0, this.contour.GetNewPointName()), false);
-                cadPoint1.IsFix = !Forced;
-                CadPoint cadPoint2 = (CadPoint)this.contour.Add(new CadPoint(0, 0 + tuple.Item1, this.contour.GetNewPointName()), true);
-                cadPoint2.IsBase = this.contour.DrawMethod == DrawMethod.FromPoint;
-                cadPoint2.IsFix = !Forced;
-                this.contour.Add(new ConstraintLenth(cadPoint1, cadPoint2, tuple.Item1), true);
-            }
-            else if (this.contour.BasePoint != null)
-            {
-                ConstraintLenth lastLenthConstr = this.contour.BaseLenthConstrait;
 
-                CadPoint point1 = this.contour.BaseLenthConstrait.GetNotThisPoint(this.contour.BasePoint);
-                if (point1 == null) return;
-
-                CadPoint point = Sizing.GetPositionLineFromAngle(point1, this.contour.BasePoint, tuple.Item1, tuple.Item2 < 0 ? 90 : tuple.Item2);
-                CadPoint cadPoint2 = new CadPoint(point.X, point.Y, this.contour.GetNewPointName());
-
-                ConstraintLenth lenthConstrait = 
-                    (ConstraintLenth)this.contour.Add(
-                        new ConstraintLenth(this.contour.BasePoint, cadPoint2, tuple.Item1, 
-                        this.contour.DrawMethod == DrawMethod.FromPoint), this.contour.DrawMethod != DrawMethod.FromPoint);
-
-                ConstraintAngle constraintAngle = 
-                    (ConstraintAngle)this.contour.Add(
-                        new ConstraintAngle(lastLenthConstr, lenthConstrait, tuple.Item2), false);
-
-
-                CadPoint point2 = (CadPoint)this.contour.Add(cadPoint2, true);
-                point2.IsSelect = true;
-
-                if (this.contour.DrawMethod == DrawMethod.FromPoint && this.contour.BasePoint != this.contour.LastPoint)
-                {
-                    lenthConstrait.IsSupport = true;
-                    this.contour.Add(new ConstraintLenth(this.contour.LastPoint, point2, -1), false);
-                    
-                    // this.Contour.Add(new ConstraintAngle(this.Contour.LastLenthConstrait, lenthConstrait, Angle), 0);
-                }
-            }
-            else
-            {
-                PoolDimLabel poolDimLabel = new PoolDimLabel($"{tuple.Item1}&{tuple.Item2}", this.Height);
-                poolDimLabel.Removed += PoolDimLabel_Removed;
-                SizePool.Children.Add(poolDimLabel);
-            }
-        }
 
         private void PoolDimLabel_Removed(object sender, EventArgs e)
         {
@@ -160,10 +106,16 @@ namespace SureMeasure.View.OrderPage
             }
             else
             {
-                BuildLine(e);
+                if (contour.BuildLine(e) == false) AddToSizePool(e);
             }
         }
 
+        private void AddToSizePool(Tuple<double, double> tuple)
+        {
+            PoolDimLabel poolDimLabel = new PoolDimLabel($"{tuple.Item1}&{tuple.Item2}", this.Height);
+            poolDimLabel.Removed += PoolDimLabel_Removed;
+            SizePool.Children.Add(poolDimLabel);
+        }
 
 
         private void CadCanvasPage_BindingContextChanged(object sender, EventArgs e)
@@ -211,7 +163,7 @@ namespace SureMeasure.View.OrderPage
             string result = await DisplayPromptAsync("Добавить линию", "Мне нужны твоя длинна и угол", "Add", "Cancel", "0000&00", -1, Keyboard.Numeric, $"{random.Next(250, 1000)}&{random.Next(45, 270)}");
             if (string.IsNullOrEmpty(result) == false)
             {
-                BuildLine(ConvertDimMessage(result));
+                contour.BuildLine(ConvertDimMessage(result));
             }
         }
 
