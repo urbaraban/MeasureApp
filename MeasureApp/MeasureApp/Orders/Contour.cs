@@ -265,10 +265,8 @@ namespace SureMeasure.Orders
                 point2.ID = this.GetNewPointName();
 
                 ConstraintLenth lenthConstrait =
-                    (ConstraintLenth)this.Add(
-                        new ConstraintLenth(this.BasePoint, point2, tuple.Item1,
-                        this.DrawMethod == DrawMethod.FromPoint && this.LastPoint != this.BasePoint), 
-                        this.DrawMethod == DrawMethod.StepByStep);
+                    new ConstraintLenth(this.BasePoint, point2, tuple.Item1,
+                        this.DrawMethod == DrawMethod.FromPoint && this.LastPoint != this.BasePoint);
 
                 ConstraintAngle constraintAngle =
                     (ConstraintAngle)this.Add(
@@ -279,6 +277,7 @@ namespace SureMeasure.Orders
                     this.Add(new ConstraintLenth(this.LastPoint, point2, -1), false);
                 }
 
+                this.Add(lenthConstrait, this.DrawMethod == DrawMethod.StepByStep);
                 this.Add(point2, true);
                 return true;
             }

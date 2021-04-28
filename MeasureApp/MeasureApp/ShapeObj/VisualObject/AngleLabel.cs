@@ -60,7 +60,7 @@ namespace SureMeasure.ShapeObj
 
         private void AngleConstrait_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            CadPoint point = Sizing.GetPositionLineFromAngle(this._angleConstrait.Point1, this._angleConstrait.Point2, 20 * this.Scale, this._angleConstrait.Value / 2d - 360);
+            CadPoint point = Sizing.GetPositionLineFromAngle(this._angleConstrait.Point1, this._angleConstrait.Point2, 30 * this.Scale, this._angleConstrait.Value / 2d);
             this.TranslationX = point.OX;
             this.TranslationY = point.OY;
         }
