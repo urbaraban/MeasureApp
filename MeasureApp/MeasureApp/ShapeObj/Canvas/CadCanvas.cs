@@ -108,7 +108,9 @@ namespace SureMeasure.ShapeObj.Canvas
 
             //Gestured
             //Tap
-
+            /*TapGestureRecognizer tapGestureRecognizer = new TapGestureRecognizer();
+            tapGestureRecognizer.Tapped += TapGestureRecognizer_Tapped;
+            this.GestureRecognizers.Add(tapGestureRecognizer);*/
             //Pinch
             PinchGestureRecognizer pinchGestureRecognizer = new PinchGestureRecognizer();
             pinchGestureRecognizer.PinchUpdated += PinchGestureRecognizer_PinchUpdated;
@@ -130,6 +132,11 @@ namespace SureMeasure.ShapeObj.Canvas
             DropGestureRecognizer dropGestureRecognizer = new DropGestureRecognizer();
             dropGestureRecognizer.Drop += DropGestureRecognizer_Drop;
             this.GestureRecognizers.Add(dropGestureRecognizer);
+        }
+
+        private void TapGestureRecognizer_Tapped(object sender, EventArgs e)
+        {
+            
         }
 
         private void DropGestureRecognizer_Drop(object sender, DropEventArgs e)

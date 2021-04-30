@@ -6,13 +6,14 @@ using System.Text.RegularExpressions;
 
 namespace SureMeasure.BLEDevice
 {
-    public class lomvumM40 : LaserDistanceMeter
+    public class lomvumM40 : DistanceMeter
     {
         public BluetoothDevice Device
         {
             get => this._device;
             set
             {
+                if (_device != null) this._device.GattServerDisconnected -= Device_GattServerDisconnected;
                 _device = value;
                 if (Device != null)
                 {
@@ -27,6 +28,11 @@ namespace SureMeasure.BLEDevice
             get => this._gattCharacteristic;
             set
             {
+                if (this._gattCharacteristic != null)
+                {
+                    this._gattCharacteristic.CharacteristicValueChanged -= _gattCharacteristic_CharacteristicValueChanged;
+                    this._gattCharacteristic.StopNotificationsAsync();
+                }
                 this._gattCharacteristic = value;
                 this._gattCharacteristic.CharacteristicValueChanged += _gattCharacteristic_CharacteristicValueChanged;
                 this._gattCharacteristic.StartNotificationsAsync();
@@ -126,7 +132,6 @@ namespace SureMeasure.BLEDevice
 
         private async void Device_GattServerDisconnected(object sender, EventArgs e)
         {
-            //UpdatedDevice?.Invoke(null, null);
             var device = sender as BluetoothDevice;
             await device.Gatt.ConnectAsync();
         }

@@ -1,12 +1,9 @@
 ﻿using IxMilia.Dxf;
 using IxMilia.Dxf.Entities;
 using SureMeasure.CadObjects;
-using SureMeasure.CadObjects.Constraints;
 using SureMeasure.Orders;
-using SureMeasure.ShapeObj;
 using SureMeasure.ShapeObj.Canvas;
 using SureMeasure.ShapeObj.Constraints;
-using SureMeasure.Tools;
 using SureMeasure.View.OrderPage.Canvas;
 using System;
 using System.Collections.Generic;
@@ -60,6 +57,7 @@ namespace SureMeasure.View.OrderPage
             base.OnAppearing();
             this.MainCanvas.VisualClear();
             this.MainCanvas.DrawContour(this.contour);
+            this.BindingContext = AppShell.SelectOrder;
 
         }
 

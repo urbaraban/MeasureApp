@@ -10,6 +10,8 @@ using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Forms;
+using Xamarin.Essentials;
+using System.IO;
 
 namespace SureMeasure
 {
@@ -46,7 +48,7 @@ namespace SureMeasure
 
         public static AppShell Instance { get; set; }
 
-        public static LaserDistanceMeter BLEDevice
+        public static DistanceMeter BLEDevice
         {
             get => AppShell._bledevice;
             set
@@ -64,7 +66,7 @@ namespace SureMeasure
         }
         private static void _bledevice_LenthUpdated(object sender, Tuple<double, double> e) => LenthUpdated?.Invoke(null, e);
 
-        private static LaserDistanceMeter _bledevice;
+        private static DistanceMeter _bledevice;
 
         private List<BluetoothDevice> Devices = new List<BluetoothDevice>();
 
@@ -121,6 +123,9 @@ namespace SureMeasure
                     case "Laser Distance Meter":
                         BLEDevice = new lomvumM40(device);
                         break;
+                    case "Sure Measure Device":
+                        BLEDevice = new SureMeasureDevice(device);
+                        break;
                 }
 
             }
@@ -150,6 +155,48 @@ namespace SureMeasure
         private async void DeviceItem_Clicked(object sender, EventArgs e)
         {
             LoadBleScan();
+        }
+
+        public async static Task<string> TakePhotoAsync()
+        {
+            try
+            {
+                var photo = await MediaPicker.CapturePhotoAsync(new MediaPickerOptions
+                {
+                    Title = $"SureMeasure.{DateTime.Now.ToString("dd.MM.yyyy_hh.mm.ss")}.png"
+                });
+
+                // для примера сохраняем файл в локальном хранилище
+                var newFile = Path.Combine(FileSystem.AppDataDirectory, photo.FileName);
+                using (var stream = await photo.OpenReadAsync())
+                using (var newStream = File.OpenWrite(newFile))
+                    await stream.CopyToAsync(newStream);
+
+                return photo.FullPath;
+                // загружаем в ImageView
+               // img.Source = ImageSource.FromFile(photo.FullPath);
+            }
+            catch (Exception ex)
+            {
+                await AppShell.Instance.AlertDialog("Сообщение об ошибке", ex.Message);
+            }
+            return string.Empty;
+        }
+
+        public async static Task<string> SelectPhoto()
+        {
+            try
+            {
+                // выбираем фото
+                var photo = await MediaPicker.PickPhotoAsync();
+                return photo.FullPath;
+            }
+            catch (Exception ex)
+            {
+                await AppShell.Instance.AlertDialog("Сообщение об ошибке", ex.Message);
+            }
+
+            return string.Empty;
         }
     }
 }

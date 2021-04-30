@@ -1,6 +1,7 @@
 ﻿using SureMeasure.Data;
 using SureMeasure.Orders;
 using System;
+using System.Collections.Generic;
 using System.Windows.Input;
 using Xamarin.Essentials;
 using Xamarin.Forms;
@@ -22,23 +23,26 @@ namespace SureMeasure.View.OrderPage
         {
             InitializeComponent();
             listView.SelectionChanged += ListView_SelectionChanged;
+            AppShell.UpdatedOrder += AppShell_UpdatedOrder;
+        }
+
+        private void AppShell_UpdatedOrder(object sender, Order e)
+        {
+            foreach(OrderDataItem orderDataItem in listView.ItemsSource)
+            {
+                if (orderDataItem.ID == e.ID)
+                {
+                    listView.Dispatcher.BeginInvokeOnMainThread(() => {
+                        listView.SelectedItem = orderDataItem;
+                    });
+                }
+            }
         }
 
         private async void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (e.CurrentSelection[0] is OrderDataItem dataItem)
             {
-                if (AppShell.SelectOrder.DataItem != dataItem && AppShell.SelectOrder.Contours.Count > 0)
-                {
-                    if (AppShell.SelectOrder.IsAlive == true)
-                    {
-                        if (await AppShell.Instance.AlertDialog("Сохранить текущий?", string.Empty) == true)
-                        {
-                            await AppShell.OrdersDB.SaveItemAsync(AppShell.SelectOrder);
-                        }
-                    }
-                }
-
                 Order order = xmlrw.Read(dataItem);
                 SelectedOrderItem(this, order == null ? new Order(dataItem) : order);
             }
@@ -48,24 +52,31 @@ namespace SureMeasure.View.OrderPage
         {
             base.OnAppearing();
 
-            UpdateList(AppShell.SelectOrder);
+            UpdateList();
         }
 
         private async void AddBtn_Clicked(object sender, EventArgs e)
         {
-            Order order = (Order)listView.SelectedItem;
-            await AppShell.OrdersDB.SaveItemAsync(new Order());
-            UpdateList(order);
+            AppShell.SelectOrder = new Order();
+            await AppShell.OrdersDB.SaveItemAsync(AppShell.SelectOrder);
+            UpdateList();
         }
 
-        private void UpdateList(Order SelectOrder)
+        private void UpdateList()
         {
             listView.Dispatcher.BeginInvokeOnMainThread(async () =>
             {
                 listView.ItemsSource = await AppShell.OrdersDB.GetItemsAsync();
-                if (SelectOrder != null)
+
+                if (AppShell.SelectOrder != null)
                 {
-                    listView.SelectedItem = SelectOrder;
+                    foreach (OrderDataItem orderDataItem in listView.ItemsSource)
+                    {
+                        if (orderDataItem.ID == AppShell.SelectOrder.ID)
+                        {
+                            listView.SelectedItem = orderDataItem;
+                        }
+                    }
                 }
             });
         }
@@ -77,7 +88,7 @@ namespace SureMeasure.View.OrderPage
                 xmlrw.Remove(dataItem.XmlUrl);
                 await AppShell.OrdersDB.DeleteItemAsync(dataItem);
             }
-            UpdateList(AppShell.SelectOrder);
+            UpdateList();
         }
 
         private async void ClearBtn_Clicked(object sender, EventArgs e)
@@ -86,7 +97,7 @@ namespace SureMeasure.View.OrderPage
             {
                 await AppShell.OrdersDB.DeleteItemAsync(dataItem);
             }
-            UpdateList(null);
+            UpdateList();
         }
 
         private void CallButton_Clicked(object sender, EventArgs e)

@@ -7,22 +7,54 @@
     <Shell.SearchHandler>
         <controls:OrderSearchHandler Placeholder="Enter search term"
                                          ShowsResults="true"
-                                        DisplayMemberName="Name"/>
+                                        DisplayMemberName="Name">
+            <controls:OrderSearchHandler.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Label 
+                            Grid.Column="0"
+                            Text="{Binding ID}"
+                            FontSize="Large"
+                            HorizontalTextAlignment="Center"
+                            VerticalTextAlignment="Center"
+                            Margin="5,0,10,0"/>
+                        <Label 
+                            Grid.Column="1"
+                            Text="{Binding Name}"
+                            FontSize="Large"
+                            HorizontalTextAlignment="Start"
+                            VerticalTextAlignment="Center"/>
+                        <Label 
+                            Grid.Column="2"
+                            Text="{Binding Adress}"
+                            FontSize="Large"
+                            HorizontalTextAlignment="Start"
+                            VerticalTextAlignment="Center"/>
+                    </Grid>
+                </DataTemplate>
+            </controls:OrderSearchHandler.ItemTemplate>
+        </controls:OrderSearchHandler>
     </Shell.SearchHandler>
     
     <ContentPage.Content>
         <AbsoluteLayout >
             <ScrollView Orientation="Vertical" HorizontalOptions="FillAndExpand" >
-                <CollectionView x:Name="listView" SelectionMode="Single" HorizontalOptions="FillAndExpand" Margin="10"  VerticalScrollBarVisibility="Always">
+                <CollectionView x:Name="listView" SelectionMode="Single" HorizontalOptions="FillAndExpand" Margin="10" VerticalScrollBarVisibility="Always">
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
-                            <Grid Padding="5">
+                            <Grid Margin="3" Padding="5">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto"/>
                                     <ColumnDefinition Width="100"/>
                                     <ColumnDefinition/>
                                     <ColumnDefinition Width="Auto"/>
@@ -30,9 +62,21 @@
                                 </Grid.ColumnDefinitions>
                                 <Label 
                                     Grid.Column="0"
+                                    Grid.Row="0"
+                                    Grid.RowSpan="3"
+                                    Text="{Binding ID}"
+                                    FontSize="Medium"
+                                    FontAttributes="Bold"
+                                    HorizontalTextAlignment="Center"
+                                    VerticalTextAlignment="Center"
+                                    Margin="5,0,10,0"/>
+                                <Label 
+                                    Grid.Column="1"
+                                    Grid.Row="0"
                                     Grid.RowSpan="3"
                                     Text="{Binding Date}"
-                                    FontAttributes="Bold" /> 
+                                    FontAttributes="Bold"
+                                    VerticalTextAlignment="Center"/>
                                 <!--<Image 
                                        Grid.RowSpan="2"
                                        Grid.Row="1"   
@@ -42,20 +86,21 @@
                                        WidthRequest="60"
                                        Margin="0,0,10,0"
                                        BackgroundColor="Aqua"/>-->
-                                <Label Grid.Column="1"
+                                <Label Grid.Column="2"
                                    Text="{Binding Name}"
                                    FontAttributes="Bold" />
                                 <Label Grid.Row="1"
                                        Grid.RowSpan="1"
-                                       Grid.Column="1"
+                                       Grid.Column="2"
                                        Text="{Binding Details}"
                                        FontAttributes="Italic"
                                        VerticalOptions="Start"
-                                       TextColor="DimGray"/>
-                                
+                                       TextColor="DimGray"
+                                       MaxLines="1"/>
+
                                 <Label Grid.Row="2"
                                        Grid.RowSpan="1"
-                                       Grid.Column="1"
+                                       Grid.Column="2"
                                        Text="{Binding Adress}"
                                        FontAttributes="Italic"
                                        VerticalOptions="Start"
@@ -63,7 +108,7 @@
                                 <Button
                                     Text="✆"
                                     FontSize="Body"
-                                    Grid.Column="2"
+                                    Grid.Column="3"
                                     Grid.RowSpan="3"
                                     WidthRequest="40"
                                     BindingContext="{Binding Phone}"
@@ -71,7 +116,7 @@
                                     />
                                 <Button
                                     Text="Way"
-                                    Grid.Column="3"
+                                    Grid.Column="4"
                                     Grid.RowSpan="3"
                                     BindingContext="{Binding Location}"
                                     WidthRequest="40"

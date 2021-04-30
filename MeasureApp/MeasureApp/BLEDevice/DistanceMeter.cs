@@ -2,7 +2,7 @@
 
 namespace SureMeasure.BLEDevice
 {
-    public interface LaserDistanceMeter
+    public interface DistanceMeter
     {
         public event EventHandler<Tuple<double, double>> LenthUpdated;
 

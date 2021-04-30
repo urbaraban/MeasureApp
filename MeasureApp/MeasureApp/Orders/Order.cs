@@ -1,10 +1,10 @@
 ﻿using SureMeasure.Data;
-using SQLite;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Xamarin.Essentials;
+using System.IO;
+using System.Collections.ObjectModel;
 
 namespace SureMeasure.Orders
 {
@@ -33,9 +33,9 @@ namespace SureMeasure.Orders
             {
                 ID = 0,
                 Date = DateTime.Now,
-                Name = "Templ",
-                Details = "Templ",
-                PhoneNumber = "+7923251320",
+                Name = "{NewOrder}",
+                Details = string.Empty,
+                PhoneNumber = string.Empty,
                 Location = new Location(),
                 XmlUrl = string.Empty,
                 ImagesUrls = string.Empty
@@ -45,6 +45,13 @@ namespace SureMeasure.Orders
         public Order(OrderDataItem orderDataItem)
         {
             this.DataItem = orderDataItem;
+
+            string[] pathsImages = this.DataItem.ImagesUrls.Split('%');
+            this.ImagesUrls.Clear();
+            foreach (string path in pathsImages)
+            {
+                if (File.Exists(path) == true) this.ImagesUrls.Add(path);
+            }
         }
         /// <summary>
         /// Name or other label
@@ -67,16 +74,24 @@ namespace SureMeasure.Orders
         /// <summary>
         /// Url image for picker
         /// </summary>
-        public List<string> ImagesUrls
+        public ObservableCollection<string> ImagesUrls { get; set; } = new ObservableCollection<string>();
+
+
+        public void AddPhoto(string Path)
         {
-            get => new List<string>(this.DataItem.ImagesUrls.Split('%'));
-            set
+            if (string.IsNullOrEmpty(Path) == false)
             {
-                this.DataItem.ImagesUrls = string.Concat(value, '%');
+                ImagesUrls.Add(Path);
+                this.DataItem.ImagesUrls = string.Join('%', ImagesUrls).Replace("%%", "%");
                 OnPropertyChanged("ImagesUrls");
             }
         }
 
+        public void RemovePhoto(string path)
+        {
+            ImagesUrls.Remove(path);
+            OnPropertyChanged("ImagesUrls");
+        }
 
         /// <summary>
         /// Location order.
@@ -87,6 +102,15 @@ namespace SureMeasure.Orders
             set
             {
                 this.DataItem.Location = value;
+            }
+        }
+
+        public string Adress
+        {
+            get => this.DataItem.Adress;
+            set
+            {
+                this.DataItem.Adress = value;
             }
         }
 
@@ -136,7 +160,7 @@ namespace SureMeasure.Orders
             }
         }
 
-        public List<Contour> Contours = new List<Contour>();
+        public ObservableCollection<Contour> Contours = new ObservableCollection<Contour>();
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -149,6 +173,7 @@ namespace SureMeasure.Orders
         {
             OnPropertyChanged("Area");
             OnPropertyChanged("Perimetr");
+            OnPropertyChanged("ImagesUrls");
         }
 
         public override string ToString()

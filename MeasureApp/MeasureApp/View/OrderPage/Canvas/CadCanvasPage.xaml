@@ -5,7 +5,10 @@
              x:Class="SureMeasure.View.OrderPage.CadCanvasPage"
              Title="Drawing">
     <ContentPage.ToolbarItems>
+        <ToolbarItem Text="ID"/>
+        <ToolbarItem Text="{Binding ID}"/>
         <ToolbarItem Icon="search.png" Text="Share" Clicked="ShareBtn_Clicked"/>
+        
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
         <StackLayout Orientation="Vertical" VerticalOptions="FillAndExpand">

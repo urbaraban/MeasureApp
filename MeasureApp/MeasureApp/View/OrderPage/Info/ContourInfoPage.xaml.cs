@@ -30,9 +30,16 @@ namespace SureMeasure.View.OrderPage
 
         private void AppShell_UpdatedOrder(object sender, Orders.Order e) => this.BindingContext = e;
 
-        private void PhotoButton_Clicked(object sender, EventArgs e)
+        private async void PhotoButton_Clicked(object sender, EventArgs e)
         {
+           string path = await AppShell.TakePhotoAsync();
+            if (string.IsNullOrEmpty(path) == false)
+            {
+                ImageGallery.Dispatcher.BeginInvokeOnMainThread(() => { 
+                AppShell.SelectOrder.AddPhoto(path);
+                });
 
+            }
         }
 
         protected override void OnAppearing()
@@ -46,6 +53,26 @@ namespace SureMeasure.View.OrderPage
             if (AppShell.SelectOrder.IsAlive == true)
             {
                 await AppShell.OrdersDB.SaveItemAsync(AppShell.SelectOrder);
+            }
+        }
+
+        private async void SelectPhotoButton_Clicked(object sender, EventArgs e)
+        {
+            
+            string path = await AppShell.SelectPhoto();
+            if (string.IsNullOrEmpty(path) == false)
+            {
+                ImageGallery.Dispatcher.BeginInvokeOnMainThread(() => {
+                    AppShell.SelectOrder.AddPhoto(path);
+                });
+            }
+        }
+
+        private void CollectionView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.CurrentSelection is Image image)
+            {
+                image.Aspect = Aspect.AspectFill;
             }
         }
     }

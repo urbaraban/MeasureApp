@@ -24,14 +24,7 @@ namespace SureMeasure.Data
         /// <summary>
         /// Url image for picker
         /// </summary>
-        public string ImagesUrls
-        {
-            get => imagesUrls == string.Empty ? "SureMeasureLogo.png" : imagesUrls;
-            set
-            {
-                imagesUrls = string.Concat(value,'%');
-            }
-        }  
+        public string ImagesUrls { get; set; }
 
         /// <summary>
         /// Location order.
@@ -39,7 +32,12 @@ namespace SureMeasure.Data
         public string Adress 
         {
             get => Location == null ? "Empty" : Location.Latitude.ToString();
+            set
+            {
+                adress = value;
+            }
         }
+        public string adress;
         public Location Location;
 
         public string Details { get; set; }
