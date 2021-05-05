@@ -1,10 +1,7 @@
 ﻿using SureMeasure.Orders;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
+using System.Diagnostics;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -68,12 +65,14 @@ namespace SureMeasure.View.OrderPage
             }
         }
 
-        private void CollectionView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void CollectionView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (e.CurrentSelection is Image image)
-            {
-                image.Aspect = Aspect.AspectFill;
-            }
+
+        }
+
+        private async void ShareBtn_Clicked(object sender, EventArgs e)
+        {
+            AppShell.ShareOrder(this.GetOrder);
         }
     }
 }

@@ -46,7 +46,7 @@
             <ScrollView Orientation="Vertical" HorizontalOptions="FillAndExpand" >
                 <CollectionView x:Name="listView" SelectionMode="Single" HorizontalOptions="FillAndExpand" Margin="10" VerticalScrollBarVisibility="Always">
                     <CollectionView.ItemTemplate>
-                        <DataTemplate>
+                        <DataTemplate >
                             <Grid Margin="3" Padding="5">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />

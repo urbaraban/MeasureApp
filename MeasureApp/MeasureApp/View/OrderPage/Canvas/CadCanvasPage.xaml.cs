@@ -198,48 +198,11 @@ namespace SureMeasure.View.OrderPage
             {
                 this.contour.DrawMethod = sw.IsToggled == true ? DrawMethod.FromPoint : DrawMethod.StepByStep;
             }
-            
         }
 
         private async void ShareBtn_Clicked(object sender, EventArgs e)
         {
-            List<string> paths = new List<string>();
-
-            foreach (Contour contour in this.order.Contours) 
-            {
-                DxfFile dxfFile = new DxfFile();
-                dxfFile.Header.SetDefaults();
-                dxfFile.Header.AlternateDimensioningScaleFactor = 1;
-                dxfFile.Header.DrawingUnits = DxfDrawingUnits.Metric;
-                dxfFile.Header.UnitFormat = DxfUnitFormat.Decimal;
-                dxfFile.Header.DefaultDrawingUnits = DxfUnits.Millimeters;
-                dxfFile.Header.AlternateDimensioningUnits = DxfUnitFormat.Decimal;
-                dxfFile.ViewPorts.Clear();
-                foreach (ConstraintLenth constraintLenth in contour.Lenths)
-                {
-                    if (constraintLenth.IsSupport == false)
-                    {
-                        dxfFile.Entities.Add(new DxfLine(
-                            new DxfPoint(constraintLenth.Point1.X, constraintLenth.Point1.Y, 0),
-                            new DxfPoint(constraintLenth.Point2.X, constraintLenth.Point2.Y, 0)));
-                    }
-                }
-                string path = Path.ChangeExtension(Path.Combine(FileSystem.CacheDirectory, Path.GetTempFileName()), ".dxf");
-                dxfFile.Save(path);
-                paths.Add(path);
-            }
-
-            List<ShareFile> shareFiles = new List<ShareFile>();
-            foreach(string str in paths)
-            {
-                shareFiles.Add(new ShareFile(str));
-            }
-
-            await Share.RequestAsync(new ShareMultipleFilesRequest
-            {
-                Title = "Отправить чертеж",
-                Files = shareFiles
-            });
+            AppShell.ShareOrder(this.order);
         }
     }
 }

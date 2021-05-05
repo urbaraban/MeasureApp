@@ -10,7 +10,7 @@
     <Company>2Build</Company>
     <ApplicationIcon>Sure-Measure-01.ico</ApplicationIcon>
     <PackageIcon>Sure-Measure-01.png</PackageIcon>
-    <RootNamespace>Sure Measure</RootNamespace>
+    <RootNamespace>SureMeasure</RootNamespace>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
   </PropertyGroup>
 
