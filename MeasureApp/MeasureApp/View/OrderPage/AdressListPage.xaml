@@ -39,59 +39,93 @@
             </controls:OrderSearchHandler.ItemTemplate>
         </controls:OrderSearchHandler>
     </Shell.SearchHandler>
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Clear" Priority="0" Clicked="ClearBtn_Clicked" Order="Secondary"/>
+    </ContentPage.ToolbarItems>
     
     <ContentPage.Content>
         <AbsoluteLayout >
-            <ScrollView Orientation="Vertical" HorizontalOptions="FillAndExpand" >
-                <CollectionView x:Name="listView" SelectionMode="Single" Margin="5" HorizontalOptions="FillAndExpand" VerticalScrollBarVisibility="Always">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate>
-                            <Frame Padding="0" Margin="0" HorizontalOptions="Center" BackgroundColor="Transparent">
-                                <Frame BorderColor="LightGray" CornerRadius="0" Padding="0" Margin="2" BackgroundColor="Transparent">
-                                    <Grid HeightRequest="100" RowSpacing="0"
+            <ScrollView Orientation="Vertical" HorizontalOptions="FillAndExpand">
+                <Frame BorderColor="LightGray" Margin="5" Padding="0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                        <Frame BorderColor="LightGray" Padding="5" Margin="0">
+                    <Grid
+                        Margin="5"
+                        Grid.Row="0"
+                        >
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" x:Name="AddBtn" Text="Add" Clicked="AddBtn_Clicked"/>
+                        <Button Grid.Column="1" x:Name="RemoveBtn" Text="Remove" Clicked="RemoveBtn_Clicked"/>
+                    </Grid>
+                        </Frame>
+                        <CollectionView
+                        Grid.Row="1"
+                        x:Name="listView" 
+                        SelectionMode="Single" 
+                        Margin="3" VerticalScrollBarVisibility="Always">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Frame Padding="0" Margin="0" HorizontalOptions="Center" BackgroundColor="Transparent">
+                                        <SwipeView>
+                                            <SwipeView.LeftItems>
+                                                <SwipeItems>
+                                                    <SwipeItem Text="Delete"
+                                                       IconImageSource="delete.png"
+                                                       BackgroundColor="LightPink"/>
+                                                </SwipeItems>
+                                            </SwipeView.LeftItems>
+                                    <Frame BorderColor="LightGray" CornerRadius="0" Padding="0" Margin="2" BackgroundColor="Transparent">
+                                        <Grid HeightRequest="100" RowSpacing="0"
                                   ColumnSpacing="0">
-                                <Grid.RowDefinitions>
-                                            <RowDefinition/>
-                                            <RowDefinition Height="auto"/>
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="auto"/>
-                                        <ColumnDefinition />
-                                </Grid.ColumnDefinitions>
-                                        <Rectangle
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition/>
+                                                <RowDefinition Height="auto"/>
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="auto"/>
+                                                <ColumnDefinition />
+                                            </Grid.ColumnDefinitions>
+                                            <Rectangle
                                         WidthRequest="10"
                                         Grid.RowSpan="2"
                                         Background="DodgerBlue"/>
-                                        <Grid
+                                            <Grid
                                             Grid.Column="1"
                                             Grid.Row="0"
                                               Padding="4" 
                                             HeightRequest="200">
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                                <RowDefinition/>
-                                            </Grid.RowDefinitions>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="auto"/>
-                                                <ColumnDefinition/>
-                                                <ColumnDefinition Width="auto"/>
-                                                <ColumnDefinition Width="auto"/>
-                                            </Grid.ColumnDefinitions>
-                                            <Image
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition/>
+                                                    <RowDefinition/>
+                                                    <RowDefinition/>
+                                                </Grid.RowDefinitions>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="auto"/>
+                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition Width="auto"/>
+                                                    <ColumnDefinition Width="auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Image
                                             Grid.Column="0"
                                             Grid.Row="0"
                                             Grid.RowSpan="3"
                                             Source="SureMeasureLogo.jpg"
                                             WidthRequest="100"
                                             />
-                                            <Label 
+                                                <Label 
                                                 Margin="0"
                                                 Grid.Column="1"
                                                 Grid.Row="0"
                                                 Text="{Binding Name}"
                                                 FontAttributes="Bold"/>
-                                            <Label Grid.Row="1"
+                                                <Label Grid.Row="1"
                                                Grid.Column="1"
                                                Text="{Binding Details}"
                                                FontAttributes="Italic"
@@ -99,13 +133,13 @@
                                                TextColor="DimGray"
                                                MaxLines="1"/>
 
-                                            <Label Grid.Row="2"
+                                                <Label Grid.Row="2"
                                                Grid.Column="1"
                                                Text="{Binding Adress}"
                                                FontAttributes="Italic"
                                                VerticalOptions="Start"
                                                TextColor="DimGray"/>
-                                            <Button
+                                                <Button
                                     Text="Call"
                                     FontSize="Body"
                                     Grid.Column="2"
@@ -115,7 +149,7 @@
                                     BindingContext="{Binding Phone}"
                                     Clicked="CallButton_Clicked"
                                     />
-                                            <Button
+                                                <Button
                                     Text="Way"
                                                 Grid.Column="3"
                                                 Grid.RowSpan="3"
@@ -124,24 +158,24 @@
                                                 Padding="3"
                                     Clicked="WayButton_Clicked"
                                     />
-                                        </Grid>
-                                        <Grid
-                                            BackgroundColor="Gainsboro"
+                                            </Grid>
+                                            <Grid
+
                                             Grid.Column="1"
                                             Grid.Row="1"
                                             HeightRequest="30">
-                                            <Label 
+                                                <Label 
                                                 Grid.Column="0"
                                                 Grid.Row="0"
                                                 Text="{Binding ID}"
                                                VerticalOptions="Center"
                                                HorizontalOptions="Center"/>
-                                            <Label 
+                                                <Label 
                                                 Grid.Column="1"
                                                 Grid.ColumnSpan="3"
                                                 VerticalOptions="Center"
                                                 Text="{Binding Date}"/>
-                                            <Label
+                                                <Label
                                                 Grid.Column="3"
                                                 Text="{Binding Cost}"
                                                 VerticalOptions="Center"
@@ -151,22 +185,17 @@
                                                 Padding="3"
                                                 />
 
+                                            </Grid>
                                         </Grid>
-                                    </Grid>
-                            </Frame>
-                            </Frame>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
+                                    </Frame>
+                                        </SwipeView>
+                                    </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Grid>
+                </Frame>
             </ScrollView>
-            <StackLayout AbsoluteLayout.LayoutBounds="0.98, 0.98, -1, -1" 
-                AbsoluteLayout.LayoutFlags="PositionProportional" WidthRequest="70"
-
-        VerticalOptions="End" HorizontalOptions="End">
-                <Button x:Name="AddBtn" Text="Add" Clicked="AddBtn_Clicked"/>
-                <Button x:Name="RemoveBtn" Text="Remove" Clicked="RemoveBtn_Clicked"/>
-                <Button x:Name="ClearBtn" Text="Clear" Clicked="ClearBtn_Clicked"/>
-            </StackLayout>
         </AbsoluteLayout>
     </ContentPage.Content>
 

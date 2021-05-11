@@ -48,5 +48,7 @@ namespace SureMeasure.Data
         /// Url to xml file
         /// </summary>
         public string XmlUrl { get; set; }
+
+        public double Cost { get; set; }
     }
 }

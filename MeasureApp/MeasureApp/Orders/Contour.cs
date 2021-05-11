@@ -63,7 +63,7 @@ namespace SureMeasure.Orders
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
 
-        public DrawMethod DrawMethod
+        public DrawMethod SelectedDrawMethod
         {
             get => this._drawmethod;
             set
@@ -217,7 +217,7 @@ namespace SureMeasure.Orders
             else if (Object is ConstraintLenth lenthConstrait)
             {
                 this.Lenths.Add(lenthConstrait);
-                if (Last == true && (DrawMethod == DrawMethod.StepByStep || this.BaseLenthConstrait == null))
+                if (Last == true && (SelectedDrawMethod == DrawMethod.StepByStep || this.BaseLenthConstrait == null))
                 {
                     this.BaseLenthConstrait = lenthConstrait;
                     FindContourForLenth(lenthConstrait);
@@ -266,18 +266,18 @@ namespace SureMeasure.Orders
 
                 ConstraintLenth lenthConstrait =
                     new ConstraintLenth(this.BasePoint, point2, tuple.Item1,
-                        this.DrawMethod == DrawMethod.FromPoint && this.LastPoint != this.BasePoint);
+                        this.SelectedDrawMethod == DrawMethod.FromPoint && this.LastPoint != this.BasePoint);
 
                 ConstraintAngle constraintAngle =
                     (ConstraintAngle)this.Add(
                         new ConstraintAngle(this.BaseLenthConstrait, lenthConstrait, tuple.Item2), false);
 
-                if (this.DrawMethod == DrawMethod.FromPoint && this.BasePoint != this.LastPoint)
+                if (this.SelectedDrawMethod == DrawMethod.FromPoint && this.BasePoint != this.LastPoint)
                 {
                     this.Add(new ConstraintLenth(this.LastPoint, point2, -1), false);
                 }
 
-                this.Add(lenthConstrait, this.DrawMethod == DrawMethod.StepByStep);
+                this.Add(lenthConstrait, this.SelectedDrawMethod == DrawMethod.StepByStep);
                 this.Add(point2, true);
                 return true;
             }
@@ -406,5 +406,11 @@ namespace SureMeasure.Orders
         }
 
         public override string ToString() => this.ID;
+
+        public enum DrawMethod
+        {
+            StepByStep,
+            FromPoint
+        }
     }
 }

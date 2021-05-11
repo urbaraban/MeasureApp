@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -67,7 +68,11 @@ namespace SureMeasure.View.OrderPage
 
         private async void CollectionView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
+            var supportsUri = await Launcher.CanOpenAsync((string)e.CurrentSelection[0]);
+            if (supportsUri == true)
+            {
+                await Launcher.OpenAsync((string)e.CurrentSelection[0]);
+            }
         }
 
         private async void ShareBtn_Clicked(object sender, EventArgs e)

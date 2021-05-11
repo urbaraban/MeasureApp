@@ -1,18 +1,14 @@
-﻿using IxMilia.Dxf;
-using IxMilia.Dxf.Entities;
+﻿using Plugin.Segmented.Control;
 using SureMeasure.CadObjects;
 using SureMeasure.Orders;
 using SureMeasure.ShapeObj.Canvas;
-using SureMeasure.ShapeObj.Constraints;
 using SureMeasure.View.OrderPage.Canvas;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Windows.Input;
-using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+using static SureMeasure.Orders.Contour;
 
 namespace SureMeasure.View.OrderPage
 {
@@ -26,6 +22,11 @@ namespace SureMeasure.View.OrderPage
             this.order.Contours.Add(new Contour("Test"));
         });
 
+        public ICommand ChangeDrawMethod => new Command(() =>
+        {
+
+        });
+
         private Order order => (Order)this.BindingContext;
         private Contour contour => (Contour)ContourPicker.SelectedItem;
 
@@ -33,7 +34,6 @@ namespace SureMeasure.View.OrderPage
         {
             InitializeComponent();
             AddBtn.Clicked += AddBtn_Clicked;
-            ClearBtn.Clicked += ClearBtn_Clicked;
             FitBtn.Clicked += FitBtn_Clicked;
             GetBtn.Clicked += GetBtn_Clicked;
 
@@ -41,6 +41,9 @@ namespace SureMeasure.View.OrderPage
             this.BindingContextChanged += CadCanvasPage_BindingContextChanged;
             ContourPicker.SelectedIndexChanged += ContourPicker_SelectedIndexChanged;
             AppShell.LenthUpdated += AppShell_LenthUpdated;
+
+            DrawMethodSelecter.Children.Add(new SegmentedControlOption() { Text = "Step By Step", Item = DrawMethod.StepByStep });
+            DrawMethodSelecter.Children.Add(new SegmentedControlOption() { Text = "From Point", Item = DrawMethod.FromPoint });
 
             if (this.MainCanvas.BindingContext != null)
             {
@@ -72,7 +75,10 @@ namespace SureMeasure.View.OrderPage
 
         private void GetBtn_Clicked(object sender, EventArgs e)
         {
-            AppShell.BLEDevice.OnDevice();
+            if (AppShell.BLEDevice != null)
+            {
+                AppShell.BLEDevice.OnDevice();
+            }
         }
 
         private void MainCanvas_Droped(object sender, DropEventArgs e)
@@ -138,8 +144,6 @@ namespace SureMeasure.View.OrderPage
                 {
                     contour.Paths.Add(new ContourPath(contour.Paths.Count.ToString()));
                 }
-                PathPicker.ItemsSource = contour.Paths;
-                PathPicker.SelectedItem = contour.Paths[0];
                 MainCanvas.BindingContext = contour;
             }
         }
@@ -185,7 +189,7 @@ namespace SureMeasure.View.OrderPage
 
         private void ContourAddBtn_Clicked(object sender, EventArgs e)
         {
-            Contour tempContor = new Contour("Test");
+            Contour tempContor = new Contour($"Contour {this.order.Contours.Count + 1}");
             this.order.Contours.Add(tempContor);
             ContourPicker.ItemsSource = null;
             ContourPicker.ItemsSource = this.order.Contours;
@@ -196,13 +200,37 @@ namespace SureMeasure.View.OrderPage
         {
             if (this.contour != null && sender is Xamarin.Forms.Switch sw)
             {
-                this.contour.DrawMethod = sw.IsToggled == true ? DrawMethod.FromPoint : DrawMethod.StepByStep;
+                this.contour.SelectedDrawMethod = sw.IsToggled == true ? DrawMethod.FromPoint : DrawMethod.StepByStep;
             }
         }
 
         private async void ShareBtn_Clicked(object sender, EventArgs e)
         {
             AppShell.ShareOrder(this.order);
+        }
+
+        private void DrawMethodSelecter_OnSegmentSelected(object sender, Plugin.Segmented.Event.SegmentSelectEventArgs e)
+        {
+            if (DrawMethodSelecter.Children[DrawMethodSelecter.SelectedSegment] is SegmentedControlOption controlOption)
+                this.contour.SelectedDrawMethod = (DrawMethod)controlOption.Item;
+        }
+
+        private void Button_Clicked(object sender, EventArgs e)
+        {
+            if (this.order.Contours.Count > 1)
+            {
+                Contour temp = (Contour)ContourPicker.SelectedItem;
+                this.order.Contours.Remove(temp);
+
+                ContourPicker.ItemsSource = null;
+                ContourPicker.ItemsSource = this.order.Contours;
+                ContourPicker.SelectedItem = this.order.Contours[0];
+            }
+            else if (this.order.Contours.Count == 1)
+            {
+                this.order.Contours[0].Clear();
+            }
+            this.MainCanvas.DrawContour(this.contour);
         }
     }
 }

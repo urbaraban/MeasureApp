@@ -60,7 +60,7 @@ namespace SureMeasure.ShapeObj
             {
                 Center = new Point(CadCanvas.RegularAnchorSize + CadCanvas.RegularAnchorSize / 2, CadCanvas.RegularAnchorSize + CadCanvas.RegularAnchorSize / 2),
                 RadiusX = CadCanvas.RegularAnchorSize,
-                RadiusY = CadCanvas.RegularAnchorSize
+                RadiusY = CadCanvas.RegularAnchorSize,
             };
 
             this.TranslationX = this.X - CadCanvas.RegularAnchorSize - this.StrokeThickness;

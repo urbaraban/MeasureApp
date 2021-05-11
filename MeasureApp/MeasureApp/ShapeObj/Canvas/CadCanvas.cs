@@ -52,16 +52,6 @@ namespace SureMeasure.ShapeObj.Canvas
         private PanGestureRecognizer panGesture = new PanGestureRecognizer();
         private Point startPoint = new Point(0, 0);
 
-        public DrawMethod Method
-        {
-            get => this.Contour.DrawMethod;
-            set
-            {
-                this.Contour.DrawMethod = value;
-                OnPropertyChanged("Method");
-            }
-        }
-
         private Contour Contour;
 
         public CadCanvas()
@@ -254,8 +244,7 @@ namespace SureMeasure.ShapeObj.Canvas
                 double scale = Math.Min(this.MainLayout.Width / (maxX - minX), this.MainLayout.Height / (maxY - minY));
                 this.GroupLayout.Scale = scale * 0.6;
 
-                this.GroupLayout.TranslationX = -(this.GroupLayout.Width / 2 - (this.GroupLayout.Width / 2 - minX) * this.GroupLayout.Scale) + Math.Abs(maxX - minX) * this.GroupLayout.Scale * 0.1 + 50;
-                this.GroupLayout.TranslationY = -(this.GroupLayout.Height / 2 - (this.GroupLayout.Height / 2 - minY) * this.GroupLayout.Scale) + Math.Abs(maxY - minY) * this.GroupLayout.Scale * 0.1 + 50;
+                TranslateToPoint(new Point((minX + maxX) / 2, (minY + maxY) / 2));
 
                 Debug.WriteLine($"Fit{this.GroupLayout.TranslationX - this.MainLayout.Width / 2 / this.GroupLayout.Scale}:{this.GroupLayout.TranslationY - this.MainLayout.Width / 2 / this.GroupLayout.Scale}");
 
@@ -456,9 +445,5 @@ namespace SureMeasure.ShapeObj.Canvas
         }
     }
 
-    public enum DrawMethod
-    {
-        StepByStep,
-        FromPoint
-    }
+
 }

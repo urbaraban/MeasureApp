@@ -134,6 +134,16 @@ namespace SureMeasure.Orders
             }
         }
 
+        public double Cost
+        {
+            get => this.DataItem.Cost;
+            set
+            {
+                this.DataItem.Cost = value;
+                OnPropertyChanged("Cost");
+            }
+        }
+
         public double Perimetr
         {
             get
@@ -180,5 +190,7 @@ namespace SureMeasure.Orders
         {
             return Name;
         }
+
+        
     }
 }

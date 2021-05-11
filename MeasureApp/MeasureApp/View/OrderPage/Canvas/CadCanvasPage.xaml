@@ -1,67 +1,86 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
-             xmlns:shapeobj="clr-namespace:SureMeasure.ShapeObj.Canvas"
+             xmlns:shapeobj="clr-namespace:SureMeasure.ShapeObj.Canvas" xmlns:widget="clr-namespace:Android.Widget;assembly=Mono.Android" xmlns:control="clr-namespace:Plugin.Segmented.Control;assembly=Plugin.Segmented"
              x:Class="SureMeasure.View.OrderPage.CadCanvasPage"
              Title="Drawing">
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="ID"/>
         <ToolbarItem Text="{Binding ID}"/>
-        <ToolbarItem Icon="search.png" Text="Share" Clicked="ShareBtn_Clicked"/>
+        <ToolbarItem Icon="search.png" Text="Share"  Clicked="ShareBtn_Clicked"/>
+        <ToolbarItem Icon="search.png" Text="Clear" Order="Secondary" Clicked="ClearBtn_Clicked"/>
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
-        <StackLayout Orientation="Vertical" VerticalOptions="FillAndExpand">
+        <StackLayout Orientation="Vertical" VerticalOptions="FillAndExpand" >
             <AbsoluteLayout BackgroundColor="White"  VerticalOptions="FillAndExpand">
-                <shapeobj:CadCanvas x:Name="MainCanvas" 
-                                 AbsoluteLayout.LayoutBounds="0,0,1,1" 
-                                 AbsoluteLayout.LayoutFlags="SizeProportional"
-                             Margin="10" IsClippedToBounds="true">
+                <Grid
+                    AbsoluteLayout.LayoutBounds="0,0,1,1" 
+                    AbsoluteLayout.LayoutFlags="SizeProportional">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <shapeobj:CadCanvas x:Name="MainCanvas" 
+                                         AbsoluteLayout.LayoutBounds="0,0,1,1" 
+                                         AbsoluteLayout.LayoutFlags="SizeProportional"
+                                     Margin="10" IsClippedToBounds="true"
+                                           Grid.Row="0"  Grid.RowSpan="4">
+                    </shapeobj:CadCanvas>
 
-                </shapeobj:CadCanvas>
-                <StackLayout Orientation="Vertical">
-                    <StackLayout AbsoluteLayout.LayoutBounds="0,0,1,0.10" 
-                   AbsoluteLayout.LayoutFlags="SizeProportional" 
-                             Orientation="Vertical">
-                        <Grid Margin=" 10">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="2*"/>
-                                <ColumnDefinition Width="1*"/>
-                                <ColumnDefinition Width="1*"/>
-                            </Grid.ColumnDefinitions>
-                            <Picker x:Name="ContourPicker" 
-                                Title="Select contour"
-                                TitleColor="Wheat"
-                                ItemDisplayBinding="{Binding Path=ID}"
-                                Grid.Column="0"/>
-                            <Button x:Name="ContourAddBtn" Text="+" Grid.Column="1" Clicked="ContourAddBtn_Clicked" />
-                            <Button Text="—" Grid.Column="2"/>
-                        </Grid>
-                    </StackLayout>
-                    <StackLayout x:Name="SizePool" Orientation="Horizontal" Padding="5">
-                        
-                    </StackLayout>
-                </StackLayout>
-                
+                    <Grid Margin="10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
+                        <Button Text="-" Grid.Row="0" Grid.Column="0" Clicked="Button_Clicked"/>
+                        <Picker x:Name="ContourPicker" Grid.Column="1"/>
+                        <Button Text="+" Grid.Row="0" Grid.Column="2" Clicked="ContourAddBtn_Clicked"/>
+                        <control:SegmentedControl 
+                            Grid.Row="1"
+                            Grid.ColumnSpan="3"
+                x:Name="DrawMethodSelecter" 
+                            SelectedItem="{Binding SelectedDrawMethod}"
+                TintColor="ForestGreen"
+                BackgroundColor="White"
+                SelectedTextColor="White"
+                TextColor="Black"
+                DisabledColor="Gray"
+                BorderColor="Gainsboro"
+                BorderWidth="1"
+                FontSize="Small"
+                Margin="8,8,8,8"
+                            
+                OnSegmentSelected="DrawMethodSelecter_OnSegmentSelected"/>
 
-                <StackLayout AbsoluteLayout.LayoutBounds="0.98, 0.98, -1, -1" 
-                AbsoluteLayout.LayoutFlags="PositionProportional" WidthRequest="70"
-
-                             VerticalOptions="End" HorizontalOptions="End">
-                    <Picker x:Name="PathPicker" Title="Path" 
-                            HorizontalTextAlignment="Center" 
-                            Margin="0,0,0,100"/>
-                    <Button x:Name="GetBtn" Text="Get"/>
-                    <Button x:Name="AddBtn" Text="Add"/>
-                    <Button x:Name="FitBtn" Text="Fit"/>
-                    <Button x:Name="ClearBtn" Text="Clear"/>
-                    
-                </StackLayout>
-                <StackLayout Padding="20" Orientation="Horizontal" AbsoluteLayout.LayoutBounds="0, 1, -1, -1"
+                        <StackLayout x:Name="SizePool"  Orientation="Horizontal" Padding="5" Grid.Row="2" />
+                    </Grid>
+                    <Grid 
+                    Grid.Row="3"
+                    Padding="20" 
+                      HorizontalOptions="FillAndExpand"
+                      AbsoluteLayout.LayoutBounds="0, 1, -1, 1"
                              AbsoluteLayout.LayoutFlags="PositionProportional">
-                    <Switch Toggled="Switch_Toggled"/>
-                    <Label x:Name="DrawMethodLabel" Text="DrawMethod" VerticalOptions="Center"/>
-                </StackLayout>
-                <StackLayout Orientation="Horizontal" ></StackLayout>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button x:Name="GetBtn" Grid.Column="2" CornerRadius="30" VerticalOptions="Center" HorizontalOptions="Center" WidthRequest="60" HeightRequest="60" Text="ᛒ"/>
+                    <Button x:Name="AddBtn" Grid.Column="1" Text="✚" VerticalOptions="Center" HorizontalOptions="Center" CornerRadius="30" WidthRequest="60" HeightRequest="60"/>
+                    <Button x:Name="FitBtn" Grid.Column="0" Text="⟺" VerticalOptions="Center" HorizontalOptions="Center" CornerRadius="30" WidthRequest="60" HeightRequest="60"/>
+                </Grid>
+
+                </Grid>
             </AbsoluteLayout>
         </StackLayout>
     </ContentPage.Content>

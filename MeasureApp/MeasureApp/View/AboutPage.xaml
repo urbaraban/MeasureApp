@@ -4,7 +4,7 @@
              x:Class="SureMeasure.View.AboutPage">
     <ContentPage.Content>
         <StackLayout Margin="30">
-            <Label Text="Привет! Я Urbaraban и это приложение создано мной. Если у тебя есть какие то мысли и предложения, то ты можешь мне написать, например, в телеграме по этому нику."
+            <Label Text="Привет! Я Urbaraban и это приложение создано мной. Если у тебя есть какие то мысли и предложения, то ты можешь мне написать, например в телеграме, по этому нику."
                 VerticalOptions="CenterAndExpand" 
                 HorizontalOptions="CenterAndExpand" />
         </StackLayout>

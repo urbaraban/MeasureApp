@@ -92,7 +92,7 @@ namespace SureMeasure.ShapeObj
 
         private void CadCanvas_RegularSize(object sender, double e)
         {
-            this.StrokeThickness = 5 * 1 / e;
+            this.StrokeThickness = 5 / e;
         }
 
         private void Anchors_Changed(object sender, EventArgs e)
