@@ -20,6 +20,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\Fonts\Segoemdl2assets.ttf" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="InTheHand.BluetoothLE" Version="4.0.19" />
     <PackageReference Include="IxMilia.Dxf" Version="0.8.0" />
     <PackageReference Include="Plugin.SegmentedControl.Netstandard" Version="5.4.5" />
@@ -61,6 +65,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="images\logo\" />
+    <None Remove="Resources\Fonts\Segoe-mdl2-assets.ttf" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Fonts\Segoe-mdl2-assets.ttf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Resources\images\logo\" />
   </ItemGroup>
 </Project>

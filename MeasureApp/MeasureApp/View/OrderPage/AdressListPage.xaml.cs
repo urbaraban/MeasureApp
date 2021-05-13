@@ -75,6 +75,7 @@ namespace SureMeasure.View.OrderPage
                         if (orderDataItem.ID == AppShell.SelectOrder.ID)
                         {
                             listView.SelectedItem = orderDataItem;
+                            listView.ScrollTo(listView.SelectedItem);
                         }
                     }
                 }
@@ -120,6 +121,17 @@ namespace SureMeasure.View.OrderPage
                 var options = new MapLaunchOptions { NavigationMode = NavigationMode.Driving };
                 await Map.OpenAsync(new Location(55.045258, 82.867106), options);
             }
+        }
+
+        private async void SwipeItem_Invoked(object sender, EventArgs e)
+        {
+            if (sender is OrderDataItem dataItem)
+            {
+
+                xmlrw.Remove(dataItem.XmlUrl);
+                await AppShell.OrdersDB.DeleteItemAsync(dataItem);
+            }
+            UpdateList();
         }
     }
 }

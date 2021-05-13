@@ -16,7 +16,7 @@ namespace SureMeasure.ShapeObj
         });
         private ICommand Remove => new Command(async () =>
         {
-            this.TryRemove();
+            this.cadPoint.TryRemove();
         });
         private ICommand LastPoint => new Command(async () =>
         {

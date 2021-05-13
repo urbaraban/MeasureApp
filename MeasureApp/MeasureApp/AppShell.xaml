@@ -5,6 +5,7 @@
        xmlns:orderPage="clr-namespace:SureMeasure.View.OrderPage"
        Title="SureMeasure"
        x:Class="SureMeasure.AppShell"
+       xmlns:common="clr-namespace:SureMeasure.Common"
        WidthRequest="200">
 
     <!--
@@ -85,14 +86,43 @@
     </Shell.FlyoutHeader>
 
     <FlyoutItem Title="Draw" Icon="icon_about.png">
-        <ShellContent Title="Draw" Icon="icon_feed.png" ContentTemplate="{DataTemplate orderPage:CadCanvasPage}" />
-        <ShellContent Title="Adress" Icon="icon_about.png" Route="AdressListPage" ContentTemplate="{DataTemplate orderPage:AdressListPage}" />
-        <ShellContent Title="Info" Icon="icon_feed.png" ContentTemplate="{DataTemplate orderPage:ContourInfoPage}" />
+        <ShellContent Title="Draw" ContentTemplate="{DataTemplate orderPage:CadCanvasPage}">
+            <ShellContent.Icon>
+                <FontImageSource
+                                    FontFamily="SegoeAssets"
+                                    Glyph="{x:Static common:IconFont.EditPage}"
+                                    Color="White"
+                                    Size="24"/>
+            </ShellContent.Icon>
+        </ShellContent>
+        <ShellContent Title="Detail" ContentTemplate="{DataTemplate orderPage:ContourInfoPage}">
+            <ShellContent.Icon>
+                <FontImageSource
+                                    FontFamily="SegoeAssets"
+                                    Glyph="{x:Static common:IconFont.Calculator}"
+                                    Color="White"
+                                    Size="24"/>
+            </ShellContent.Icon>
+        </ShellContent>
+        <ShellContent Title="Orders" Route="AdressListPage" ContentTemplate="{DataTemplate orderPage:AdressListPage}">
+            <ShellContent.Icon>
+                <FontImageSource
+                                    FontFamily="SegoeAssets"
+                                    Glyph="{x:Static common:IconFont.OrderPage}"
+                                    Color="White"
+                                    Size="24"/>
+            </ShellContent.Icon>
+        </ShellContent>
+
     </FlyoutItem>
 
-    <MenuItem Text="Device"
-              IconImageSource="random.png"
-              Clicked="DeviceItem_Clicked" />
+    <MenuItem Text="Device"  Clicked="DeviceItem_Clicked" >
+        <MenuItem.IconImageSource>
+            <FontImageSource
+                                    FontFamily="SegoeAssets"
+                                    Glyph="{x:Static common:IconFont.Bluetooth}"/>
+        </MenuItem.IconImageSource>
+    </MenuItem>
 
     <FlyoutItem Title="About" Icon="icon_about.png">
         <ShellContent Route="AboutPage" ContentTemplate="{DataTemplate local:AboutPage}" />

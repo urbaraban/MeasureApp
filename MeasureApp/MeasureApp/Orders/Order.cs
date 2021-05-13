@@ -1,22 +1,28 @@
-﻿using SureMeasure.Data;
-using System;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using Xamarin.Essentials;
-using System.IO;
-using System.Collections.ObjectModel;
-
-namespace SureMeasure.Orders
+﻿namespace SureMeasure.Orders
 {
+    using SureMeasure.Data;
+    using System;
+    using System.Collections.ObjectModel;
+    using System.ComponentModel;
+    using System.IO;
+    using System.Runtime.CompilerServices;
+    using Xamarin.Essentials;
+
+    /// <summary>
+    /// Defines the <see cref="Order" />.
+    /// </summary>
     public class Order : INotifyPropertyChanged
     {
+        /// <summary>
+        /// Gets a value indicating whether IsAlive.
+        /// </summary>
         public bool IsAlive
         {
             get
             {
                 foreach (Contour contour in this.Contours)
                 {
-                    foreach(ContourPath contourPath in contour.Paths)
+                    foreach (ContourPath contourPath in contour.Paths)
                     {
                         if (contourPath.Count > 0) return true;
                     }
@@ -25,8 +31,14 @@ namespace SureMeasure.Orders
             }
         }
 
+        /// <summary>
+        /// Gets the DataItem.
+        /// </summary>
         public OrderDataItem DataItem { get; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Order"/> class.
+        /// </summary>
         public Order()
         {
             this.DataItem = new OrderDataItem()
@@ -42,6 +54,10 @@ namespace SureMeasure.Orders
             };
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Order"/> class.
+        /// </summary>
+        /// <param name="orderDataItem">The orderDataItem<see cref="OrderDataItem"/>.</param>
         public Order(OrderDataItem orderDataItem)
         {
             this.DataItem = orderDataItem;
@@ -53,14 +69,21 @@ namespace SureMeasure.Orders
                 if (File.Exists(path) == true) this.ImagesUrls.Add(path);
             }
         }
+
         /// <summary>
-        /// Name or other label
+        /// Gets the ID
+        /// Name or other label.
         /// </summary>
-        /// 
         public int ID { get => this.DataItem.ID; }
 
+        /// <summary>
+        /// Gets the Date.
+        /// </summary>
         public string Date => this.DataItem.Date.ToLocalTime().ToString("d:M:y");
 
+        /// <summary>
+        /// Gets or sets the Name.
+        /// </summary>
         public string Name
         {
             get => this.DataItem.Name;
@@ -72,11 +95,15 @@ namespace SureMeasure.Orders
         }
 
         /// <summary>
-        /// Url image for picker
+        /// Gets or sets the ImagesUrls
+        /// Url image for picker.
         /// </summary>
         public ObservableCollection<string> ImagesUrls { get; set; } = new ObservableCollection<string>();
 
-
+        /// <summary>
+        /// The AddPhoto.
+        /// </summary>
+        /// <param name="Path">The Path<see cref="string"/>.</param>
         public void AddPhoto(string Path)
         {
             if (string.IsNullOrEmpty(Path) == false)
@@ -87,6 +114,10 @@ namespace SureMeasure.Orders
             }
         }
 
+        /// <summary>
+        /// The RemovePhoto.
+        /// </summary>
+        /// <param name="path">The path<see cref="string"/>.</param>
         public void RemovePhoto(string path)
         {
             ImagesUrls.Remove(path);
@@ -94,7 +125,8 @@ namespace SureMeasure.Orders
         }
 
         /// <summary>
-        /// Location order.
+        /// Gets or sets the Location
+        /// Location order..
         /// </summary>
         public Location Location
         {
@@ -105,6 +137,9 @@ namespace SureMeasure.Orders
             }
         }
 
+        /// <summary>
+        /// Gets or sets the Adress.
+        /// </summary>
         public string Adress
         {
             get => this.DataItem.Adress;
@@ -114,6 +149,9 @@ namespace SureMeasure.Orders
             }
         }
 
+        /// <summary>
+        /// Gets or sets the Details.
+        /// </summary>
         public string Details
         {
             get => this.DataItem.Details;
@@ -124,6 +162,9 @@ namespace SureMeasure.Orders
             }
         }
 
+        /// <summary>
+        /// Gets or sets the Phone.
+        /// </summary>
         public string Phone
         {
             get => this.DataItem.PhoneNumber == null ? "+7999999" : this.DataItem.PhoneNumber;
@@ -134,6 +175,9 @@ namespace SureMeasure.Orders
             }
         }
 
+        /// <summary>
+        /// Gets or sets the Cost.
+        /// </summary>
         public double Cost
         {
             get => this.DataItem.Cost;
@@ -144,7 +188,10 @@ namespace SureMeasure.Orders
             }
         }
 
-        public double Perimetr
+        /// <summary>
+        /// Gets the Perimetre.
+        /// </summary>
+        public double Perimetre
         {
             get
             {
@@ -153,10 +200,14 @@ namespace SureMeasure.Orders
                 {
                     perimetr += contour.Perimetr;
                 }
-                return Math.Round(perimetr / 1000, 1);
+                this.DataItem.Perimetre = Math.Round(perimetr / 1000, 1);
+                return this.DataItem.Perimetre;
             }
         }
 
+        /// <summary>
+        /// Gets the Area.
+        /// </summary>
         public double Area
         {
             get
@@ -166,31 +217,48 @@ namespace SureMeasure.Orders
                 {
                     area += contour.Area;
                 }
-                return Math.Round(area / 1000000, 2, MidpointRounding.ToEven);
+                this.DataItem.Area = Math.Round(area / 1000000, 2, MidpointRounding.ToEven);
+                return this.DataItem.Area;
             }
         }
 
+        /// <summary>
+        /// Defines the Contours.
+        /// </summary>
         public ObservableCollection<Contour> Contours = new ObservableCollection<Contour>();
 
+        /// <summary>
+        /// Defines the PropertyChanged.
+        /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
 
+        /// <summary>
+        /// The OnPropertyChanged.
+        /// </summary>
+        /// <param name="prop">The prop<see cref="string"/>.</param>
         public void OnPropertyChanged([CallerMemberName] string prop = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
 
+        /// <summary>
+        /// The UpdateBinding.
+        /// </summary>
         public void UpdateBinding()
         {
             OnPropertyChanged("Area");
-            OnPropertyChanged("Perimetr");
+            OnPropertyChanged("Perimetre");
+            OnPropertyChanged("Sqare");
             OnPropertyChanged("ImagesUrls");
         }
 
+        /// <summary>
+        /// The ToString.
+        /// </summary>
+        /// <returns>The <see cref="string"/>.</returns>
         public override string ToString()
         {
             return Name;
         }
-
-        
     }
 }

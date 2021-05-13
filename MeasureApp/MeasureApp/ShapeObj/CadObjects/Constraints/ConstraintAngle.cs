@@ -59,6 +59,15 @@ namespace SureMeasure.CadObjects.Constraints
 
             this.Point1.PropertyChanged += CadanchorMiddle_PropertyChanged;
             this.Point3.PropertyChanged += CadanchorEnd_PropertyChanged;
+
+            this.Point1.Removed += Point1_Removed;
+            this.Point2.Removed += Point1_Removed;
+            this.Point3.Removed += Point1_Removed;
+        }
+
+        private void Point1_Removed(object sender, bool e)
+        {
+            this.Removed?.Invoke(this, true);
         }
 
         public void Remove()
@@ -131,6 +140,11 @@ namespace SureMeasure.CadObjects.Constraints
 
         public void TryRemove()
         {
+            this.Point1.Removed -= Point1_Removed;
+            this.Point2.Removed -= Point1_Removed;
+            this.Point3.Removed -= Point1_Removed;
+            Point1.PropertyChanged -= CadanchorMiddle_PropertyChanged;
+            Point3.PropertyChanged -= CadanchorEnd_PropertyChanged;
             Removed?.Invoke(this, true);
         }
     }

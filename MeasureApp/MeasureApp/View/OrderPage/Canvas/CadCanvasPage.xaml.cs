@@ -2,6 +2,7 @@
 using SureMeasure.CadObjects;
 using SureMeasure.Orders;
 using SureMeasure.ShapeObj.Canvas;
+using SureMeasure.Tools;
 using SureMeasure.View.OrderPage.Canvas;
 using System;
 using System.Diagnostics;
@@ -17,15 +18,18 @@ namespace SureMeasure.View.OrderPage
     {
         public static CadVariable MeasureVariable;
 
-        public ICommand AddContour => new Command(async () =>
+        public ICommand AddContour => new Command(() =>
         {
-            this.order.Contours.Add(new Contour("Test"));
+            Contour tempContor = new Contour($"Contour {this.order.Contours.Count + 1}");
+            this.order.Contours.Add(tempContor);
+            ContourPicker.Dispatcher.BeginInvokeOnMainThread(() =>
+            {
+                ContourPicker.ItemsSource = null;
+                ContourPicker.ItemsSource = this.order.Contours;
+                ContourPicker.SelectedItem = tempContor;
+            });
         });
 
-        public ICommand ChangeDrawMethod => new Command(() =>
-        {
-
-        });
 
         private Order order => (Order)this.BindingContext;
         private Contour contour => (Contour)ContourPicker.SelectedItem;
@@ -37,7 +41,6 @@ namespace SureMeasure.View.OrderPage
             FitBtn.Clicked += FitBtn_Clicked;
             GetBtn.Clicked += GetBtn_Clicked;
 
-            this.MainCanvas.Droped += MainCanvas_Droped;
             this.BindingContextChanged += CadCanvasPage_BindingContextChanged;
             ContourPicker.SelectedIndexChanged += ContourPicker_SelectedIndexChanged;
             AppShell.LenthUpdated += AppShell_LenthUpdated;
@@ -81,16 +84,6 @@ namespace SureMeasure.View.OrderPage
             }
         }
 
-        private void MainCanvas_Droped(object sender, DropEventArgs e)
-        {
-            if (sender is CadCanvas)
-            {
-                if (e.Data.Properties["Message"] != null)
-                {
-                   contour.BuildLine(ConvertDimMessage(e.Data.Properties["Message"].ToString()), true);
-                }
-            }
-        }
 
         private void AppShell_UpdatedOrder(object sender, Order e) => this.BindingContext = e;
 
@@ -128,7 +121,7 @@ namespace SureMeasure.View.OrderPage
             {
                 if (order.Contours.Count < 1)
                 {
-                    order.Contours.Add(new Contour("Test"));
+                    order.Contours.Add(new Contour($"Contour {this.order.Contours.Count + 1}"));
                 }
                 ContourPicker.ItemsSource = order.Contours;
                 ContourPicker.SelectedItem = order.Contours[0];
@@ -165,27 +158,11 @@ namespace SureMeasure.View.OrderPage
             string result = await DisplayPromptAsync("Добавить линию", "Мне нужны твоя длинна и угол", "Add", "Cancel", "0000&00", -1, Keyboard.Numeric, $"{random.Next(250, 1000)}&{random.Next(45, 270)}");
             if (string.IsNullOrEmpty(result) == false)
             {
-                contour.BuildLine(ConvertDimMessage(result));
+                contour.BuildLine(Converters.ConvertDimMessage(result));
             }
         }
 
-        private Tuple<double, double> ConvertDimMessage(string message)
-        {
-            double LineLenth = -1;
-            double LineAngle = -1;
-
-            if (string.IsNullOrEmpty(message) == false)
-            {
-                string[] strings = message.Split('&');
-                LineLenth = double.Parse(strings[0]);
-                LineAngle = -1;
-                if (strings.Length > 1)
-                {
-                    LineAngle = double.Parse(strings[1]);
-                }
-            }
-            return new Tuple<double, double>(LineLenth, LineAngle);
-        }
+        
 
         private void ContourAddBtn_Clicked(object sender, EventArgs e)
         {

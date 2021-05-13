@@ -19,6 +19,10 @@ namespace SureMeasure.Data
 
         public DateTime Date { get; set; }
 
+        public double Area { get; set; }
+
+        public double Perimetre { get; set; }
+
         public string Name { get; set; }
 
         /// <summary>

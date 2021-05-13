@@ -1,8 +1,10 @@
 ﻿using SureMeasure.CadObjects;
 using SureMeasure.CadObjects.Constraints;
+using SureMeasure.CadObjects.Interface;
 using SureMeasure.Orders;
 using SureMeasure.ShapeObj.Constraints;
 using SureMeasure.ShapeObj.Interface;
+using SureMeasure.Tools;
 using System;
 using System.Diagnostics;
 using System.Windows.Input;
@@ -46,8 +48,6 @@ namespace SureMeasure.ShapeObj.Canvas
         private AbsoluteLayout AnchorLayout;
         private DynamicBackground BackgroundLayout;
         #endregion
-
-        public event EventHandler<DropEventArgs> Droped;
 
         private PanGestureRecognizer panGesture = new PanGestureRecognizer();
         private Point startPoint = new Point(0, 0);
@@ -124,15 +124,21 @@ namespace SureMeasure.ShapeObj.Canvas
             this.GestureRecognizers.Add(dropGestureRecognizer);
         }
 
-        private void TapGestureRecognizer_Tapped(object sender, EventArgs e)
-        {
-            
-        }
 
         private void DropGestureRecognizer_Drop(object sender, DropEventArgs e)
         {
-            Droped?.Invoke(this, e);
+            if (e.Data.Properties["Object"] is CadObject cadObjects)
+            {
+                
+            }
+            if (e.Data.Properties["Message"] != null)
+            {
+                this.Contour.BuildLine(Converters.ConvertDimMessage(e.Data.Properties["Message"].ToString()), true);
+            }
+            
         }
+
+
 
         private void CadCanvas_BindingContextChanged(object sender, EventArgs e)
         {

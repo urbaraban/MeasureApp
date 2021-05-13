@@ -3,11 +3,22 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
              xmlns:shapeobj="clr-namespace:SureMeasure.ShapeObj.Canvas" xmlns:widget="clr-namespace:Android.Widget;assembly=Mono.Android" xmlns:control="clr-namespace:Plugin.Segmented.Control;assembly=Plugin.Segmented"
              x:Class="SureMeasure.View.OrderPage.CadCanvasPage"
+             xmlns:common="clr-namespace:SureMeasure.Common"
              Title="Drawing">
+    <ContentPage.Resources>
+    </ContentPage.Resources>
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="ID"/>
         <ToolbarItem Text="{Binding ID}"/>
-        <ToolbarItem Icon="search.png" Text="Share"  Clicked="ShareBtn_Clicked"/>
+        <ToolbarItem Text="Share"  Clicked="ShareBtn_Clicked">
+            <ToolbarItem.IconImageSource>
+                <FontImageSource
+                                    FontFamily="SegoeAssets"
+                                    Glyph="{x:Static common:IconFont.Share}"
+                                    Color="White"
+                                    Size="30"/>
+            </ToolbarItem.IconImageSource>
+        </ToolbarItem>
         <ToolbarItem Icon="search.png" Text="Clear" Order="Secondary" Clicked="ClearBtn_Clicked"/>
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
@@ -35,31 +46,75 @@
                             <ColumnDefinition Width="1*"/>
                             <ColumnDefinition Width="auto"/>
                             <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="auto"/>
                             <RowDefinition Height="auto"/>
                             <RowDefinition Height="auto"/>
                         </Grid.RowDefinitions>
-                        <Button Text="-" Grid.Row="0" Grid.Column="0" Clicked="Button_Clicked"/>
-                        <Picker x:Name="ContourPicker" Grid.Column="1"/>
-                        <Button Text="+" Grid.Row="0" Grid.Column="2" Clicked="ContourAddBtn_Clicked"/>
+                        <Button Grid.Row="0"
+                                Grid.Column="0"
+                                WidthRequest="40" HeightRequest="40" CornerRadius="20"
+                                VerticalOptions="Center" 
+                                Padding="0" FontSize="Large"
+                                Clicked="Button_Clicked">
+                            <Button.ImageSource>
+                                <FontImageSource
+                                    FontFamily="SegoeAssets"
+                                    Glyph="{x:Static common:IconFont.Minus}"
+                                    Color="White"
+                                    Size="18"/>
+                            </Button.ImageSource>
+                        </Button>
+                        <Picker x:Name="ContourPicker" Grid.Column="1" Grid.ColumnSpan="2"/>
+                        <Button Grid.Row="0" 
+                                WidthRequest="40" HeightRequest="40" CornerRadius="20"
+                                VerticalOptions="Center" 
+                                Padding="0" FontSize="Large" 
+                                Grid.Column="4" 
+                                Command="{Binding AddContour}">
+                            <Button.ImageSource>
+                                <FontImageSource
+                                    FontFamily="SegoeAssets"
+                                    Glyph="{x:Static common:IconFont.Plus}"
+                                    Color="White"
+                                    Size="18"/>
+                            </Button.ImageSource>
+                        </Button>
                         <control:SegmentedControl 
                             Grid.Row="1"
-                            Grid.ColumnSpan="3"
-                x:Name="DrawMethodSelecter" 
+                            Grid.ColumnSpan="2"
+                            x:Name="DrawMethodSelecter" 
                             SelectedItem="{Binding SelectedDrawMethod}"
-                TintColor="ForestGreen"
-                BackgroundColor="White"
-                SelectedTextColor="White"
-                TextColor="Black"
-                DisabledColor="Gray"
-                BorderColor="Gainsboro"
-                BorderWidth="1"
-                FontSize="Small"
-                Margin="8,8,8,8"
+                            TintColor="{StaticResource Primary}"
+                            BackgroundColor="White"
+                            SelectedTextColor="White"
+                            TextColor="Black"
+                            DisabledColor="Gray"
+
+                            FontSize="Small"
+                            Margin="8,8,8,8"
                             
                 OnSegmentSelected="DrawMethodSelecter_OnSegmentSelected"/>
+                        <Button Grid.Row="1" Grid.Column="2" FontSize="Large" CornerRadius="10" HeightRequest="30" WidthRequest="80">
+                            <Button.ImageSource>
+                                <FontImageSource
+                                    FontFamily="SegoeAssets"
+                                    Glyph="{x:Static common:IconFont.Undo}"
+                                    Color="White"
+                                    Size="20"/>
+                            </Button.ImageSource>
+                        </Button>
+                        <Button Grid.Row="1" Grid.Column="4" FontSize="Large" CornerRadius="10" HeightRequest="30" WidthRequest="40">
+                            <Button.ImageSource>
+                                <FontImageSource
+                                    FontFamily="SegoeAssets"
+                                    Glyph="{x:Static common:IconFont.Redo}"
+                                    Color="White"
+                                    Size="20"/>
+                            </Button.ImageSource>
+                        </Button>
 
                         <StackLayout x:Name="SizePool"  Orientation="Horizontal" Padding="5" Grid.Row="2" />
                     </Grid>
@@ -75,10 +130,36 @@
                         <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
 
-                    <Button x:Name="GetBtn" Grid.Column="2" CornerRadius="30" VerticalOptions="Center" HorizontalOptions="Center" WidthRequest="60" HeightRequest="60" Text="ᛒ"/>
-                    <Button x:Name="AddBtn" Grid.Column="1" Text="✚" VerticalOptions="Center" HorizontalOptions="Center" CornerRadius="30" WidthRequest="60" HeightRequest="60"/>
-                    <Button x:Name="FitBtn" Grid.Column="0" Text="⟺" VerticalOptions="Center" HorizontalOptions="Center" CornerRadius="30" WidthRequest="60" HeightRequest="60"/>
-                </Grid>
+                        <Button x:Name="GetBtn" Grid.Column="2" CornerRadius="30" FontSize="Large" VerticalOptions="Center" HorizontalOptions="Center" WidthRequest="60" HeightRequest="60">
+                            <Button.ImageSource>
+                                <FontImageSource
+                                    FontFamily="SegoeAssets"
+                                    Glyph="{x:Static common:IconFont.Device}"
+                                    Color="White"
+                                    Size="24"/>
+                            </Button.ImageSource>
+                        </Button>
+                        <Button x:Name="AddBtn" Grid.Column="1"  VerticalOptions="Center" HorizontalOptions="Center" CornerRadius="30" WidthRequest="60" HeightRequest="60">
+                            <Button.ImageSource>
+                                <FontImageSource
+                                    FontFamily="SegoeAssets"
+                                    Glyph="{x:Static common:IconFont.Plus}"
+                                    Color="White"
+                                    Size="24"/>
+                            </Button.ImageSource>
+                        </Button>
+                        <Button x:Name="FitBtn" Grid.Column="0"
+                                FontSize="Large" VerticalOptions="Center" HorizontalOptions="Center" CornerRadius="30" WidthRequest="60" HeightRequest="60">
+                            <Button.ImageSource>
+                                <FontImageSource
+                                    FontFamily="SegoeAssets"
+                                    Glyph="{x:Static common:IconFont.FitPage}"
+                                    Color="White"
+                                    Size="30"/> 
+                            </Button.ImageSource>
+                        </Button>
+
+                    </Grid>
 
                 </Grid>
             </AbsoluteLayout>

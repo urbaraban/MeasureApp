@@ -1,203 +1,330 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:controls="clr-namespace:SureMeasure.OrderPage.Controls"
-             x:Class="SureMeasure.View.OrderPage.AdressListPage"
-             Title="Orders"
-             WidthRequest="100">
+<ContentPage
+    x:Class="SureMeasure.View.OrderPage.AdressListPage"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:common="clr-namespace:SureMeasure.Common"
+    xmlns:controls="clr-namespace:SureMeasure.OrderPage.Controls"
+    Title="Orders"
+    WidthRequest="100">
     <Shell.SearchHandler>
-        <controls:OrderSearchHandler Placeholder="Enter search term"
-                                         ShowsResults="true"
-                                        DisplayMemberName="Name">
+        <controls:OrderSearchHandler
+            DisplayMemberName="Name"
+            Placeholder="Enter search term"
+            ShowsResults="true">
             <controls:OrderSearchHandler.ItemTemplate>
                 <DataTemplate>
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="auto" />
                         </Grid.ColumnDefinitions>
-                        <Label 
+                        <Label
                             Grid.Column="0"
-                            Text="{Binding ID}"
                             FontSize="Large"
                             HorizontalTextAlignment="Center"
-                            VerticalTextAlignment="Center"/>
-                        <Label 
+                            Text="{Binding ID}"
+                            VerticalTextAlignment="Center" />
+                        <Label
                             Grid.Column="1"
+                            FontSize="Large"
+                            HorizontalTextAlignment="Start"
                             Text="{Binding Name}"
-                            FontSize="Large"
-                            HorizontalTextAlignment="Start"
-                            VerticalTextAlignment="Center"/>
-                        <Label 
+                            VerticalTextAlignment="Center" />
+                        <Label
                             Grid.Column="2"
-                            Text="{Binding Adress}"
                             FontSize="Large"
                             HorizontalTextAlignment="Start"
-                            VerticalTextAlignment="Center"/>
+                            Text="{Binding Adress}"
+                            VerticalTextAlignment="Center" />
                     </Grid>
                 </DataTemplate>
             </controls:OrderSearchHandler.ItemTemplate>
         </controls:OrderSearchHandler>
     </Shell.SearchHandler>
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Clear" Priority="0" Clicked="ClearBtn_Clicked" Order="Secondary"/>
+        <ToolbarItem
+            Clicked="ClearBtn_Clicked"
+            Order="Secondary"
+            Priority="0"
+            Text="Clear" />
     </ContentPage.ToolbarItems>
-    
+
     <ContentPage.Content>
-        <AbsoluteLayout >
-            <ScrollView Orientation="Vertical" HorizontalOptions="FillAndExpand">
-                <Frame BorderColor="LightGray" Margin="5" Padding="0">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
-                        <Frame BorderColor="LightGray" Padding="5" Margin="0">
-                    <Grid
-                        Margin="5"
-                        Grid.Row="0"
-                        >
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <Button Grid.Column="0" x:Name="AddBtn" Text="Add" Clicked="AddBtn_Clicked"/>
-                        <Button Grid.Column="1" x:Name="RemoveBtn" Text="Remove" Clicked="RemoveBtn_Clicked"/>
-                    </Grid>
-                        </Frame>
-                        <CollectionView
-                        Grid.Row="1"
-                        x:Name="listView" 
-                        SelectionMode="Single" 
-                        Margin="3" VerticalScrollBarVisibility="Always">
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate>
-                                <Frame Padding="0" Margin="0" HorizontalOptions="Center" BackgroundColor="Transparent">
-                                        <SwipeView>
-                                            <SwipeView.LeftItems>
-                                                <SwipeItems>
-                                                    <SwipeItem Text="Delete"
-                                                       IconImageSource="delete.png"
-                                                       BackgroundColor="LightPink"/>
-                                                </SwipeItems>
-                                            </SwipeView.LeftItems>
-                                    <Frame BorderColor="LightGray" CornerRadius="0" Padding="0" Margin="2" BackgroundColor="Transparent">
-                                        <Grid HeightRequest="100" RowSpacing="0"
-                                  ColumnSpacing="0">
+        <ScrollView
+            HorizontalOptions="FillAndExpand"
+            Orientation="Vertical"
+            VerticalOptions="Start"
+            VerticalScrollBarVisibility="Always">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <CollectionView
+                    x:Name="listView"
+                    Grid.Row="1"
+                    Margin="3"
+                    SelectionMode="Single">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Frame
+                                Margin="0"
+                                Padding="0"
+                                BackgroundColor="Transparent"
+                                HorizontalOptions="Center">
+                                <SwipeView>
+
+                                    <SwipeView.RightItems>
+                                        <SwipeItem
+                                            BackgroundColor="LightPink"
+                                            IconImageSource="delete.png"
+                                            Invoked="SwipeItem_Invoked"
+                                            Text="Delete" />
+                                    </SwipeView.RightItems>
+                                    <Frame
+                                        Margin="2"
+                                        Padding="0"
+                                        BackgroundColor="Transparent"
+                                        BorderColor="LightGray"
+                                        CornerRadius="0">
+                                        <Grid
+                                            ColumnSpacing="0"
+                                            HeightRequest="100"
+                                            RowSpacing="0">
                                             <Grid.RowDefinitions>
-                                                <RowDefinition/>
-                                                <RowDefinition Height="auto"/>
+                                                <RowDefinition />
+                                                <RowDefinition Height="auto" />
                                             </Grid.RowDefinitions>
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="auto"/>
-                                                <ColumnDefinition />
+                                                <ColumnDefinition Width="auto" />
+                                                <ColumnDefinition Width="auto" />
                                             </Grid.ColumnDefinitions>
                                             <Rectangle
-                                        WidthRequest="10"
-                                        Grid.RowSpan="2"
-                                        Background="DodgerBlue"/>
-                                            <Grid
-                                            Grid.Column="1"
-                                            Grid.Row="0"
-                                              Padding="4" 
-                                            HeightRequest="200">
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition/>
-                                                    <RowDefinition/>
-                                                    <RowDefinition/>
-                                                </Grid.RowDefinitions>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="auto"/>
-                                                    <ColumnDefinition/>
-                                                    <ColumnDefinition Width="auto"/>
-                                                    <ColumnDefinition Width="auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <Image
-                                            Grid.Column="0"
-                                            Grid.Row="0"
-                                            Grid.RowSpan="3"
-                                            Source="SureMeasureLogo.jpg"
-                                            WidthRequest="100"
-                                            />
-                                                <Label 
-                                                Margin="0"
+                                                Grid.RowSpan="2"
+                                                Background="DodgerBlue"
+                                                WidthRequest="10" />
+                                            <Frame
+                                                Grid.Row="0"
                                                 Grid.Column="1"
-                                                Grid.Row="0"
-                                                Text="{Binding Name}"
-                                                FontAttributes="Bold"/>
-                                                <Label Grid.Row="1"
-                                               Grid.Column="1"
-                                               Text="{Binding Details}"
-                                               FontAttributes="Italic"
-                                               VerticalOptions="Start"
-                                               TextColor="DimGray"
-                                               MaxLines="1"/>
+                                                Padding="0"
+                                                BackgroundColor="Transparent"
+                                                HorizontalOptions="Center">
+                                                <Grid
+                                                    Grid.Row="0"
+                                                    Grid.Column="1"
+                                                    Padding="4"
+                                                    HeightRequest="200">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition />
+                                                        <RowDefinition />
+                                                        <RowDefinition />
+                                                    </Grid.RowDefinitions>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition />
+                                                        <ColumnDefinition />
+                                                        <ColumnDefinition />
+                                                        <ColumnDefinition />
+                                                    </Grid.ColumnDefinitions>
+                                                    <Image
+                                                        Grid.Row="0"
+                                                        Grid.RowSpan="3"
+                                                        Grid.Column="0"
+                                                        Source="SureMeasureLogo.jpg"
+                                                        WidthRequest="100" />
+                                                    <Label
+                                                        Grid.Row="0"
+                                                        Grid.Column="1"
+                                                        Margin="0"
+                                                        FontAttributes="Bold"
+                                                        Text="{Binding Name}" />
+                                                    <Label
+                                                        Grid.Row="1"
+                                                        Grid.Column="1"
+                                                        FontAttributes="Italic"
+                                                        MaxLines="1"
+                                                        Text="{Binding Details}"
+                                                        VerticalOptions="Start" />
 
-                                                <Label Grid.Row="2"
-                                               Grid.Column="1"
-                                               Text="{Binding Adress}"
-                                               FontAttributes="Italic"
-                                               VerticalOptions="Start"
-                                               TextColor="DimGray"/>
-                                                <Button
-                                    Text="Call"
-                                    FontSize="Body"
-                                    Grid.Column="2"
-                                    WidthRequest="50"
-                                                Padding="3"
-                                                Grid.RowSpan="3"
-                                    BindingContext="{Binding Phone}"
-                                    Clicked="CallButton_Clicked"
-                                    />
-                                                <Button
-                                    Text="Way"
-                                                Grid.Column="3"
-                                                Grid.RowSpan="3"
-                                    BindingContext="{Binding Location}"
-                                    WidthRequest="50"
-                                                Padding="3"
-                                    Clicked="WayButton_Clicked"
-                                    />
-                                            </Grid>
-                                            <Grid
-
-                                            Grid.Column="1"
-                                            Grid.Row="1"
-                                            HeightRequest="30">
-                                                <Label 
-                                                Grid.Column="0"
-                                                Grid.Row="0"
-                                                Text="{Binding ID}"
-                                               VerticalOptions="Center"
-                                               HorizontalOptions="Center"/>
-                                                <Label 
+                                                    <Label
+                                                        Grid.Row="2"
+                                                        Grid.Column="1"
+                                                        FontAttributes="Italic"
+                                                        Text="{Binding Adress}"
+                                                        VerticalOptions="Start" />
+                                                    <Button
+                                                        Grid.RowSpan="3"
+                                                        Grid.Column="2"
+                                                        Padding="3"
+                                                        BackgroundColor="Transparent"
+                                                        BindingContext="{Binding Phone}"
+                                                        Clicked="CallButton_Clicked"
+                                                        FontSize="Body"
+                                                        WidthRequest="50">
+                                                        <Button.ImageSource>
+                                                            <FontImageSource
+                                                                FontFamily="SegoeAssets"
+                                                                Glyph="{x:Static common:IconFont.Phone}"
+                                                                Size="24"
+                                                                Color="Gray" />
+                                                        </Button.ImageSource>
+                                                    </Button>
+                                                    <Button
+                                                        Grid.RowSpan="3"
+                                                        Grid.Column="3"
+                                                        Padding="3"
+                                                        BackgroundColor="Transparent"
+                                                        BindingContext="{Binding Location}"
+                                                        Clicked="WayButton_Clicked"
+                                                        WidthRequest="50">
+                                                        <Button.ImageSource>
+                                                            <FontImageSource
+                                                                FontFamily="SegoeAssets"
+                                                                Glyph="{x:Static common:IconFont.Car}"
+                                                                Size="24"
+                                                                Color="Gray" />
+                                                        </Button.ImageSource>
+                                                    </Button>
+                                                </Grid>
+                                            </Frame>
+                                            <Frame
+                                                Grid.Row="1"
                                                 Grid.Column="1"
                                                 Grid.ColumnSpan="3"
-                                                VerticalOptions="Center"
-                                                Text="{Binding Date}"/>
-                                                <Label
-                                                Grid.Column="3"
-                                                Text="{Binding Cost}"
-                                                VerticalOptions="Center"
-                                                HorizontalOptions="Center"
-                                                TextColor="DodgerBlue"
-                                                FontAttributes="Bold"
-                                                Padding="3"
-                                                />
+                                                Padding="0"
+                                                BackgroundColor="Transparent"
+                                                HeightRequest="30">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="1*" />
+                                                        <ColumnDefinition Width="auto" />
+                                                        <ColumnDefinition Width="2*" />
+                                                        <ColumnDefinition Width="0.5*" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <Label
+                                                        Grid.Row="0"
+                                                        Grid.Column="0"
+                                                        HorizontalOptions="Center"
+                                                        Text="{Binding ID}"
+                                                        VerticalOptions="Center" />
+                                                    <Label
+                                                        Grid.Column="1"
+                                                        Text="{Binding Date, StringFormat='{0:MMMM dd, yyyy}'}"
+                                                        VerticalOptions="Center" />
 
-                                            </Grid>
+                                                    <Grid Grid.Column="2" Grid.ColumnSpan="1">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="auto" />
+                                                            <ColumnDefinition />
+                                                            <ColumnDefinition Width="auto" />
+                                                            <ColumnDefinition />
+                                                        </Grid.ColumnDefinitions>
+                                                        <Label
+                                                            Grid.Column="0"
+                                                            Padding="3"
+                                                            FontAttributes="Bold"
+                                                            HorizontalOptions="Start"
+                                                            Text="S"
+                                                            TextColor="DodgerBlue"
+                                                            VerticalOptions="Center" />
+                                                        <Label
+                                                            Grid.Column="1"
+                                                            Padding="3"
+                                                            FontAttributes="Bold"
+                                                            HorizontalOptions="Start"
+                                                            Text="{Binding Area}"
+                                                            TextColor="DodgerBlue"
+                                                            VerticalOptions="Center" />
+                                                        <Label
+                                                            Grid.Column="2"
+                                                            Padding="3"
+                                                            FontAttributes="Bold"
+                                                            HorizontalOptions="Start"
+                                                            Text="P"
+                                                            TextColor="DodgerBlue"
+                                                            VerticalOptions="Center" />
+                                                        <Label
+                                                            Grid.Column="3"
+                                                            Padding="3"
+                                                            FontAttributes="Bold"
+                                                            HorizontalOptions="Start"
+                                                            Text="{Binding Perimetre}"
+                                                            TextColor="DodgerBlue"
+                                                            VerticalOptions="Center" />
+                                                    </Grid>
+                                                    <Label
+                                                        Grid.Column="3"
+                                                        Padding="5,5,15,5"
+                                                        FontAttributes="Bold"
+                                                        HorizontalOptions="End"
+                                                        Text="{Binding Cost}"
+                                                        TextColor="DodgerBlue"
+                                                        VerticalOptions="Center" />
+
+                                                </Grid>
+                                            </Frame>
                                         </Grid>
-                                    </Frame>
-                                        </SwipeView>
-                                    </Frame>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
-                </Grid>
-                </Frame>
-            </ScrollView>
-        </AbsoluteLayout>
-    </ContentPage.Content>
 
-    
+                                    </Frame>
+                                </SwipeView>
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup Name="CommonStates">
+                                        <VisualState Name="Normal" />
+                                        <VisualState Name="Selected">
+                                            <VisualState.Setters>
+                                                <Setter Property="BackgroundColor" Value="Yellow" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                            </Frame>
+
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0" Margin="5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Button
+                            x:Name="AddBtn"
+                            Grid.Column="0"
+                            Clicked="AddBtn_Clicked"
+                            FontFamily="SegoeAssets">
+                            <Button.ImageSource>
+                                <FontImageSource
+                                    FontFamily="SegoeAssets"
+                                    Glyph="{x:Static common:IconFont.Plus}"
+                                    Size="20"
+                                    Color="White" />
+                            </Button.ImageSource>
+                        </Button>
+                        <Button
+                            x:Name="RemoveBtn"
+                            Grid.Column="1"
+                            BackgroundColor="IndianRed"
+                            Clicked="RemoveBtn_Clicked">
+                            <Button.ImageSource>
+                                <FontImageSource
+                                    FontFamily="SegoeAssets"
+                                    Glyph="{x:Static common:IconFont.Remove}"
+                                    Size="20"
+                                    Color="White" />
+                            </Button.ImageSource>
+                        </Button>
+                    </Grid>
+
+                </Grid>
+
+            </Grid>
+        </ScrollView>
+    </ContentPage.Content>
 </ContentPage>

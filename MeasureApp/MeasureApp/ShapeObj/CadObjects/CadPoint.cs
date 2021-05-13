@@ -1,4 +1,5 @@
 ﻿using SureMeasure.CadObjects.Interface;
+using SureMeasure.ShapeObj;
 using SureMeasure.ShapeObj.Canvas;
 using SureMeasure.ShapeObj.Constraints;
 using SureMeasure.ShapeObj.Interface;

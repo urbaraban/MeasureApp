@@ -108,7 +108,9 @@ namespace SureMeasure.ShapeObj.Constraints
         public void TryRemove()
         {
             UnSubAnchor(this.Point1);
+            this.Point1.TryRemove();
             UnSubAnchor(this.Point2);
+            this.Point2.TryRemove();
             this.Variable.PropertyChanged -= Variable_PropertyChanged;
             Removed?.Invoke(this, true);
         }

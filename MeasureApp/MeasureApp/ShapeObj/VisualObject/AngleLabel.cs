@@ -30,6 +30,10 @@ namespace SureMeasure.ShapeObj
         {
             this._angleConstrait.Variable.Value = -1;
         });
+        private ICommand Remove => new Command(async () =>
+        {
+            this._angleConstrait.TryRemove();
+        });
 
         private List<SheetMenuItem> commands = new List<SheetMenuItem>();
 
@@ -48,14 +52,21 @@ namespace SureMeasure.ShapeObj
             this.VerticalTextAlignment = TextAlignment.End;
             this.BackgroundColor = Color.Yellow;
             this._angleConstrait.PropertyChanged += AngleConstrait_PropertyChanged;
+            this._angleConstrait.Removed += _angleConstrait_Removed;
             CadCanvas.RegularSize += CadCanvas_RegularSize;
 
             this.commands.Add(new SheetMenuItem(CallValueDialog, "{CALL_VALUE_DIALOG}"));
             this.commands.Add(new SheetMenuItem(Measure, "{MEASURE}"));
             this.commands.Add(new SheetMenuItem(InvertAngle, "{INVERT_ANGLE}"));
             this.commands.Add(new SheetMenuItem(FreeAngle, "{FREE_ANGLE}"));
+            this.commands.Add(new SheetMenuItem(Remove, "{REMOVE}"));
 
             this.SheetMenu = new SheetMenu(this.commands);
+        }
+
+        private void _angleConstrait_Removed(object sender, bool e)
+        {
+            this.TryRemove();
         }
 
         private void AngleConstrait_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
