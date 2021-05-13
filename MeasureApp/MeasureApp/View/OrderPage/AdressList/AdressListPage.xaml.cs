@@ -125,11 +125,13 @@ namespace SureMeasure.View.OrderPage
 
         private async void SwipeItem_Invoked(object sender, EventArgs e)
         {
-            if (sender is OrderDataItem dataItem)
+            if (sender is SwipeItem swipeItem)
             {
-
-                xmlrw.Remove(dataItem.XmlUrl);
-                await AppShell.OrdersDB.DeleteItemAsync(dataItem);
+                if (swipeItem.BindingContext is OrderDataItem dataItem)
+                {
+                    xmlrw.Remove(dataItem.XmlUrl);
+                    await AppShell.OrdersDB.DeleteItemAsync(dataItem);
+                }
             }
             UpdateList();
         }

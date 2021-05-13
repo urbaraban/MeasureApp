@@ -112,7 +112,7 @@
                             <Button.ImageSource>
                                 <FontImageSource
                                     FontFamily="SegoeAssets"
-                                    Glyph="{x:Static common:IconFont.Car}"
+                                    Glyph="{x:Static common:IconFont.Map}"
                                     Size="24"
                                     Color="White" />
                             </Button.ImageSource>
@@ -215,7 +215,7 @@
                                                 Aspect="AspectFit"
                                                 BackgroundColor="Azure"
                                                 HeightRequest="100"
-                                                Source="{Binding .}" />
+                                                Source="{Binding .}"/>
                                         </DataTemplate>
                                     </CollectionView.ItemTemplate>
                                 </CollectionView>

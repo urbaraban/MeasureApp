@@ -23,5 +23,6 @@ namespace SureMeasure.Common
 		public const string Camera = "\uE722";
 		public const string PhotoGallery = "\uE7C5";
 		public const string Calculator = "\uE8EF";
+		public const string Map = "\uE707";
 	}
 }

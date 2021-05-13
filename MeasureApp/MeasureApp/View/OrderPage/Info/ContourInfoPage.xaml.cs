@@ -1,4 +1,6 @@
-﻿using SureMeasure.Orders;
+﻿using Rg.Plugins.Popup.Extensions;
+using SureMeasure.Orders;
+using SureMeasure.View.OrderPage.Popup;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -68,11 +70,7 @@ namespace SureMeasure.View.OrderPage
 
         private async void CollectionView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var supportsUri = await Launcher.CanOpenAsync((string)e.CurrentSelection[0]);
-            if (supportsUri == true)
-            {
-                await Launcher.OpenAsync((string)e.CurrentSelection[0]);
-            }
+           await Navigation.PushPopupAsync(new ImagePopUp((string)ImageGallery.SelectedItem, GetOrder.ImagesUrls));
         }
 
         private async void ShareBtn_Clicked(object sender, EventArgs e)
