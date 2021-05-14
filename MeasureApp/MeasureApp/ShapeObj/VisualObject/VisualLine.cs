@@ -12,6 +12,8 @@ namespace SureMeasure.ShapeObj
         private ConstraintLenth constraintLenth;
         public event EventHandler<bool> Removed;
 
+        private LineGeometry lineGeometry => (LineGeometry)this.Data;
+
         public new Xamarin.Forms.Rectangle Bounds => new Xamarin.Forms.Rectangle(
             Math.Min(constraintLenth.Point1.OX, constraintLenth.Point2.OX), 
             Math.Min(constraintLenth.Point1.OY, constraintLenth.Point2.OY), 
@@ -24,6 +26,7 @@ namespace SureMeasure.ShapeObj
         /// <param name="anchorAnchorLenth"></param>
         public VisualLine(ConstraintLenth anchorAnchorLenth)
         {
+            this.Data = new LineGeometry();
             this.HorizontalOptions = LayoutOptions.Start;
             this.VerticalOptions = LayoutOptions.Start;
             this.StrokeThickness = 5;
@@ -77,17 +80,15 @@ namespace SureMeasure.ShapeObj
             double MaxX = Math.Max(this.constraintLenth.Point2.OX, this.constraintLenth.Point1.OX) + CadCanvas.RegularAnchorSize;
             double MaxY = Math.Max(this.constraintLenth.Point2.OY, this.constraintLenth.Point1.OY) + CadCanvas.RegularAnchorSize;
 
-            LineGeometry lineGeometry = new LineGeometry()
+            this.Data = new LineGeometry()
             {
                 StartPoint = new Point(this.constraintLenth.Point1.OX, this.constraintLenth.Point1.OY),
                 EndPoint = new Point(this.constraintLenth.Point2.OX, this.constraintLenth.Point2.OY)
             };
 
-            Xamarin.Forms.Device.InvokeOnMainThreadAsync(() => {
+            this.lineGeometry.Dispatcher.BeginInvokeOnMainThread(() => {
                 this.Layout(new Xamarin.Forms.Rectangle(0, 0, MaxX, MaxY));
             });
-
-            this.Data = lineGeometry;
         }
 
         private void CadCanvas_RegularSize(object sender, double e)

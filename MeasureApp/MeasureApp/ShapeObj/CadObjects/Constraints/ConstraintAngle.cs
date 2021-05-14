@@ -3,6 +3,7 @@ using SureMeasure.ShapeObj;
 using SureMeasure.ShapeObj.Constraints;
 using SureMeasure.Tools;
 using System;
+using System.Numerics;
 
 namespace SureMeasure.CadObjects.Constraints
 {
@@ -112,6 +113,8 @@ namespace SureMeasure.CadObjects.Constraints
         {
             if (this.Running == false && this.Variable.Value > -1)
             {
+                Vector2.Transform(new Vector2(), Quaternion.CreateFromAxisAngle(new Vector3(0f, 0f, 1f), 15f));
+
                 this.Running = true;
 
                 if (LastPoint.IsFix == false)
@@ -123,11 +126,11 @@ namespace SureMeasure.CadObjects.Constraints
                 {
                     if (anchorAnchor1.GetNotThisPoint(FirstPoint) is CadPoint cadPoint1)
                     {
-                        anchorAnchor1.MakeMagic(cadPoint1, FirstPoint);
+                      // anchorAnchor1.MakeMagic(MiddlePoint, FirstPoint);
                     }
                     else if (anchorAnchor2.GetNotThisPoint(FirstPoint) is CadPoint cadPoint2)
                     {
-                        anchorAnchor2.MakeMagic(cadPoint2, FirstPoint);
+                      // anchorAnchor2.MakeMagic(MiddlePoint, FirstPoint);
                     }
                     double lenth = Sizing.PtPLenth(MiddlePoint, FirstPoint);
                     FirstPoint.Update(Sizing.GetPositionLineFromAngle(LastPoint, MiddlePoint, lenth, 360 - angle));

@@ -81,13 +81,6 @@ namespace SureMeasure
 
             AppShell.Instance = this;
             AppShell.SelectOrder = new Order();
-
-            AdressListPage.SelectedOrderItem += AdressListPage_UpdatedOrder;
-        }
-
-        private void AdressListPage_UpdatedOrder(object sender, Order e)
-        {
-            AppShell.SelectOrder = e;
         }
 
         private async void OnMenuItemClicked(object sender, EventArgs e)

@@ -82,7 +82,7 @@ namespace SureMeasure.View.OrderPage
 
         private async void MapButton_Clicked(object sender, EventArgs e)
         {
-            await Navigation.PushPopupAsync(new MapPopup());
+            //await Navigation.PushPopupAsync(new MapPopup());
         }
     }
 }

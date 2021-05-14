@@ -1,27 +1,60 @@
-﻿using SureMeasure.CadObjects;
-using SureMeasure.CadObjects.Interface;
-using SureMeasure.Tools;
-using System;
-
-namespace SureMeasure.ShapeObj.Constraints
+﻿namespace SureMeasure.ShapeObj.Constraints
 {
+    using SureMeasure.CadObjects;
+    using SureMeasure.CadObjects.Interface;
+    using SureMeasure.Tools;
+    using System;
+    using System.Numerics;
+
+    /// <summary>
+    /// Defines the <see cref="ConstraintLenth" />.
+    /// </summary>
     public class ConstraintLenth : CadConstraint, CadObject
     {
+        /// <summary>
+        /// Defines the Changed.
+        /// </summary>
         public event EventHandler Changed;
-        public event EventHandler<bool> Removed;
-        public override event EventHandler<bool> Selected;
-        public override event EventHandler<bool> Supported;
-
-        public Orientaton Orientation = Orientaton.OFF; // -1 — Off, 0 — Vetical, 1 — Horizontal
 
         /// <summary>
-        /// Set temp attribute on this constaint
+        /// Defines the Removed.
         /// </summary>
+        public event EventHandler<bool> Removed;
 
+        /// <summary>
+        /// Defines the Selected.
+        /// </summary>
+        public override event EventHandler<bool> Selected;
+
+        /// <summary>
+        /// Defines the Supported.
+        /// </summary>
+        public override event EventHandler<bool> Supported;
+
+        /// <summary>
+        /// Defines the Orientation.
+        /// </summary>
+        public Orientaton Orientation = Orientaton.OFF;// -1 — Off, 0 — Vetical, 1 — Horizontal
+
+        /// <summary>
+        /// Gets or sets the Point1
+        /// Set temp attribute on this constaint.
+        /// </summary>
         public CadPoint Point1 { get; set; }
-        public CadPoint Point2 { get; set; }
 
-        public double Lenth 
+        /// <summary>
+        /// Gets or sets the Point2.
+        /// </summary>
+        public CadPoint Point2 { get; set; }
+        /// <summary>
+        /// Get line Vector
+        /// </summary>
+        public Vector2 Vector  => Vector2.Normalize(new Vector2((float)(Point2.X - Point1.X), (float)(Point2.Y - Point1.Y)));
+
+        /// <summary>
+        /// Gets or sets the Lenth.
+        /// </summary>
+        public double Lenth
         {
             get => this.Variable.Value < 0 ? Sizing.PtPLenth(this.Point1, this.Point2) : this.Variable.Value;
             set
@@ -31,6 +64,9 @@ namespace SureMeasure.ShapeObj.Constraints
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether IsSelect.
+        /// </summary>
         public override bool IsSelect
         {
             get => this._isselect;
@@ -40,8 +76,15 @@ namespace SureMeasure.ShapeObj.Constraints
                 Selected?.Invoke(this, this._isselect);
             }
         }
+
+        /// <summary>
+        /// Defines the _isselect.
+        /// </summary>
         private bool _isselect = false;
 
+        /// <summary>
+        /// Gets or sets a value indicating whether IsSupport.
+        /// </summary>
         public override bool IsSupport
         {
             get => this._issupport;
@@ -51,10 +94,24 @@ namespace SureMeasure.ShapeObj.Constraints
                 Supported?.Invoke(this, this._issupport);
             }
         }
+
+        /// <summary>
+        /// Defines the _issupport.
+        /// </summary>
         private bool _issupport = false;
 
+        /// <summary>
+        /// Gets the ID.
+        /// </summary>
         public override string ID => Point1.ID + Point2.ID;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConstraintLenth"/> class.
+        /// </summary>
+        /// <param name="point1">The point1<see cref="CadPoint"/>.</param>
+        /// <param name="point2">The point2<see cref="CadPoint"/>.</param>
+        /// <param name="Lenth">The Lenth<see cref="double"/>.</param>
+        /// <param name="isSupport">The isSupport<see cref="bool"/>.</param>
         public ConstraintLenth(CadPoint point1, CadPoint point2, double Lenth, bool isSupport = false)
         {
             this.Point1 = point1;
@@ -74,6 +131,11 @@ namespace SureMeasure.ShapeObj.Constraints
             this.Point2.Removed += Point_Removed;
         }
 
+        /// <summary>
+        /// The Point_Removed.
+        /// </summary>
+        /// <param name="sender">The sender<see cref="object"/>.</param>
+        /// <param name="e">The e<see cref="bool"/>.</param>
         private void Point_Removed(object sender, bool e)
         {
             if (this.Point1 == sender || this.Point2 == sender)
@@ -82,9 +144,14 @@ namespace SureMeasure.ShapeObj.Constraints
             }
         }
 
+        /// <summary>
+        /// The Point_ChangedPoint.
+        /// </summary>
+        /// <param name="sender">The sender<see cref="object"/>.</param>
+        /// <param name="e">The e<see cref="CadPoint"/>.</param>
         private void Point_ChangedPoint(object sender, CadPoint e)
         {
-            if (this.Point1 == sender) 
+            if (this.Point1 == sender)
             {
                 UnSubAnchor(this.Point1);
                 this.Point1 = e;
@@ -99,12 +166,19 @@ namespace SureMeasure.ShapeObj.Constraints
             Changed?.Invoke(this, null);
         }
 
+        /// <summary>
+        /// The Fix.
+        /// </summary>
+        /// <param name="state">The state<see cref="bool"/>.</param>
         public void Fix(bool state)
         {
             this.Point1.IsFix = state;
             this.Point2.IsFix = state;
         }
 
+        /// <summary>
+        /// The TryRemove.
+        /// </summary>
         public void TryRemove()
         {
             UnSubAnchor(this.Point1);
@@ -115,16 +189,29 @@ namespace SureMeasure.ShapeObj.Constraints
             Removed?.Invoke(this, true);
         }
 
+        /// <summary>
+        /// The UnSubAnchor.
+        /// </summary>
+        /// <param name="cadPoint">The cadPoint<see cref="CadPoint"/>.</param>
         public void UnSubAnchor(CadPoint cadPoint)
         {
             cadPoint.PropertyChanged -= Point_PropertyChanged;
         }
 
+        /// <summary>
+        /// The SubAnchor.
+        /// </summary>
+        /// <param name="cadPoint">The cadPoint<see cref="CadPoint"/>.</param>
         public void SubAnchor(CadPoint cadPoint)
         {
             cadPoint.PropertyChanged += Point_PropertyChanged;
         }
 
+        /// <summary>
+        /// The GetNotThisPoint.
+        /// </summary>
+        /// <param name="cadPoint">The cadPoint<see cref="CadPoint"/>.</param>
+        /// <returns>The <see cref="CadPoint"/>.</returns>
         public CadPoint GetNotThisPoint(CadPoint cadPoint)
         {
             if (this.Point1 == cadPoint) return this.Point2;
@@ -132,62 +219,71 @@ namespace SureMeasure.ShapeObj.Constraints
             return null;
         }
 
+        /// <summary>
+        /// The ToString.
+        /// </summary>
+        /// <returns>The <see cref="string"/>.</returns>
         public override string ToString()
         {
             return $"{this.ID}:{Lenth.ToString()}";
         }
 
+        /// <summary>
+        /// The Variable_PropertyChanged.
+        /// </summary>
+        /// <param name="sender">The sender<see cref="object"/>.</param>
+        /// <param name="e">The e<see cref="System.ComponentModel.PropertyChangedEventArgs"/>.</param>
         private void Variable_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            MakeMagic(this.Point1, this.Point2);
+            if (this.IsFix == false)
+            {
+                if (MakeMagic(this.Point1, this.Vector, false) == false)
+                {
+                    MakeMagic(this.Point2, this.Vector, true);
+                }
+            }
+            this.Running = false;
         }
 
+        /// <summary>
+        /// The Point_PropertyChanged.
+        /// </summary>
+        /// <param name="sender">The sender<see cref="object"/>.</param>
+        /// <param name="e">The e<see cref="System.ComponentModel.PropertyChangedEventArgs"/>.</param>
         private void Point_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            MakeMagic((CadPoint)sender, sender != this.Point2 ? this.Point2 : this.Point1);
+            if (sender is CadPoint cadPoint1 && this.GetNotThisPoint(cadPoint1) is CadPoint cadPoint2)
+            {
+                if (MakeMagic(cadPoint1, this.Vector, cadPoint1 != this.Point1) == false)
+                {
+                    MakeMagic(cadPoint2, this.Vector, cadPoint2 != this.Point1);
+                }
+            }
+            this.Running = false;
         }
 
-        public void MakeMagic(CadPoint cadPoint1, CadPoint cadPoint2)
+        /// <summary>
+        /// The MakeMagic.
+        /// </summary>
+        /// <param name="cadPoint1">The cadPoint1<see cref="CadPoint"/>.</param>
+        /// <param name="cadPoint2">The cadPoint2<see cref="CadPoint"/>.</param>
+        public bool MakeMagic(CadPoint startPoint, Vector2 vector2, bool Inversion)
         {
-            //Debug.WriteLine($"MakeMagicLine {cadPoint1.ID}{cadPoint2.ID}");
-
             if (this.Running == false)
             {
                 this.Running = true;
-                if (cadPoint2.IsFix == false)
-                {
-                    if (this.Variable.Value > -1 &&
-                        this.Variable.Value != Sizing.PtPLenth(cadPoint1, cadPoint2) &&
-                        CadConstraint.RuntimeConstraits.Contains(this) == false &&
-                        CadConstraint.FixedPoint.Contains(cadPoint1) == false)
-                    {
-                        CadConstraint.AddRunConstrait(this, cadPoint1);
-                        if (this.Orientation == Orientaton.OFF)
-                        {
-                            cadPoint2.Update(Sizing.GetPostionOnLine(cadPoint1, cadPoint2, this.Lenth), true);
-                        }
-                        else
-                        {
-                            int vectorX = cadPoint1.X < cadPoint2.X ? 1 : -1;
-                            int vectorY = cadPoint1.Y < cadPoint2.Y ? 1 : -1;
-                            cadPoint2.Update(this.Orientation == Orientaton.Vertical ? cadPoint1.X : cadPoint1.X + this.Lenth * vectorX,
-                                this.Orientation == Orientaton.Vertical ? cadPoint1.Y + this.Lenth * vectorY : cadPoint1.Y, true);
-                        }
-                        CadConstraint.RemoveRunConstrait(this, cadPoint1);
-                    }
-                }
-                else if (cadPoint1.IsFix == false)
-                {
-                    this.Running = false;
-                    MakeMagic(cadPoint2, cadPoint1);
-
-                }
-                this.Running = false;
+                this.Changed?.Invoke(this, null);
+                return this.GetNotThisPoint(startPoint).Update(
+                        startPoint.X + vector2.X * this.Lenth * (Inversion == true ? -1 : 1),
+                        startPoint.Y + vector2.Y * this.Lenth * (Inversion == true ? -1 : 1));
             }
-
-            this.Changed?.Invoke(this, null);
+            return false;
         }
 
+        /// <summary>
+        /// The GetInvertClone.
+        /// </summary>
+        /// <returns>The <see cref="ConstraintLenth"/>.</returns>
         public ConstraintLenth GetInvertClone()
         {
             return new ConstraintLenth(this.Point2, this.Point1, this.Lenth, this.IsSupport);

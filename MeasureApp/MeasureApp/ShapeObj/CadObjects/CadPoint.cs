@@ -182,18 +182,21 @@ namespace SureMeasure.CadObjects
             {
                 this._x = cadPoint.X;
                 this._y = cadPoint.Y;
+                OnPropertyChanged("Point");
             }
-            OnPropertyChanged("Point");
+            
         }
 
-        public void Update(Point Point, bool Constraint = false)
+        public bool Update(Point Point, bool Constraint = false)
         {
             if (this.IsFix == false)
             {
                 this._x = Point.X;
                 this._y = Point.Y;
+                OnPropertyChanged("Point");
+                return true;
             }
-            OnPropertyChanged("Point");
+            return false;
         }
 
         public void Add(Point cadPoint)
@@ -202,11 +205,16 @@ namespace SureMeasure.CadObjects
             this._y += cadPoint.Y;
         }
 
-        public void Update(double X, double Y, bool Constraint = false)
+        public bool Update(double X, double Y)
         {
-            this._x = X;
-            this._y = Y;
-            OnPropertyChanged("Point");
+            if (this.IsFix == false)
+            {
+                this._x = X;
+                this._y = Y;
+                OnPropertyChanged("Point");
+                return true;
+            }
+            return false;
         }
 
         public override string ToString()

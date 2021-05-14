@@ -1,7 +1,6 @@
 ﻿using SureMeasure.Data;
 using SureMeasure.Orders;
 using System;
-using System.Collections.Generic;
 using System.Windows.Input;
 using Xamarin.Essentials;
 using Xamarin.Forms;
@@ -12,8 +11,6 @@ namespace SureMeasure.View.OrderPage
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class AdressListPage : ContentPage
     {
-        public static event EventHandler<Order> SelectedOrderItem;
-
         public ICommand AddItem => new Command(async () =>
         {
             
@@ -43,8 +40,17 @@ namespace SureMeasure.View.OrderPage
         {
             if (e.CurrentSelection[0] is OrderDataItem dataItem)
             {
-                Order order = xmlrw.Read(dataItem);
-                SelectedOrderItem(this, order == null ? new Order(dataItem) : order);
+                if (AppShell.SelectOrder.ID != dataItem.ID)
+                {
+                    if (xmlrw.Read(dataItem) is Order order)
+                    {
+                        AppShell.SelectOrder = order;
+                    }
+                    else
+                    {
+                        AppShell.SelectOrder = new Order(dataItem);
+                    }
+                }
             }
         }
 

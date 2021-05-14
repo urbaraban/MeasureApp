@@ -8,7 +8,6 @@ namespace SureMeasure.ShapeObj.Constraints
 {
     public abstract class CadConstraint : INotifyPropertyChanged 
     {
-
         #region static
         public static List<CadPoint> FixedPoint = new List<CadPoint>();
         public static List<CadConstraint> RuntimeConstraits = new List<CadConstraint>();
