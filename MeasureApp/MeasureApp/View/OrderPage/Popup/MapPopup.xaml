@@ -1,10 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <pages:PopupPage
-    x:Class="SureMeasure.View.OrderPage.Popup.ImagePopUp"
+    x:Class="SureMeasure.View.OrderPage.Popup.MapPopup"
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:animations="clr-namespace:Rg.Plugins.Popup.Animations;assembly=Rg.Plugins.Popup"
-    xmlns:pages="clr-namespace:Rg.Plugins.Popup.Pages;assembly=Rg.Plugins.Popup">
+    xmlns:pages="clr-namespace:Rg.Plugins.Popup.Pages;assembly=Rg.Plugins.Popup"
+    xmlns:maps="clr-namespace:Xamarin.Forms.Maps;assembly=Xamarin.Forms.Maps">
     <pages:PopupPage.Animation>
         <animations:ScaleAnimation
             DurationIn="400"
@@ -17,22 +18,16 @@
     </pages:PopupPage.Animation>
     <!--  You can use any elements here which are extended from Xamarin.Forms.View  -->
     <StackLayout HorizontalOptions="FillAndExpand" VerticalOptions="EndAndExpand">
-        <Frame CornerRadius="20" HorizontalOptions="FillAndExpand">
+        <Frame
+            CornerRadius="20"
+            HorizontalOptions="FillAndExpand">
             <StackLayout VerticalOptions="StartAndExpand">
-                <CarouselView x:Name="Carusel">
-                    <CarouselView.ItemTemplate>
-                        <DataTemplate>
-                            <Image
-                                Margin="3,0,3,0"
-                                Aspect="AspectFit"
-                                Source="{Binding .}" />
-                        </DataTemplate>
-                    </CarouselView.ItemTemplate>
-                </CarouselView>
+                <maps:Map 
+                    IsShowingUser="True"
+                    MapType="Street" />
                 <Label Text="This is test label" />
                 <Button Clicked="CloseButton_Clicked" Text="close" />
             </StackLayout>
         </Frame>
-
     </StackLayout>
 </pages:PopupPage>

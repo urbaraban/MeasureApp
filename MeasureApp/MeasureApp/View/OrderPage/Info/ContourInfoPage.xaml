@@ -108,7 +108,7 @@
                     BorderColor="LightGray">
                     <Grid>
                         <Entry Grid.ColumnSpan="3" Text="{Binding Adress}" />
-                        <Button Grid.Column="3">
+                        <Button Grid.Column="3" Clicked="MapButton_Clicked">
                             <Button.ImageSource>
                                 <FontImageSource
                                     FontFamily="SegoeAssets"
@@ -203,7 +203,6 @@
                                     Grid.Column="1"
                                     HeightRequest="100"
                                     ItemsSource="{Binding ImagesUrls}"
-                                    SelectionChanged="CollectionView_SelectionChanged"
                                     SelectionMode="Single">
                                     <CollectionView.ItemsLayout>
                                         <GridItemsLayout Orientation="Horizontal" />
@@ -213,9 +212,12 @@
                                             <Image
                                                 Margin="3,0,3,0"
                                                 Aspect="AspectFit"
-                                                BackgroundColor="Azure"
                                                 HeightRequest="100"
-                                                Source="{Binding .}"/>
+                                                Source="{Binding .}">
+                                                <Image.GestureRecognizers>
+                                                    <TapGestureRecognizer Tapped="ImageTapGestureRecognizer_Tapped" />
+                                                </Image.GestureRecognizers>
+                                            </Image>
                                         </DataTemplate>
                                     </CollectionView.ItemTemplate>
                                 </CollectionView>

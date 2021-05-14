@@ -68,14 +68,21 @@ namespace SureMeasure.View.OrderPage
             }
         }
 
-        private async void CollectionView_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-           await Navigation.PushPopupAsync(new ImagePopUp((string)ImageGallery.SelectedItem, GetOrder.ImagesUrls));
-        }
 
         private async void ShareBtn_Clicked(object sender, EventArgs e)
         {
             AppShell.ShareOrder(this.GetOrder);
+        }
+
+
+        private async void ImageTapGestureRecognizer_Tapped(object sender, EventArgs e)
+        {
+            await Navigation.PushPopupAsync(new ImagePopUp((string)ImageGallery.SelectedItem, GetOrder.ImagesUrls));
+        }
+
+        private async void MapButton_Clicked(object sender, EventArgs e)
+        {
+            await Navigation.PushPopupAsync(new MapPopup());
         }
     }
 }
