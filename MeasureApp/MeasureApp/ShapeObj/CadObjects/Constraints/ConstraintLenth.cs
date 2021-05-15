@@ -237,10 +237,7 @@
         {
             if (this.IsFix == false)
             {
-                if (MakeMagic(this.Point1, this.Vector, false) == false)
-                {
-                    MakeMagic(this.Point2, this.Vector, true);
-                }
+                PreMagic(this.Point1, this.Point2, this.Vector);
             }
             this.Running = false;
         }
@@ -254,12 +251,16 @@
         {
             if (sender is CadPoint cadPoint1 && this.GetNotThisPoint(cadPoint1) is CadPoint cadPoint2)
             {
-                if (MakeMagic(cadPoint1, this.Vector, cadPoint1 != this.Point1) == false)
-                {
-                    MakeMagic(cadPoint2, this.Vector, cadPoint2 != this.Point1);
-                }
+                PreMagic(cadPoint1, cadPoint2, this.Vector, cadPoint1 != this.Point1);
             }
-            this.Running = false;
+        }
+
+        public void PreMagic(CadPoint cadPoint1, CadPoint cadPoint2, Vector2 vector2, bool Inversion = false)
+        {
+            if (MakeMagic(cadPoint1, vector2, Inversion) == false)
+            {
+                MakeMagic(cadPoint2, vector2, !Inversion);
+            }
         }
 
         /// <summary>
@@ -273,9 +274,11 @@
             {
                 this.Running = true;
                 this.Changed?.Invoke(this, null);
-                return this.GetNotThisPoint(startPoint).Update(
+                bool result = this.GetNotThisPoint(startPoint).Update(
                         startPoint.X + vector2.X * this.Lenth * (Inversion == true ? -1 : 1),
                         startPoint.Y + vector2.Y * this.Lenth * (Inversion == true ? -1 : 1));
+                this.Running = false;
+                return result;
             }
             return false;
         }

@@ -118,11 +118,15 @@ namespace SureMeasure.ShapeObj
             this.Rotation = Sizing.AngleHorizont(this._lenthConstrait.Point1, this._lenthConstrait.Point2);
 
             double templenth = Math.Round(Sizing.PtPLenth(this._lenthConstrait.Point1, this._lenthConstrait.Point2), 2);
-
-            Xamarin.Forms.Device.InvokeOnMainThreadAsync(() => {
-                this.Text = $"{(_lenthConstrait.Lenth > -1 ? _lenthConstrait.Lenth.ToString() : string.Empty)}" +
-                    $"{ (templenth != _lenthConstrait.Lenth ? $"({templenth.ToString()})" : string.Empty)}";
-            });
+            double tempdelta = Math.Abs(templenth / _lenthConstrait.Lenth - 1);
+            if (tempdelta == 0 || tempdelta > 0.1) { 
+                Xamarin.Forms.Device.InvokeOnMainThreadAsync(() =>
+                {
+                    this.Text = $"{(_lenthConstrait.Lenth > -1 ? _lenthConstrait.Lenth.ToString() : string.Empty)}" +
+                        $"{ (templenth != _lenthConstrait.Lenth ? $"({templenth.ToString()})" : string.Empty)}";
+            
+                });
+            }
         }
 
        
