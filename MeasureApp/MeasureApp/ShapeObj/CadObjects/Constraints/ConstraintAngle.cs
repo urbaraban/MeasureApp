@@ -58,7 +58,7 @@ namespace SureMeasure.CadObjects.Constraints
             this.Variable = new CadVariable(Angle, false);
             this.Variable.PropertyChanged += Angle_PropertyChanged;
 
-            this.Point1.PropertyChanged += CadanchorMiddle_PropertyChanged;
+            this.Point1.PropertyChanged += CadanchorStart_PropertyChanged;
             this.Point3.PropertyChanged += CadanchorEnd_PropertyChanged;
 
             this.Point1.Removed += Point1_Removed;
@@ -75,7 +75,7 @@ namespace SureMeasure.CadObjects.Constraints
         {
             this.Variable.PropertyChanged -= Angle_PropertyChanged;
 
-            this.Point1.PropertyChanged -= CadanchorMiddle_PropertyChanged;
+            this.Point1.PropertyChanged -= CadanchorStart_PropertyChanged;
             this.Point3.PropertyChanged -= CadanchorEnd_PropertyChanged;
         }
 
@@ -83,11 +83,11 @@ namespace SureMeasure.CadObjects.Constraints
         {
             if (this.anchorAnchor2.Orientation == Orientaton.OFF || this.anchorAnchor1.Orientation != Orientaton.OFF)
             {
-                MakeMagic(this.anchorAnchor1.Point1, this.anchorAnchor1.Point2, this.anchorAnchor2.Point2, this.Variable.Value);
+                MakeMagic(this.Point1, this.Point2, this.Point3, this.Variable.Value);
             }
         }
 
-        private void CadanchorMiddle_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void CadanchorStart_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "Point")
             {
@@ -111,42 +111,52 @@ namespace SureMeasure.CadObjects.Constraints
 
         private void MakeMagic(CadPoint FirstPoint, CadPoint MiddlePoint, CadPoint LastPoint, double angle)
         {
-            if (this.Running == false && this.Variable.Value > -1)
+            if (CadConstraint.RuntimeConstraits.Contains(this) == false)
             {
-                Vector2.Transform(new Vector2(), Quaternion.CreateFromAxisAngle(new Vector3(0f, 0f, 1f), 15f));
-
-                this.Running = true;
-
                 if (LastPoint.IsFix == false)
                 {
-                    double lenth = Sizing.PtPLenth(MiddlePoint, LastPoint);
-                    LastPoint.Update(Sizing.GetPositionLineFromAngle(FirstPoint, MiddlePoint, lenth, angle));
+                    CadConstraint.RuntimeConstraits.Add(this);
+                    Vector2 vector1 = Vector2.Normalize(new Vector2((float)(FirstPoint.X - MiddlePoint.X), (float)(FirstPoint.Y - MiddlePoint.Y)));
+                    Vector2 vector2 = RotateRadians(vector1, angle);
+                    if (anchorAnchor1.GetNotThisPoint(LastPoint) is CadPoint cadPoint1)
+                    {
+                        anchorAnchor1.PreMagic(MiddlePoint, LastPoint, vector2);
+                    }
+                    else if (anchorAnchor2.GetNotThisPoint(LastPoint) is CadPoint cadPoint2)
+                    {
+                        anchorAnchor2.PreMagic(MiddlePoint, LastPoint, vector2);
+                    }
+                    CadConstraint.RuntimeConstraits.Add(this);
                 }
                 else
                 {
-                    if (anchorAnchor1.GetNotThisPoint(FirstPoint) is CadPoint cadPoint1)
-                    {
-                      // anchorAnchor1.MakeMagic(MiddlePoint, FirstPoint);
-                    }
-                    else if (anchorAnchor2.GetNotThisPoint(FirstPoint) is CadPoint cadPoint2)
-                    {
-                      // anchorAnchor2.MakeMagic(MiddlePoint, FirstPoint);
-                    }
-                    double lenth = Sizing.PtPLenth(MiddlePoint, FirstPoint);
-                    FirstPoint.Update(Sizing.GetPositionLineFromAngle(LastPoint, MiddlePoint, lenth, 360 - angle));
+                    this.MakeMagic(LastPoint, MiddlePoint, FirstPoint, 360 - angle);
                 }
-
-                this.Running = false;
             }
+
             OnPropertyChanged("Point");
         }
+
+        private Vector2 RotateRadians(Vector2 vector1, double angle)
+        {
+            double radians = angle * Math.PI / 180;
+
+            var ca = Math.Cos(radians);
+            var sa = Math.Sin(radians);
+            return new Vector2((float)(ca * vector1.X - sa * vector1.Y), (float)(sa * vector1.X + ca * vector1.Y));
+        }
+
+        /*private Vector2 RotateRadians(this Vector2 v, double Degrees)
+        {
+            
+        }*/
 
         public void TryRemove()
         {
             this.Point1.Removed -= Point1_Removed;
             this.Point2.Removed -= Point1_Removed;
             this.Point3.Removed -= Point1_Removed;
-            Point1.PropertyChanged -= CadanchorMiddle_PropertyChanged;
+            Point1.PropertyChanged -= CadanchorStart_PropertyChanged;
             Point3.PropertyChanged -= CadanchorEnd_PropertyChanged;
             Removed?.Invoke(this, true);
         }

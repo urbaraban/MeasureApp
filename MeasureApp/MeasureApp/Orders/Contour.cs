@@ -268,9 +268,9 @@ namespace SureMeasure.Orders
                     new ConstraintLenth(this.BasePoint, point2, tuple.Item1,
                         this.SelectedDrawMethod == DrawMethod.FromPoint && this.LastPoint != this.BasePoint);
 
-                /*ConstraintAngle constraintAngle =
+                ConstraintAngle constraintAngle =
                     (ConstraintAngle)this.Add(
-                        new ConstraintAngle(this.BaseLenthConstrait, lenthConstrait, tuple.Item2), false);*/
+                        new ConstraintAngle(this.BaseLenthConstrait, lenthConstrait, tuple.Item2), false);
 
                 if (this.SelectedDrawMethod == DrawMethod.FromPoint && this.BasePoint != this.LastPoint)
                 {

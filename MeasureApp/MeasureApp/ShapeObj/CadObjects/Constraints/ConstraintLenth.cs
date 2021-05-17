@@ -239,7 +239,6 @@
             {
                 PreMagic(this.Point1, this.Point2, this.Vector);
             }
-            this.Running = false;
         }
 
         /// <summary>
@@ -253,13 +252,23 @@
             {
                 PreMagic(cadPoint1, cadPoint2, this.Vector, cadPoint1 != this.Point1);
             }
+            this.Changed?.Invoke(this, null);
         }
 
         public void PreMagic(CadPoint cadPoint1, CadPoint cadPoint2, Vector2 vector2, bool Inversion = false)
         {
-            if (MakeMagic(cadPoint1, vector2, Inversion) == false)
+            if (this.Variable.Value > -1 
+                && (this.Point1.IsFix == false || this.Point2.IsFix == false)
+                && CadConstraint.BreakPoints.Contains(cadPoint1) == false)
             {
-                MakeMagic(cadPoint2, vector2, !Inversion);
+                if (MakeMagic(cadPoint1, vector2, Inversion) == false)
+                {
+                    if (CadConstraint.BreakPoints.Contains(cadPoint2) == false)
+                    {
+                        CadConstraint.RuntimeConstraits.Clear();
+                        MakeMagic(cadPoint2, vector2, !Inversion);
+                    }
+                }
             }
         }
 
@@ -268,19 +277,25 @@
         /// </summary>
         /// <param name="cadPoint1">The cadPoint1<see cref="CadPoint"/>.</param>
         /// <param name="cadPoint2">The cadPoint2<see cref="CadPoint"/>.</param>
-        public bool MakeMagic(CadPoint startPoint, Vector2 vector2, bool Inversion)
+        private bool MakeMagic(CadPoint startPoint, Vector2 vector2, bool Inversion)
         {
-            if (this.Running == false)
+            
+            CadPoint EndPoint = this.GetNotThisPoint(startPoint);
+            if (CadConstraint.RuntimeConstraits.Contains(this) == false && EndPoint.IsFix == false)
             {
-                this.Running = true;
-                this.Changed?.Invoke(this, null);
-                bool result = this.GetNotThisPoint(startPoint).Update(
+                CadConstraint.RuntimeConstraits.Add(this);
+                CadConstraint.BreakPoints.Add(startPoint);
+
+                bool result = EndPoint.Update(
                         startPoint.X + vector2.X * this.Lenth * (Inversion == true ? -1 : 1),
                         startPoint.Y + vector2.Y * this.Lenth * (Inversion == true ? -1 : 1));
-                this.Running = false;
+
+                CadConstraint.BreakPoints.Remove(startPoint);
+                CadConstraint.RuntimeConstraits.Remove(this);
                 return result;
             }
-            return false;
+            
+            return CadConstraint.RuntimeConstraits.Contains(this);
         }
 
         /// <summary>

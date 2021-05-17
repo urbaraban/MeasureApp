@@ -9,45 +9,10 @@ namespace SureMeasure.ShapeObj.Constraints
     public abstract class CadConstraint : INotifyPropertyChanged 
     {
         #region static
-        public static List<CadPoint> FixedPoint = new List<CadPoint>();
         public static List<CadConstraint> RuntimeConstraits = new List<CadConstraint>();
+        public static List<CadPoint> BreakPoints = new List<CadPoint>();
 
-        public static void AddRunConstrait(CadConstraint cadConstraint, CadPoint cadPoint)
-        {
-            RuntimeConstraits.Add(cadConstraint);
-            FixedPoint.Add(cadPoint);
-        }
 
-        public static void RemoveRunConstrait(CadConstraint cadConstraint, CadPoint cadPoint)
-        {
-            if (RuntimeConstraits.Contains(cadConstraint) == true)
-            {
-                if (cadConstraint == RuntimeConstraits[0])
-                {
-                    RuntimeConstraits.Clear();
-                    FixedPoint.Clear();
-                }
-                else
-                {
-                    int ContsrIndex = RuntimeConstraits.IndexOf(cadConstraint);
-                    if (ContsrIndex > -1)
-                    {
-                        RuntimeConstraits.RemoveRange(ContsrIndex, RuntimeConstraits.Count - ContsrIndex);
-                    }
-
-                    int AnchorIndex = FixedPoint.IndexOf(cadPoint);
-                    if (AnchorIndex > -1)
-                    {
-                        FixedPoint.RemoveRange(AnchorIndex, FixedPoint.Count - AnchorIndex);
-                    }
-                }
-            }
-        }
-
-        public static bool CheckConstraitOrAnchor(CadConstraint cadConstraint, CadPoint cadAnchor)
-        {
-            return RuntimeConstraits.Contains(cadConstraint) || FixedPoint.Contains(cadAnchor);
-        }
         #endregion
         public virtual event EventHandler<bool> Selected;
         public virtual event EventHandler<bool> Fixed;
@@ -112,7 +77,7 @@ namespace SureMeasure.ShapeObj.Constraints
         private bool _issupprot = false;
         #endregion
 
-        public virtual bool Running { get; set; } = false;
+        public virtual bool Execute { get; } = true;
 
         public event PropertyChangedEventHandler PropertyChanged;
 

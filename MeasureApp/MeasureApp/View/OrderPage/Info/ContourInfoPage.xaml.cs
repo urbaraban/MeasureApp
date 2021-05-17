@@ -84,5 +84,13 @@ namespace SureMeasure.View.OrderPage
         {
             //await Navigation.PushPopupAsync(new MapPopup());
         }
+
+        private void CallButton_Clicked(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(this.GetOrder.Phone) == true)
+                AppShell.Instance.AlertDialog("{Alert}", "{Phone number is empty}");
+            else
+                PhoneDialer.Open(this.GetOrder.Phone);
+        }
     }
 }

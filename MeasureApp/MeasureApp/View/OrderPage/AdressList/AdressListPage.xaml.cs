@@ -107,14 +107,14 @@ namespace SureMeasure.View.OrderPage
             UpdateList();
         }
 
-        private void CallButton_Clicked(object sender, EventArgs e)
+        private async void CallButton_Clicked(object sender, EventArgs e)
         {
             if (sender is Button button)
             {
-                if (button.BindingContext == null) 
-                    PhoneDialer.Open("+79999999999");
+                if (button.BindingContext == null)
+                    await AppShell.Instance.AlertDialog("{Alert}", "{Phone number is empty}");
                 else
-                PhoneDialer.Open((string)button.BindingContext);
+                    PhoneDialer.Open((string)button.BindingContext);
             }
             
         }
