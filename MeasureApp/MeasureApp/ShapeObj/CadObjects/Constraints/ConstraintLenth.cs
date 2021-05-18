@@ -55,13 +55,13 @@
         /// <summary>
         /// Gets or sets the Lenth.
         /// </summary>
-        public double Lenth
+        public override double Value
         {
             get => this.Variable.Value < 0 ? Sizing.PtPLenth(this.Point1, this.Point2) : this.Variable.Value;
             set
             {
                 this.Variable.Value = value;
-                OnPropertyChanged("Lenth");
+                OnPropertyChanged("Value");
             }
         }
 
@@ -226,7 +226,7 @@
         /// <returns>The <see cref="string"/>.</returns>
         public override string ToString()
         {
-            return $"{this.ID}:{Lenth.ToString()}";
+            return $"{this.ID}:{Value.ToString()}";
         }
 
         /// <summary>
@@ -287,8 +287,8 @@
                 {
                     CadConstraint.RuntimeConstraits.Add(this);
                     bool result = EndPoint.Update(
-                            startPoint.X + vector2.X * this.Lenth * (Inversion == true ? -1 : 1),
-                            startPoint.Y + vector2.Y * this.Lenth * (Inversion == true ? -1 : 1));
+                            startPoint.X + vector2.X * this.Value * (Inversion == true ? -1 : 1),
+                            startPoint.Y + vector2.Y * this.Value * (Inversion == true ? -1 : 1));
                     CadConstraint.RuntimeConstraits.Remove(this);
                     return result;
                 }
@@ -304,7 +304,7 @@
         /// <returns>The <see cref="ConstraintLenth"/>.</returns>
         public ConstraintLenth GetInvertClone()
         {
-            return new ConstraintLenth(this.Point2, this.Point1, this.Lenth, this.IsSupport);
+            return new ConstraintLenth(this.Point2, this.Point1, this.Value, this.IsSupport);
         }
     }
 }

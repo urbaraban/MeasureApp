@@ -25,8 +25,11 @@ namespace SureMeasure.ShapeObj
         #region Command
         private ICommand CallValueDialog => new Command(async () =>
         {
-            string callresult = await AppShell.Instance.DisplayPromtDialog(_lenthConstrait.Variable.Name, _lenthConstrait.Variable.Value.ToString());
-            this._lenthConstrait.Variable.Value = double.Parse(callresult);
+            string callresult = await AppShell.Instance.DisplayPromtDialog(_lenthConstrait.Variable.Name, _lenthConstrait.Value.ToString());
+            if (callresult != null)
+            {
+                this._lenthConstrait.Variable.Value = double.Parse(callresult);
+            }
         });
         private ICommand Measure => new Command(() =>
         {
@@ -77,7 +80,7 @@ namespace SureMeasure.ShapeObj
             this.VerticalTextAlignment = TextAlignment.Center;
 
             this._lenthConstrait = lenthConstrait;
-            this.Text = this._lenthConstrait.Lenth.ToString();
+            this.Text = this._lenthConstrait.Value.ToString();
             this.ScaleY = -1;
 
             this.BackgroundColor = Color.Green;
@@ -90,7 +93,7 @@ namespace SureMeasure.ShapeObj
             this.SetBinding(Label.TextProperty, new Binding()
             {
                 Source = _lenthConstrait,
-                Path = "Lenth",
+                Path = "Value",
                 Mode = BindingMode.OneWay,
                 Converter = new ToStringConverter()
             });
@@ -118,12 +121,12 @@ namespace SureMeasure.ShapeObj
             this.Rotation = Sizing.AngleHorizont(this._lenthConstrait.Point1, this._lenthConstrait.Point2);
 
             double templenth = Math.Round(Sizing.PtPLenth(this._lenthConstrait.Point1, this._lenthConstrait.Point2), 2);
-            double tempdelta = Math.Abs(templenth / _lenthConstrait.Lenth - 1);
+            double tempdelta = Math.Abs(templenth / _lenthConstrait.Value - 1);
             if (tempdelta == 0 || tempdelta > 0.01) { 
                 Xamarin.Forms.Device.InvokeOnMainThreadAsync(() =>
                 {
-                    this.Text = $"{(_lenthConstrait.Lenth > -1 ? _lenthConstrait.Lenth.ToString() : string.Empty)}" +
-                        $"{ (templenth != _lenthConstrait.Lenth ? $"({templenth.ToString()})" : string.Empty)}";
+                    this.Text = $"{(_lenthConstrait.Value > -1 ? _lenthConstrait.Value.ToString() : string.Empty)}" +
+                        $"{ (templenth != _lenthConstrait.Value ? $"({templenth.ToString()})" : string.Empty)}";
             
                 });
             }

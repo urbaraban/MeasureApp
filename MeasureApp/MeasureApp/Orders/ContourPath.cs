@@ -60,7 +60,7 @@ namespace SureMeasure.Orders
 
                 for (int i = 0; i < Lenths.Count; i += 1)
                 {
-                    lenth += Lenths[i].Lenth;
+                    lenth += Lenths[i].Value;
                 }
 
                 return lenth;

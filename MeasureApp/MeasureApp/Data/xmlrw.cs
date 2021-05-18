@@ -122,7 +122,7 @@ namespace SureMeasure.Data
                     XLenths.Add(new XElement("Lenth",
                         new XAttribute("P1", lenth.Point1.ID),
                         new XAttribute("P2", lenth.Point2.ID),
-                        new XAttribute("Lenth", lenth.Lenth),
+                        new XAttribute("Lenth", lenth.Value),
                         new XAttribute("Support", lenth.IsSupport),
                         new XAttribute("Select", lenth.IsSelect)));
                 }

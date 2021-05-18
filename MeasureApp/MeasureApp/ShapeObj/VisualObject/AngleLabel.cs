@@ -15,7 +15,10 @@ namespace SureMeasure.ShapeObj
         private ICommand CallValueDialog => new Command(async () => 
         {
             string callresult = await AppShell.Instance.DisplayPromtDialog(_angleConstrait.Variable.Name, _angleConstrait.Value.ToString());
-            this._angleConstrait.Variable.Value = double.Parse(callresult);
+            if (callresult != null)
+            {
+                this._angleConstrait.Variable.Value = double.Parse(callresult);
+            }
         });
         private ICommand Measure => new Command(async () =>
         {
