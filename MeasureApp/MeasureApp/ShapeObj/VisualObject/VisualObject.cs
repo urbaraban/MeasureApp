@@ -145,7 +145,7 @@ namespace SureMeasure.ShapeObj
         }
 
 
-        public virtual void Update()
+        public virtual void Update(string Param)
         {
             
         }

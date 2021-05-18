@@ -82,7 +82,7 @@ namespace SureMeasure.ShapeObj
             });
         }
 
-        private void CadPoint_Selected(object sender, bool e) => Update();
+        private void CadPoint_Selected(object sender, bool e) => Update("IsSelected");
 
         private void CadPoint_Removed(object sender, bool e)
         {
@@ -96,7 +96,7 @@ namespace SureMeasure.ShapeObj
             this.cadPoint = e;
             this.cadPoint.PropertyChanged += CadPoint_PropertyChanged;
             this.cadPoint.ChangedPoint += CadPoint_ChangedPoint;
-            Update();
+            Update("Point");
         }
 
         public void ChangedPoint(CadPoint cadPoint)
@@ -115,24 +115,29 @@ namespace SureMeasure.ShapeObj
             this.ScaleTo(1/e * 1.5, 250, Easing.Linear);
         }
 
-        private void CadPoint_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) => Update();
+        private void CadPoint_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) => this.Update(e.PropertyName);
 
-        public override void Update()
+        public override void Update(string Param)
         {
-            this.TranslationX = this.X - CadCanvas.RegularAnchorSize - this.StrokeThickness;
-            this.TranslationY = this.Y - CadCanvas.RegularAnchorSize - this.StrokeThickness;
-
-            Xamarin.Forms.Device.BeginInvokeOnMainThread(() => {
-                if (this.IsSelect == true)
-                    this.Stroke = Brush.Orange;
-                else if (this.IsBase == true)
-                    this.Stroke = Brush.DarkRed;
-                else if (this.IsFix == true)
-                    this.Stroke = Brush.Gray;
-                else
-                    this.Stroke = Brush.Blue;
-            });
-
+            if (Param == "Point")
+            {
+                this.TranslationX = this.X - CadCanvas.RegularAnchorSize - this.StrokeThickness;
+                this.TranslationY = this.Y - CadCanvas.RegularAnchorSize - this.StrokeThickness;
+            }
+            else
+            {
+                Xamarin.Forms.Device.BeginInvokeOnMainThread(() =>
+                {
+                    if (this.IsSelect == true)
+                        this.Stroke = Brush.Orange;
+                    else if (this.IsBase == true)
+                        this.Stroke = Brush.DarkRed;
+                    else if (this.IsFix == true)
+                        this.Stroke = Brush.Gray;
+                    else
+                        this.Stroke = Brush.Blue;
+                });
+            }
             this.OnPropertyChanged("Point");
         }
 

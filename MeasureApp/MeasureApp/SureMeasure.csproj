@@ -11,7 +11,10 @@
     <ApplicationIcon>Sure-Measure-01.ico</ApplicationIcon>
     <PackageIcon>Sure-Measure-01.png</PackageIcon>
     <RootNamespace>SureMeasure</RootNamespace>
-    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <EnableNETAnalyzers>false</EnableNETAnalyzers>
+    <Copyright>Urbaraban</Copyright>
+    <RepositoryType></RepositoryType>
+    <RepositoryUrl>https://github.com/urbaraban/MeasureApp</RepositoryUrl>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

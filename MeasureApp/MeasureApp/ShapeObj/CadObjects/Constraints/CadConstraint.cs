@@ -9,8 +9,7 @@ namespace SureMeasure.ShapeObj.Constraints
     public abstract class CadConstraint : INotifyPropertyChanged 
     {
         #region static
-        public static List<CadConstraint> RuntimeConstraits = new List<CadConstraint>();
-        public static List<CadPoint> BreakPoints = new List<CadPoint>();
+        public static List<CadConstraint> RuntimeConstraits { get; set; } = new List<CadConstraint>();
 
 
         #endregion

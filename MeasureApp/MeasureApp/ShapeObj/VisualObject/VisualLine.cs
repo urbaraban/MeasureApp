@@ -38,10 +38,10 @@ namespace SureMeasure.ShapeObj
             this.constraintLenth.Selected += constraintLenth_Selected;
             this.StrokeLineCap = PenLineCap.Round;
             CadCanvas.RegularSize += CadCanvas_RegularSize;
-            Update();
+            Update(string.Empty);
         }
 
-        private void constraintLenth_Selected(object sender, bool e) => Update();
+        private void constraintLenth_Selected(object sender, bool e) => Update("Selected");
 
 
         private void constraintLenth_Supported(object sender, bool e)
@@ -66,7 +66,7 @@ namespace SureMeasure.ShapeObj
         /// <summary>
         /// Update geometry and layout line
         /// </summary>
-        public void Update()
+        public void Update(string Param)
         {
             if (constraintLenth.IsSupport) this.Stroke = Brush.LightGray;
             else if (constraintLenth.IsSelect) this.Stroke = Brush.DarkOrange;
@@ -98,7 +98,7 @@ namespace SureMeasure.ShapeObj
 
         private void Anchors_Changed(object sender, EventArgs e)
         {
-            Update();
+            Update("Changed");
         }
 
 

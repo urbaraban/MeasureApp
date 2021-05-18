@@ -377,8 +377,8 @@ namespace SureMeasure.ShapeObj.Canvas
                     ICommand ConnectPoint = new Command(async () =>
                     {
                         this.Contour.Add(new ConstraintLenth(cadAnchor1.cadPoint, cadAnchor2.cadPoint, -1), true);
-                        cadAnchor1.Update();
-                        cadAnchor2.Update();
+                        cadAnchor1.Update("Point");
+                        cadAnchor2.Update("Point");
                     });
                     ICommand MergePoint = new Command(async () =>
                     {

@@ -6,6 +6,7 @@ using SureMeasure.ShapeObj.Interface;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Xamarin.Forms;
 
@@ -41,7 +42,7 @@ namespace SureMeasure.CadObjects
             get => this._x;
             set
             {
-                if (this._x != (value) && this._isfix == false)
+                if (Math.Abs(value / this._x - 1) > 0.001 && this._isfix == false)
                 {
                     this._x = value;
                     OnPropertyChanged("Point");
@@ -72,7 +73,7 @@ namespace SureMeasure.CadObjects
             get => this._y;
             set
             {
-                if (this._y != value && this._isfix == false)
+                if (Math.Abs(value / this._x - 1) > 0.001 && this._isfix == false)
                 {
                     this._y = value;
                     OnPropertyChanged("Point");
@@ -176,28 +177,11 @@ namespace SureMeasure.CadObjects
             ChangedPoint?.Invoke(this, cadPoint);
             TryRemove();
         }
-        public void Update(CadPoint cadPoint, bool Constraint = false)
-        {
-            if (this.IsFix == false)
-            {
-                this._x = cadPoint.X;
-                this._y = cadPoint.Y;
-                OnPropertyChanged("Point");
-            }
-            
-        }
+        public void Update(CadPoint cadPoint) => update(cadPoint.X, cadPoint.Y);
 
-        public bool Update(Point Point, bool Constraint = false)
-        {
-            if (this.IsFix == false)
-            {
-                this._x = Point.X;
-                this._y = Point.Y;
-                OnPropertyChanged("Point");
-                return true;
-            }
-            return false;
-        }
+
+        public bool Update(Point Point) => update(Point.X, Point.Y);
+
 
         public void Add(Point cadPoint)
         {
@@ -205,14 +189,21 @@ namespace SureMeasure.CadObjects
             this._y += cadPoint.Y;
         }
 
-        public bool Update(double X, double Y)
+        public bool Update(double X, double Y) => update(X, Y);
+
+
+        private bool update(double X, double Y)
         {
             if (this.IsFix == false)
             {
-                this._x = X;
-                this._y = Y;
-                OnPropertyChanged("Point");
-                return true;
+                if (Math.Abs(X / this._x - 1) > 0.01 || Math.Abs(Y / this._y - 1) > 0.01)
+                {
+                    this._x = X;
+                    this._y = Y;
+                    //Debug.WriteLine($"Update {this.ID}");
+                    OnPropertyChanged("Point");
+                    return true;
+                }
             }
             return false;
         }

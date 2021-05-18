@@ -40,7 +40,7 @@ namespace SureMeasure.ShapeObj
 
         private void Value_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            Update();
+            Update(e.PropertyName);
         }
 
         private void TapGestureRecognizer_Tapped(object sender, EventArgs e)
@@ -53,7 +53,7 @@ namespace SureMeasure.ShapeObj
             this.Removed?.Invoke(this, true);
         }
 
-        public virtual void Update()
+        public virtual void Update(string Param)
         {
             Xamarin.Forms.Device.InvokeOnMainThreadAsync(() => {
                 this.Text = Math.Round(this.Constraint.Value, 1).ToString();

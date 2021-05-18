@@ -107,10 +107,10 @@ namespace SureMeasure.ShapeObj
                 new SheetMenuItem(Remove, "{REMOVE}"),
             }) ;
 
-            this.Update();
+            this.Update(string.Empty);
         }
 
-        public override void Update()
+        public override void Update(string Param)
         {
             this.TranslationX = (this._lenthConstrait.Point2.OX + this._lenthConstrait.Point1.OX) / 2;
             this.TranslationY = (this._lenthConstrait.Point2.OY + this._lenthConstrait.Point1.OY) / 2;
@@ -137,7 +137,7 @@ namespace SureMeasure.ShapeObj
 
         private void LenthAnchorAnchor_Changed(object sender, System.EventArgs e)
         {
-            this.Update();
+            this.Update("Changed");
         }
 
         private void _lenthAnchor_Removed(object sender, bool e)

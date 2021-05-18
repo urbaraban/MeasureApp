@@ -9,7 +9,7 @@ namespace SureMeasure.ShapeObj.Interface
         /// <summary>
         /// Update visual layout;
         /// </summary>
-        void Update();
+        void Update(string Param);
 
 
     }

@@ -4,6 +4,7 @@
     using SureMeasure.CadObjects.Interface;
     using SureMeasure.Tools;
     using System;
+    using System.Diagnostics;
     using System.Numerics;
 
     /// <summary>
@@ -248,26 +249,25 @@
         /// <param name="e">The e<see cref="System.ComponentModel.PropertyChangedEventArgs"/>.</param>
         private void Point_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (sender is CadPoint cadPoint1 && this.GetNotThisPoint(cadPoint1) is CadPoint cadPoint2)
+            if (e.PropertyName == "Point")
             {
-                PreMagic(cadPoint1, cadPoint2, this.Vector, cadPoint1 != this.Point1);
+                if (sender is CadPoint cadPoint1 && this.GetNotThisPoint(cadPoint1) is CadPoint cadPoint2)
+                {
+                    PreMagic(cadPoint1, cadPoint2, this.Vector, cadPoint1 != this.Point1);
+                }
+                this.Changed?.Invoke(this, null);
             }
-            this.Changed?.Invoke(this, null);
         }
 
         public void PreMagic(CadPoint cadPoint1, CadPoint cadPoint2, Vector2 vector2, bool Inversion = false)
         {
             if (this.Variable.Value > -1 
-                && (this.Point1.IsFix == false || this.Point2.IsFix == false)
-                && CadConstraint.BreakPoints.Contains(cadPoint1) == false)
+                && (cadPoint1.IsFix == false || cadPoint2.IsFix == false))
             {
                 if (MakeMagic(cadPoint1, vector2, Inversion) == false)
                 {
-                    if (CadConstraint.BreakPoints.Contains(cadPoint2) == false)
-                    {
-                        CadConstraint.RuntimeConstraits.Clear();
-                        MakeMagic(cadPoint2, vector2, !Inversion);
-                    }
+                    CadConstraint.RuntimeConstraits.Remove(this);
+                    MakeMagic(cadPoint2, vector2, !Inversion);
                 }
             }
         }
@@ -279,22 +279,22 @@
         /// <param name="cadPoint2">The cadPoint2<see cref="CadPoint"/>.</param>
         private bool MakeMagic(CadPoint startPoint, Vector2 vector2, bool Inversion)
         {
-            
+            Console.WriteLine($"Lenth {this.ID} Vector {startPoint.ToString()}");
             CadPoint EndPoint = this.GetNotThisPoint(startPoint);
-            if (CadConstraint.RuntimeConstraits.Contains(this) == false && EndPoint.IsFix == false)
+            if (EndPoint.IsFix == false)
             {
-                CadConstraint.RuntimeConstraits.Add(this);
-                CadConstraint.BreakPoints.Add(startPoint);
-
-                bool result = EndPoint.Update(
-                        startPoint.X + vector2.X * this.Lenth * (Inversion == true ? -1 : 1),
-                        startPoint.Y + vector2.Y * this.Lenth * (Inversion == true ? -1 : 1));
-
-                CadConstraint.BreakPoints.Remove(startPoint);
-                CadConstraint.RuntimeConstraits.Remove(this);
-                return result;
+                if (CadConstraint.RuntimeConstraits.Contains(this) == false)
+                {
+                    CadConstraint.RuntimeConstraits.Add(this);
+                    bool result = EndPoint.Update(
+                            startPoint.X + vector2.X * this.Lenth * (Inversion == true ? -1 : 1),
+                            startPoint.Y + vector2.Y * this.Lenth * (Inversion == true ? -1 : 1));
+                    CadConstraint.RuntimeConstraits.Remove(this);
+                    return result;
+                }
             }
-            
+            else CadConstraint.RuntimeConstraits.Remove(this);
+
             return CadConstraint.RuntimeConstraits.Contains(this);
         }
 

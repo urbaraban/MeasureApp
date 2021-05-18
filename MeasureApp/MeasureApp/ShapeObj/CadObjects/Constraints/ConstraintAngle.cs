@@ -115,18 +115,21 @@ namespace SureMeasure.CadObjects.Constraints
             {
                 if (LastPoint.IsFix == false)
                 {
+                    Console.WriteLine($"Angle {this.ID}");
                     CadConstraint.RuntimeConstraits.Add(this);
                     Vector2 vector1 = Vector2.Normalize(new Vector2((float)(FirstPoint.X - MiddlePoint.X), (float)(FirstPoint.Y - MiddlePoint.Y)));
                     Vector2 vector2 = RotateRadians(vector1, angle);
                     if (anchorAnchor1.GetNotThisPoint(LastPoint) is CadPoint cadPoint1)
                     {
+                        CadConstraint.RuntimeConstraits.Remove(anchorAnchor1);
                         anchorAnchor1.PreMagic(MiddlePoint, LastPoint, vector2);
                     }
                     else if (anchorAnchor2.GetNotThisPoint(LastPoint) is CadPoint cadPoint2)
                     {
+                        CadConstraint.RuntimeConstraits.Remove(anchorAnchor2);                        
                         anchorAnchor2.PreMagic(MiddlePoint, LastPoint, vector2);
                     }
-                    CadConstraint.RuntimeConstraits.Add(this);
+                    CadConstraint.RuntimeConstraits.Remove(this);
                 }
                 else
                 {
