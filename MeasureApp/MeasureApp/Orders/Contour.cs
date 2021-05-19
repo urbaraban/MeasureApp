@@ -397,6 +397,46 @@ namespace SureMeasure.Orders
             this.Points.Clear();
         }
 
+        public byte[] GetBytes()
+        {
+            List<Byte> theBytes = new List<Byte>();
+
+            theBytes.Add((byte)'2');
+            theBytes.Add((byte)'C');
+            theBytes.Add((byte)'U');
+            theBytes.Add((byte)'T');
+            theBytes.Add((byte)0);
+            theBytes.Add((byte)0);
+            theBytes.Add((byte)0);
+
+            short PathCount = (short)this.Paths.Count;
+            theBytes.Add((byte)((PathCount >> 8) & 0xff));
+            theBytes.Add((byte)(PathCount & 0xff));
+
+            foreach (ContourPath path in this.Paths)
+            {
+                theBytes.Add(path.IsClosed == true ? (byte)1 : (byte)0);
+                short PointCount = (short)(path.Points == null ? 0 : path.Points.Length);
+                theBytes.Add((byte)((PointCount >> 8) & 0xff));
+                theBytes.Add((byte)(PointCount & 0xff));
+
+                if (path.Points is CadPoint[] points)
+                {
+                    foreach (CadPoint point in points)
+                    {
+                        short posx = (short)point.X;
+                        theBytes.Add((byte)((posx >> 8) & 0xff));
+                        theBytes.Add((byte)(posx & 0xff));
+
+                        short posy = (short)point.Y;
+                        theBytes.Add((byte)((posy >> 8) & 0xff));
+                        theBytes.Add((byte)(posy & 0xff));
+                    }
+                }
+            }
+            return theBytes.ToArray();
+        }
+
         public string GetNewPointName()
         {
             string result = string.Empty;

@@ -1,161 +1,219 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
-             xmlns:shapeobj="clr-namespace:SureMeasure.ShapeObj.Canvas" xmlns:widget="clr-namespace:Android.Widget;assembly=Mono.Android" xmlns:control="clr-namespace:Plugin.Segmented.Control;assembly=Plugin.Segmented"
-             x:Class="SureMeasure.View.OrderPage.CadCanvasPage"
-             xmlns:common="clr-namespace:SureMeasure.Common"
-             Title="Drawing">
-    <ContentPage.Resources>
-    </ContentPage.Resources>
+<ContentPage
+    x:Class="SureMeasure.View.OrderPage.CadCanvasPage"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:common="clr-namespace:SureMeasure.Common"
+    xmlns:control="clr-namespace:Plugin.Segmented.Control;assembly=Plugin.Segmented"
+    xmlns:shapeobj="clr-namespace:SureMeasure.ShapeObj.Canvas"
+    xmlns:widget="clr-namespace:Android.Widget;assembly=Mono.Android"
+    Title="Drawing">
+    <ContentPage.Resources />
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="ID"/>
-        <ToolbarItem Text="{Binding ID}"/>
-        <ToolbarItem Text="Share"  Clicked="ShareBtn_Clicked">
+        <ToolbarItem Text="ID" />
+        <ToolbarItem Text="{Binding ID}" />
+        <ToolbarItem Clicked="ShareBtn_Clicked" Text="Share">
             <ToolbarItem.IconImageSource>
                 <FontImageSource
-                                    FontFamily="SegoeAssets"
-                                    Glyph="{x:Static common:IconFont.Share}"
-                                    Color="White"
-                                    Size="30"/>
+                    FontFamily="SegoeAssets"
+                    Glyph="{x:Static common:IconFont.Share}"
+                    Size="30"
+                    Color="White" />
             </ToolbarItem.IconImageSource>
         </ToolbarItem>
-        <ToolbarItem Icon="search.png" Text="Clear" Order="Secondary" Clicked="ClearBtn_Clicked"/>
+        <ToolbarItem
+            Clicked="LaserCutBtn_Clicked"
+            Icon="search.png"
+            Order="Secondary"
+            Text="2CUT" />
+        <ToolbarItem
+            Clicked="ClearBtn_Clicked"
+            Icon="search.png"
+            Order="Secondary"
+            Text="Clear" />
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
-        <StackLayout Orientation="Vertical" VerticalOptions="FillAndExpand" >
-            <AbsoluteLayout BackgroundColor="White"  VerticalOptions="FillAndExpand">
-                <Grid
-                    AbsoluteLayout.LayoutBounds="0,0,1,1" 
-                    AbsoluteLayout.LayoutFlags="SizeProportional">
+        <StackLayout Orientation="Vertical" VerticalOptions="FillAndExpand">
+            <AbsoluteLayout BackgroundColor="White" VerticalOptions="FillAndExpand">
+                <Grid AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="SizeProportional">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition/>
-                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition />
+                        <RowDefinition Height="auto" />
                     </Grid.RowDefinitions>
-                    <shapeobj:CadCanvas x:Name="MainCanvas" 
-                                         AbsoluteLayout.LayoutBounds="0,0,1,1" 
-                                         AbsoluteLayout.LayoutFlags="SizeProportional"
-                                     Margin="10" IsClippedToBounds="true"
-                                           Grid.Row="0"  Grid.RowSpan="4">
-                    </shapeobj:CadCanvas>
+                    <shapeobj:CadCanvas
+                        x:Name="MainCanvas"
+                        Grid.Row="0"
+                        Grid.RowSpan="4"
+                        Margin="10"
+                        AbsoluteLayout.LayoutBounds="0,0,1,1"
+                        AbsoluteLayout.LayoutFlags="SizeProportional"
+                        IsClippedToBounds="true" />
 
                     <Grid Margin="10">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="1*"/>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="auto" />
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="auto"/>
-                            <RowDefinition Height="auto"/>
-                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
                         </Grid.RowDefinitions>
-                        <Button Grid.Row="0"
-                                Grid.Column="0"
-                                WidthRequest="40" HeightRequest="40" CornerRadius="20"
-                                VerticalOptions="Center" 
-                                Padding="0" FontSize="Large"
-                                Clicked="Button_Clicked">
+                        <Button
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            Padding="0"
+                            Clicked="Button_Clicked"
+                            CornerRadius="20"
+                            FontSize="Large"
+                            HeightRequest="40"
+                            VerticalOptions="Center"
+                            WidthRequest="40">
                             <Button.ImageSource>
                                 <FontImageSource
                                     FontFamily="SegoeAssets"
                                     Glyph="{x:Static common:IconFont.Minus}"
-                                    Color="White"
-                                    Size="18"/>
+                                    Size="18"
+                                    Color="White" />
                             </Button.ImageSource>
                         </Button>
-                        <Picker x:Name="ContourPicker" Grid.Column="1" Grid.ColumnSpan="2"/>
-                        <Button Grid.Row="0" 
-                                WidthRequest="40" HeightRequest="40" CornerRadius="20"
-                                VerticalOptions="Center" 
-                                Padding="0" FontSize="Large" 
-                                Grid.Column="4" 
-                                Command="{Binding AddContour}">
+                        <Picker
+                            x:Name="ContourPicker"
+                            Grid.Column="1"
+                            Grid.ColumnSpan="2" />
+                        <Button
+                            Grid.Row="0"
+                            Grid.Column="4"
+                            Padding="0"
+                            Command="{Binding AddContour}"
+                            CornerRadius="20"
+                            FontSize="Large"
+                            HeightRequest="40"
+                            VerticalOptions="Center"
+                            WidthRequest="40">
                             <Button.ImageSource>
                                 <FontImageSource
                                     FontFamily="SegoeAssets"
                                     Glyph="{x:Static common:IconFont.Plus}"
-                                    Color="White"
-                                    Size="18"/>
+                                    Size="18"
+                                    Color="White" />
                             </Button.ImageSource>
                         </Button>
-                        <control:SegmentedControl 
+                        <control:SegmentedControl
+                            x:Name="DrawMethodSelecter"
                             Grid.Row="1"
                             Grid.ColumnSpan="2"
-                            x:Name="DrawMethodSelecter" 
-                            SelectedItem="{Binding SelectedDrawMethod}"
-                            TintColor="{StaticResource Primary}"
+                            Margin="8,8,8,8"
                             BackgroundColor="White"
+                            DisabledColor="Gray"
+                            FontSize="Small"
+                            OnSegmentSelected="DrawMethodSelecter_OnSegmentSelected"
+                            SelectedItem="{Binding SelectedDrawMethod}"
                             SelectedTextColor="White"
                             TextColor="Black"
-                            DisabledColor="Gray"
-
-                            FontSize="Small"
-                            Margin="8,8,8,8"
-                            
-                OnSegmentSelected="DrawMethodSelecter_OnSegmentSelected"/>
-                        <Button Grid.Row="1" Grid.Column="2" FontSize="Large" CornerRadius="10" HeightRequest="30" WidthRequest="80">
+                            TintColor="{StaticResource Primary}" />
+                        <Button
+                            Grid.Row="1"
+                            Grid.Column="2"
+                            CornerRadius="10"
+                            FontSize="Large"
+                            HeightRequest="30"
+                            WidthRequest="80">
                             <Button.ImageSource>
                                 <FontImageSource
                                     FontFamily="SegoeAssets"
                                     Glyph="{x:Static common:IconFont.Undo}"
-                                    Color="White"
-                                    Size="20"/>
+                                    Size="20"
+                                    Color="White" />
                             </Button.ImageSource>
                         </Button>
-                        <Button Grid.Row="1" Grid.Column="4" FontSize="Large" CornerRadius="10" HeightRequest="30" WidthRequest="40">
+                        <Button
+                            Grid.Row="1"
+                            Grid.Column="4"
+                            CornerRadius="10"
+                            FontSize="Large"
+                            HeightRequest="30"
+                            WidthRequest="40">
                             <Button.ImageSource>
                                 <FontImageSource
                                     FontFamily="SegoeAssets"
                                     Glyph="{x:Static common:IconFont.Redo}"
-                                    Color="White"
-                                    Size="20"/>
+                                    Size="20"
+                                    Color="White" />
                             </Button.ImageSource>
                         </Button>
 
-                        <StackLayout x:Name="SizePool"  Orientation="Horizontal" Padding="5" Grid.Row="2" />
+                        <StackLayout
+                            x:Name="SizePool"
+                            Grid.Row="2"
+                            Padding="5"
+                            Orientation="Horizontal" />
                     </Grid>
-                    <Grid 
-                    Grid.Row="3"
-                    Padding="20" 
-                      HorizontalOptions="FillAndExpand"
-                      AbsoluteLayout.LayoutBounds="0, 1, -1, 1"
-                             AbsoluteLayout.LayoutFlags="PositionProportional">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*"/>
-                        <ColumnDefinition Width="1*"/>
-                        <ColumnDefinition Width="1*"/>
-                    </Grid.ColumnDefinitions>
+                    <Grid
+                        Grid.Row="3"
+                        Padding="20"
+                        AbsoluteLayout.LayoutBounds="0, 1, -1, 1"
+                        AbsoluteLayout.LayoutFlags="PositionProportional"
+                        HorizontalOptions="FillAndExpand">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="1*" />
+                        </Grid.ColumnDefinitions>
 
-                        <Button x:Name="GetBtn" Grid.Column="2" CornerRadius="30" FontSize="Large" VerticalOptions="Center" HorizontalOptions="Center" WidthRequest="60" HeightRequest="60">
+                        <Button
+                            x:Name="GetBtn"
+                            Grid.Column="2"
+                            CornerRadius="30"
+                            FontSize="Large"
+                            HeightRequest="60"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center"
+                            WidthRequest="60">
                             <Button.ImageSource>
                                 <FontImageSource
                                     FontFamily="SegoeAssets"
                                     Glyph="{x:Static common:IconFont.Device}"
-                                    Color="White"
-                                    Size="24"/>
+                                    Size="24"
+                                    Color="White" />
                             </Button.ImageSource>
                         </Button>
-                        <Button x:Name="AddBtn" Grid.Column="1"  VerticalOptions="Center" HorizontalOptions="Center" CornerRadius="30" WidthRequest="60" HeightRequest="60">
+                        <Button
+                            x:Name="AddBtn"
+                            Grid.Column="1"
+                            CornerRadius="30"
+                            HeightRequest="60"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center"
+                            WidthRequest="60">
                             <Button.ImageSource>
                                 <FontImageSource
                                     FontFamily="SegoeAssets"
                                     Glyph="{x:Static common:IconFont.Plus}"
-                                    Color="White"
-                                    Size="24"/>
+                                    Size="24"
+                                    Color="White" />
                             </Button.ImageSource>
                         </Button>
-                        <Button x:Name="FitBtn" Grid.Column="0"
-                                FontSize="Large" VerticalOptions="Center" HorizontalOptions="Center" CornerRadius="30" WidthRequest="60" HeightRequest="60">
+                        <Button
+                            x:Name="FitBtn"
+                            Grid.Column="0"
+                            CornerRadius="30"
+                            FontSize="Large"
+                            HeightRequest="60"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center"
+                            WidthRequest="60">
                             <Button.ImageSource>
                                 <FontImageSource
                                     FontFamily="SegoeAssets"
                                     Glyph="{x:Static common:IconFont.FitPage}"
-                                    Color="White"
-                                    Size="30"/> 
+                                    Size="30"
+                                    Color="White" />
                             </Button.ImageSource>
                         </Button>
 

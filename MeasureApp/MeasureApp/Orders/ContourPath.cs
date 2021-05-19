@@ -87,7 +87,6 @@ namespace SureMeasure.Orders
             }
         }
 
-
         private List<ConstraintLenth> Lenths = new List<ConstraintLenth>();
 
         public CadPoint[] Points
@@ -96,14 +95,22 @@ namespace SureMeasure.Orders
             {
                 if (this.Lenths.Count > 0)
                 {
-                    CadPoint[] points = new CadPoint[this.Lenths.Count + (this.IsClosed == true ? 0 : 1)];
-                    
-                    for (int i = 0; i < Lenths.Count; i += 1)
+                    List<CadPoint> points = new List<CadPoint>();
+
+                    foreach (ConstraintLenth lenth in this.Lenths)
                     {
-                        points[i] = this.Lenths[i].Point1;
+                        if (lenth.IsSupport == false)
+                        {
+                            points.Add(lenth.Point1);
+                        }
                     }
-                    if (this.IsClosed == false) points[points.Length - 1] = this.Lenths[Lenths.Count - 1].Point2;
-                    return points;
+
+                    if (this.IsClosed == false)
+                    {
+                        points.Add(Lenths[Lenths.Count - 1].Point2);
+                    }
+
+                    return points.ToArray();
                 }
                 return null;
             }
