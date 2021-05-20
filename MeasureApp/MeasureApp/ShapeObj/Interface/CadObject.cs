@@ -10,7 +10,7 @@ namespace SureMeasure.CadObjects.Interface
 
         public void TryRemove();
 
-        string ID { get; set; }
+        string ID { get; }
 
         /// <summary>
         /// Selection object stat

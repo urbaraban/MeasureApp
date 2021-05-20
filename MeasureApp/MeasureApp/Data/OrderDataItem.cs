@@ -54,5 +54,13 @@ namespace SureMeasure.Data
         public string XmlUrl { get; set; }
 
         public double Cost { get; set; }
+
+        public OrderStatus Status { get; set; } = OrderStatus.InWork;
+    }
+
+    public enum OrderStatus : int
+    {
+        InWork = 0,
+        Solved = 1
     }
 }

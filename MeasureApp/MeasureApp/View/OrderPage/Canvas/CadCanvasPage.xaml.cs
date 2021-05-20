@@ -21,7 +21,7 @@ namespace SureMeasure.View.OrderPage
     {
         public static CadVariable MeasureVariable;
 
-        public ICommand AddContour => new Command(() =>
+        public Command AddContour => new Command(() =>
         {
             Contour tempContor = new Contour($"Contour {this.order.Contours.Count + 1}");
             this.order.Contours.Add(tempContor);
@@ -158,7 +158,7 @@ namespace SureMeasure.View.OrderPage
         {
             Random random = new Random();
 
-            string result = await DisplayPromptAsync("Добавить линию", "Мне нужны твоя длинна и угол", "Add", "Cancel", "0000&00", -1, Keyboard.Numeric, $"{random.Next(250, 1000)}&{random.Next(45, 270)}");
+            string result = await DisplayPromptAsync("Добавить линию", "Мне нужны твоя длинна и угол", "Add", "Cancel", "0000&00", -1, Keyboard.Numeric, $"{random.Next(100, 200)}&{random.Next(45, 270)}");
             if (string.IsNullOrEmpty(result) == false)
             {
                 contour.BuildLine(Converters.ConvertDimMessage(result));

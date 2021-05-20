@@ -42,7 +42,7 @@ namespace SureMeasure.CadObjects
             get => this._x;
             set
             {
-                if (Math.Abs(value / this._x - 1) > 0.001 && this._isfix == false)
+                if (Math.Abs(value - this._x) > 0.001 && this._isfix == false)
                 {
                     this._x = value;
                     OnPropertyChanged("Point");
@@ -73,7 +73,7 @@ namespace SureMeasure.CadObjects
             get => this._y;
             set
             {
-                if (Math.Abs(value / this._x - 1) > 0.001 && this._isfix == false)
+                if (Math.Abs(value - this._x) > 0.1 && this._isfix == false)
                 {
                     this._y = value;
                     OnPropertyChanged("Point");

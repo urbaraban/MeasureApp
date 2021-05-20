@@ -6,83 +6,45 @@ using System.Runtime.CompilerServices;
 
 namespace SureMeasure.ShapeObj.Constraints
 {
-    public abstract class CadConstraint : INotifyPropertyChanged 
+    public interface CadConstraint : INotifyPropertyChanged
     {
         #region static
         public static List<CadConstraint> RuntimeConstraits { get; set; } = new List<CadConstraint>();
 
+        public static void RemoveConstraint()
+        {
+            for (int i = 0; i < RuntimeConstraits.Count; i += 1)
+            {
+                if (RuntimeConstraits[i].IsBase == false)
+                {
+                    RuntimeConstraits.RemoveAt(i);
+                    i -= 1;
+                }
+            }
+        }
 
         #endregion
-        public virtual event EventHandler<bool> Selected;
-        public virtual event EventHandler<bool> Fixed;
-        public virtual event EventHandler<bool> Supported;
+        public event EventHandler<bool> Selected;
+        public event EventHandler<bool> Fixed;
+        public event EventHandler<bool> Supported;
 
         #region non static
-        private CadVariable _variable;
 
-        public CadVariable Variable
-        {
-            get => this._variable;
-            set
-            {
-                this._variable = value;
-                OnPropertyChanged("Variable");
-            }
-        }
+        public CadVariable Variable { get; set; }
 
-        public virtual double Value
-        {
-            get => this.Variable.Value;
-            set
-            {
-                this.Variable.Value = value;
-                OnPropertyChanged("Value");
-            }
-        }
+        public double Value { get; set; }
 
-        public virtual string ID { get; set; }
+        public string ID { get; }
 
-        public virtual bool IsSelect
-        {
-            get => this._isselect;
-            set
-            {
-                this._isselect = value;
-                Selected?.Invoke(this, this._isselect);
-            }
-        }
-        private bool _isselect = false;
+        public bool IsSelect { get; set; }
 
-        public bool IsFix
-        {
-            get => _isfix;
-            set
-            {
-                this._isfix = value;
-                Fixed?.Invoke(this, this._isfix);
-            }
-        }
-        private bool _isfix = false;
+        public bool IsFix { get; set; }
 
-        public virtual bool IsSupport
-        {
-            get => this._issupprot;
-            set
-            {
-                this._issupprot = value;
-                Supported?.Invoke(this, this._issupprot);
-            }
-        }
-        private bool _issupprot = false;
+        public bool IsSupport { get; set; }
         #endregion
 
-        public virtual bool Execute { get; } = true;
+        public bool ContaintsPoint(CadPoint Point);
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public void OnPropertyChanged([CallerMemberName] string prop = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
-        }
+        public bool IsBase { get; }
     }
 }

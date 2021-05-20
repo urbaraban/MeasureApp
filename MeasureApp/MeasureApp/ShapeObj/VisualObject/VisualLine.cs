@@ -32,7 +32,7 @@ namespace SureMeasure.ShapeObj
             this.StrokeThickness = 5;
 
             this.constraintLenth = anchorAnchorLenth;
-            this.constraintLenth.Changed += Anchors_Changed;
+            this.constraintLenth.PropertyChanged += Anchors_Changed;
             this.constraintLenth.Removed += constraintLenth_Removed;
             this.constraintLenth.Supported += constraintLenth_Supported;
             this.constraintLenth.Selected += constraintLenth_Selected;
@@ -86,9 +86,10 @@ namespace SureMeasure.ShapeObj
                 EndPoint = new Point(this.constraintLenth.Point2.OX, this.constraintLenth.Point2.OY)
             };
 
-            this.lineGeometry.Dispatcher.BeginInvokeOnMainThread(() => {
-                this.Layout(new Xamarin.Forms.Rectangle(0, 0, MaxX, MaxY));
-            });
+            if (CadConstraint.RuntimeConstraits.Contains(this.constraintLenth) == false)
+                this.lineGeometry.Dispatcher.BeginInvokeOnMainThread(() => {
+                    this.Layout(new Xamarin.Forms.Rectangle(0, 0, MaxX, MaxY));
+                });
         }
 
         private void CadCanvas_RegularSize(object sender, double e)

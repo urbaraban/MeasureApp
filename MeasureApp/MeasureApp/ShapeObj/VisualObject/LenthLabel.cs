@@ -84,7 +84,7 @@ namespace SureMeasure.ShapeObj
             this.ScaleY = -1;
 
             this.BackgroundColor = Color.Green;
-            this._lenthConstrait.Changed += LenthAnchorAnchor_Changed;
+            this._lenthConstrait.PropertyChanged += LenthAnchorAnchor_Changed;
             this._lenthConstrait.Removed += _lenthAnchor_Removed;
 
             CadCanvas.RegularSize += CadCanvas_RegularSize;

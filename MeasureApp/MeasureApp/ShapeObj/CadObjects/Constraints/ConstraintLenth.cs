@@ -4,18 +4,17 @@
     using SureMeasure.CadObjects.Interface;
     using SureMeasure.Tools;
     using System;
-    using System.Diagnostics;
+    using System.ComponentModel;
     using System.Numerics;
+    using System.Runtime.CompilerServices;
 
     /// <summary>
     /// Defines the <see cref="ConstraintLenth" />.
     /// </summary>
     public class ConstraintLenth : CadConstraint, CadObject
     {
-        /// <summary>
-        /// Defines the Changed.
-        /// </summary>
-        public event EventHandler Changed;
+        public event EventHandler<bool> Fixed;
+
 
         /// <summary>
         /// Defines the Removed.
@@ -25,12 +24,25 @@
         /// <summary>
         /// Defines the Selected.
         /// </summary>
-        public override event EventHandler<bool> Selected;
+        public event EventHandler<bool> Selected;
 
         /// <summary>
         /// Defines the Supported.
         /// </summary>
-        public override event EventHandler<bool> Supported;
+        public event EventHandler<bool> Supported;
+
+        public bool IsFix
+        {
+            get => _isfix;
+            set
+            {
+                this._isfix = value;
+                Fixed?.Invoke(this, this._isfix);
+            }
+        }
+        private bool _isfix = false;
+
+
 
         /// <summary>
         /// Defines the Orientation.
@@ -55,7 +67,7 @@
         /// <summary>
         /// Gets or sets the Lenth.
         /// </summary>
-        public override double Value
+        public double Value
         {
             get => this.Variable.Value < 0 ? Sizing.PtPLenth(this.Point1, this.Point2) : this.Variable.Value;
             set
@@ -68,7 +80,7 @@
         /// <summary>
         /// Gets or sets a value indicating whether IsSelect.
         /// </summary>
-        public override bool IsSelect
+        public bool IsSelect
         {
             get => this._isselect;
             set
@@ -86,7 +98,7 @@
         /// <summary>
         /// Gets or sets a value indicating whether IsSupport.
         /// </summary>
-        public override bool IsSupport
+        public bool IsSupport
         {
             get => this._issupport;
             set
@@ -101,10 +113,21 @@
         /// </summary>
         private bool _issupport = false;
 
+        public CadVariable Variable
+        {
+            get => this._variable;
+            set
+            {
+                this._variable = value;
+                OnPropertyChanged("Variable");
+            }
+        }
+        private CadVariable _variable;
+
         /// <summary>
         /// Gets the ID.
         /// </summary>
-        public override string ID => Point1.ID + Point2.ID;
+        public string ID => Point1.ID + Point2.ID;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConstraintLenth"/> class.
@@ -164,7 +187,7 @@
                 this.Point2 = e;
                 SubAnchor(this.Point2);
             }
-            Changed?.Invoke(this, null);
+            OnPropertyChanged();
         }
 
         /// <summary>
@@ -255,7 +278,6 @@
                 {
                     PreMagic(cadPoint1, cadPoint2, this.Vector, cadPoint1 != this.Point1);
                 }
-                this.Changed?.Invoke(this, null);
             }
         }
 
@@ -264,12 +286,17 @@
             if (this.Variable.Value > -1 
                 && (cadPoint1.IsFix == false || cadPoint2.IsFix == false))
             {
-                if (MakeMagic(cadPoint1, vector2, Inversion) == false)
+                if (cadPoint2.IsFix == false)
                 {
-                    CadConstraint.RuntimeConstraits.Remove(this);
+                    MakeMagic(cadPoint1, vector2, Inversion); 
+                }
+                else if (cadPoint1.IsFix == false)
+                {
                     MakeMagic(cadPoint2, vector2, !Inversion);
                 }
             }
+            OnPropertyChanged();
+            CadConstraint.RemoveConstraint();
         }
 
         /// <summary>
@@ -279,10 +306,10 @@
         /// <param name="cadPoint2">The cadPoint2<see cref="CadPoint"/>.</param>
         private bool MakeMagic(CadPoint startPoint, Vector2 vector2, bool Inversion)
         {
-            Console.WriteLine($"Lenth {this.ID} Vector {startPoint.ToString()}");
             CadPoint EndPoint = this.GetNotThisPoint(startPoint);
             if (EndPoint.IsFix == false)
             {
+                Console.WriteLine($"Lenth {this.ID} EndPoint {EndPoint.ToString()}");
                 if (CadConstraint.RuntimeConstraits.Contains(this) == false)
                 {
                     CadConstraint.RuntimeConstraits.Add(this);
@@ -294,7 +321,6 @@
                 }
             }
             else CadConstraint.RuntimeConstraits.Remove(this);
-
             return CadConstraint.RuntimeConstraits.Contains(this);
         }
 
@@ -305,6 +331,17 @@
         public ConstraintLenth GetInvertClone()
         {
             return new ConstraintLenth(this.Point2, this.Point1, this.Value, this.IsSupport);
+        }
+
+        public bool ContaintsPoint(CadPoint Point) => this.Point1 == Point || this.Point2 == Point;
+
+        public bool IsBase => this.Point1.IsFix == true || this.Point2.IsFix == true;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public void OnPropertyChanged([CallerMemberName] string prop = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
     }
 }

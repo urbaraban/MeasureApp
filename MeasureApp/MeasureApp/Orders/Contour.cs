@@ -1,36 +1,59 @@
-﻿using SureMeasure.CadObjects;
-using SureMeasure.CadObjects.Constraints;
-using SureMeasure.CadObjects.Interface;
-using SureMeasure.ShapeObj;
-using SureMeasure.ShapeObj.Canvas;
-using SureMeasure.ShapeObj.Constraints;
-using SureMeasure.Tools;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-
-namespace SureMeasure.Orders
+﻿namespace SureMeasure.Orders
 {
+    using SureMeasure.CadObjects;
+    using SureMeasure.CadObjects.Constraints;
+    using SureMeasure.CadObjects.Interface;
+    using SureMeasure.ShapeObj;
+    using SureMeasure.ShapeObj.Constraints;
+    using SureMeasure.Tools;
+    using System;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.ComponentModel;
+    using System.Runtime.CompilerServices;
+
+    /// <summary>
+    /// Defines the <see cref="Contour" />.
+    /// </summary>
     public class Contour : INotifyPropertyChanged, OrderObjectInt
     {
+        /// <summary>
+        /// Defines the ObjectAdded.
+        /// </summary>
         public event EventHandler<object> ObjectAdded;
 
+        /// <summary>
+        /// Gets or sets the ID.
+        /// </summary>
         public string ID { get; set; } = "Contour";
 
-        public List<ConstraintLenth> Lenths { get; private set; } = new List<ConstraintLenth>();
-
-        public List<ConstraintAngle> Angles { get; private set; } = new List<ConstraintAngle>();
-
-        public List<ContourPath> Paths { get; set; } = new List<ContourPath>();
-
-        public List<CadPoint> Points { get; private set; } = new List<CadPoint>();
+        /// <summary>
+        /// Gets the Lenths.
+        /// </summary>
+        public ObservableCollection<ConstraintLenth> Lenths { get; private set; } = new ObservableCollection<ConstraintLenth>();
 
         /// <summary>
-        /// Perimetr controur
+        /// Gets the Angles.
         /// </summary>
-        public double Perimetr {
-            get 
+        public ObservableCollection<ConstraintAngle> Angles { get; private set; } = new ObservableCollection<ConstraintAngle>();
+
+        /// <summary>
+        /// Gets or sets the Paths.
+        /// </summary>
+        public ObservableCollection<ContourPath> Paths { get; set; } = new ObservableCollection<ContourPath>();
+
+        /// <summary>
+        /// Gets the Points.
+        /// </summary>
+        public ObservableCollection<CadPoint> Points { get; private set; } = new ObservableCollection<CadPoint>();
+
+        /// <summary>
+        /// Gets the Perimetr
+        /// Perimetr controur.
+        /// </summary>
+        public double Perimetr
+        {
+            get
             {
                 double lenth = 0;
 
@@ -39,9 +62,12 @@ namespace SureMeasure.Orders
                     lenth += contourPath.Perimeter;
                 }
                 return lenth;
-            } 
+            }
         }
 
+        /// <summary>
+        /// Gets the Area.
+        /// </summary>
         public double Area
         {
             get
@@ -55,14 +81,23 @@ namespace SureMeasure.Orders
             }
         }
 
-
+        /// <summary>
+        /// Defines the PropertyChanged.
+        /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
 
+        /// <summary>
+        /// The OnPropertyChanged.
+        /// </summary>
+        /// <param name="prop">The prop<see cref="string"/>.</param>
         public void OnPropertyChanged([CallerMemberName] string prop = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
 
+        /// <summary>
+        /// Gets or sets the SelectedDrawMethod.
+        /// </summary>
         public DrawMethod SelectedDrawMethod
         {
             get => this._drawmethod;
@@ -76,9 +111,17 @@ namespace SureMeasure.Orders
                 OnPropertyChanged("Method");
             }
         }
+
+        /// <summary>
+        /// Defines the _drawmethod.
+        /// </summary>
         private DrawMethod _drawmethod = DrawMethod.StepByStep;
 
-        public ConstraintLenth BaseLenthConstrait {
+        /// <summary>
+        /// Gets or sets the BaseLenthConstrait.
+        /// </summary>
+        public ConstraintLenth BaseLenthConstrait
+        {
             get => this._baselenthconstrait;
             internal set
             {
@@ -98,9 +141,16 @@ namespace SureMeasure.Orders
                 OnPropertyChanged("BaseLenthConstrait");
             }
         }
+
+        /// <summary>
+        /// Defines the _baselenthconstrait.
+        /// </summary>
         private ConstraintLenth _baselenthconstrait;
 
-        public CadPoint BasePoint 
+        /// <summary>
+        /// Gets or sets the BasePoint.
+        /// </summary>
+        public CadPoint BasePoint
         {
             get => this._basepoint;
             internal set
@@ -123,13 +173,20 @@ namespace SureMeasure.Orders
                     }
                 }
                 OnPropertyChanged("BasePoint");
-            } 
+            }
         }
+
+        /// <summary>
+        /// Defines the _basepoint.
+        /// </summary>
         private CadPoint _basepoint;
 
-        public CadPoint LastPoint 
+        /// <summary>
+        /// Gets or sets the LastPoint.
+        /// </summary>
+        public CadPoint LastPoint
         {
-            get => this._lastpoint; 
+            get => this._lastpoint;
             internal set
             {
                 this._lastpoint = value;
@@ -153,32 +210,45 @@ namespace SureMeasure.Orders
                 OnPropertyChanged("LastPoint");
             }
         }
+
+        /// <summary>
+        /// Defines the _lastpoint.
+        /// </summary>
         private CadPoint _lastpoint;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Contour"/> class.
+        /// </summary>
+        /// <param name="Name">The Name<see cref="string"/>.</param>
         public Contour(string Name)
         {
             this.ID = Name;
-            Lenths = new List<ConstraintLenth>();
-            Angles = new List<ConstraintAngle>();
-            Paths = new List<ContourPath>();
+            Lenths = new ObservableCollection<ConstraintLenth>();
+            Angles = new ObservableCollection<ConstraintAngle>();
+            Paths = new ObservableCollection<ContourPath>();
             Paths.Add(new ContourPath(Paths.Count.ToString()));
         }
-       
+
         /// <summary>
         /// Get CadPoint for name. Search in all path.
         /// </summary>
-        /// <param name="Name"></param>
-        /// <returns></returns>
+        /// <param name="ID">The ID<see cref="string"/>.</param>
+        /// <returns>.</returns>
         public CadPoint GetPointByName(string ID)
         {
             foreach (CadPoint cadPoint in this.Points)
             {
-                if (cadPoint.ID == ID) 
+                if (cadPoint.ID == ID)
                     return cadPoint;
             }
             return null;
         }
 
+        /// <summary>
+        /// The GetLenthByName.
+        /// </summary>
+        /// <param name="ID">The ID<see cref="string"/>.</param>
+        /// <returns>The <see cref="ConstraintLenth"/>.</returns>
         public ConstraintLenth GetLenthByName(string ID)
         {
             foreach (ConstraintLenth constraintLenth in this.Lenths)
@@ -188,6 +258,12 @@ namespace SureMeasure.Orders
             return null;
         }
 
+        /// <summary>
+        /// The Add.
+        /// </summary>
+        /// <param name="Object">The Object<see cref="object"/>.</param>
+        /// <param name="Last">The Last<see cref="bool"/>.</param>
+        /// <returns>The <see cref="object"/>.</returns>
         public object Add(object Object, bool Last)
         {
             if (Object is CadObject cadObject)
@@ -209,7 +285,7 @@ namespace SureMeasure.Orders
                     else
                     {
                         this.LastPoint = cadPoint;
-                    } 
+                    }
                 }
                 ObjectAdded?.Invoke(this, Object);
                 return Object;
@@ -222,11 +298,11 @@ namespace SureMeasure.Orders
                     this.BaseLenthConstrait = lenthConstrait;
                     FindContourForLenth(lenthConstrait);
                 }
-                
+
                 ObjectAdded?.Invoke(this, Object);
                 return Object;
             }
-            else if(Object is ConstraintAngle angleConstrait)
+            else if (Object is ConstraintAngle angleConstrait)
             {
                 this.Angles.Add(angleConstrait);
                 ObjectAdded?.Invoke(this, Object);
@@ -242,8 +318,9 @@ namespace SureMeasure.Orders
         /// <summary>
         /// Make line with anchor on canvas.
         /// </summary>
-        /// <param name="tuple">item1 - lenth, item2 - angle</param>
-        /// <param name="Forced">Make line from label</param>
+        /// <param name="tuple">item1 - lenth, item2 - angle.</param>
+        /// <param name="Forced">Make line from label.</param>
+        /// <returns>The <see cref="bool"/>.</returns>
         public bool BuildLine(Tuple<double, double> tuple, bool Forced = false)
         {
             //Если у нас нет линии привязки
@@ -287,6 +364,11 @@ namespace SureMeasure.Orders
             return false;
         }
 
+        /// <summary>
+        /// The CadPoint_BaseObject.
+        /// </summary>
+        /// <param name="sender">The sender<see cref="object"/>.</param>
+        /// <param name="e">The e<see cref="bool"/>.</param>
         private void CadPoint_BaseObject(object sender, bool e)
         {
             if (e == true)
@@ -295,7 +377,11 @@ namespace SureMeasure.Orders
             }
         }
 
-        private void FindContourForLenth (ConstraintLenth constraintLenth)
+        /// <summary>
+        /// The FindContourForLenth.
+        /// </summary>
+        /// <param name="constraintLenth">The constraintLenth<see cref="ConstraintLenth"/>.</param>
+        private void FindContourForLenth(ConstraintLenth constraintLenth)
         {
             bool WithoutContour = true;
             if (constraintLenth.IsSupport == false)
@@ -318,12 +404,21 @@ namespace SureMeasure.Orders
             }
         }
 
-
+        /// <summary>
+        /// The CadObject_Removed.
+        /// </summary>
+        /// <param name="sender">The sender<see cref="object"/>.</param>
+        /// <param name="e">The e<see cref="bool"/>.</param>
         private void CadObject_Removed(object sender, bool e)
         {
             this.Remove(sender);
         }
 
+        /// <summary>
+        /// The CadObject_Selected.
+        /// </summary>
+        /// <param name="sender">The sender<see cref="object"/>.</param>
+        /// <param name="e">The e<see cref="bool"/>.</param>
         private void CadObject_Selected(object sender, bool e)
         {
             if (e == true)
@@ -342,24 +437,27 @@ namespace SureMeasure.Orders
             }
             else
             {
-                if (LastPoint == sender) {
+                if (LastPoint == sender)
+                {
                     LastPoint = null;
                 }
-                if (BasePoint == sender && BasePoint == LastPoint) {
-                    BasePoint =  null;
+                if (BasePoint == sender && BasePoint == LastPoint)
+                {
+                    BasePoint = null;
                 }
-                if (BaseLenthConstrait == sender) {
+                if (BaseLenthConstrait == sender)
+                {
                     BaseLenthConstrait = null;
                 }
-                
+
             }
         }
 
         /// <summary>
-        /// Remove select object
+        /// Remove select object.
         /// </summary>
-        /// <param name="Object"></param>
-        public void Remove (object Object)
+        /// <param name="Object">.</param>
+        public void Remove(object Object)
         {
             if (Object is CadObject cadObject)
             {
@@ -385,7 +483,7 @@ namespace SureMeasure.Orders
         }
 
         /// <summary>
-        /// Clear contour and set Base and Last object to null
+        /// Clear contour and set Base and Last object to null.
         /// </summary>
         public void Clear()
         {
@@ -397,6 +495,10 @@ namespace SureMeasure.Orders
             this.Points.Clear();
         }
 
+        /// <summary>
+        /// The GetBytes.
+        /// </summary>
+        /// <returns>The <see cref="byte[]"/>.</returns>
         public byte[] GetBytes()
         {
             List<Byte> theBytes = new List<Byte>();
@@ -437,6 +539,10 @@ namespace SureMeasure.Orders
             return theBytes.ToArray();
         }
 
+        /// <summary>
+        /// The GetNewPointName.
+        /// </summary>
+        /// <returns>The <see cref="string"/>.</returns>
         public string GetNewPointName()
         {
             string result = string.Empty;
@@ -448,11 +554,25 @@ namespace SureMeasure.Orders
             return result.Trim('\0');
         }
 
+        /// <summary>
+        /// The ToString.
+        /// </summary>
+        /// <returns>The <see cref="string"/>.</returns>
         public override string ToString() => this.ID;
 
+        /// <summary>
+        /// Defines the DrawMethod.
+        /// </summary>
         public enum DrawMethod
         {
+            /// <summary>
+            /// Defines the StepByStep.
+            /// </summary>
             StepByStep,
+
+            /// <summary>
+            /// Defines the FromPoint.
+            /// </summary>
             FromPoint
         }
     }
