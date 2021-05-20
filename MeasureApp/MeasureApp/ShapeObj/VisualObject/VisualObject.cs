@@ -8,7 +8,7 @@ using Xamarin.Forms.Shapes;
 
 namespace SureMeasure.ShapeObj
 {
-    public abstract class VisualObject : Path, INotifyPropertyChanged, CanvasObject, ActiveObject
+    public abstract class VisualObject : Path, INotifyPropertyChanged, IActiveObject
     {
         public virtual event EventHandler<bool> Selected;
         public virtual event EventHandler<object> Dropped;
@@ -134,20 +134,6 @@ namespace SureMeasure.ShapeObj
         {
             this.X += e.TotalX;
             this.Y += e.TotalY;
-        }
-
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public void OnPropertyChanged([CallerMemberName] string prop = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
-        }
-
-
-        public virtual void Update(string Param)
-        {
-            
         }
 
         public virtual void TryRemove()

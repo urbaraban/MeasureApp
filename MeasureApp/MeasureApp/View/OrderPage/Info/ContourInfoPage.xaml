@@ -209,15 +209,18 @@
                                     </CollectionView.ItemsLayout>
                                     <CollectionView.ItemTemplate>
                                         <DataTemplate>
-                                            <Image
+                                            <Grid>
+                                                <Image
                                                 Margin="3,0,3,0"
                                                 Aspect="AspectFit"
                                                 HeightRequest="100"
                                                 Source="{Binding .}">
-                                                <Image.GestureRecognizers>
-                                                    <TapGestureRecognizer Tapped="ImageTapGestureRecognizer_Tapped" />
-                                                </Image.GestureRecognizers>
-                                            </Image>
+                                                    <Image.GestureRecognizers>
+                                                        <TapGestureRecognizer Tapped="ImageTapGestureRecognizer_Tapped" />
+                                                    </Image.GestureRecognizers>
+                                                </Image>
+                                                <ActivityIndicator BindingContext="{x:Reference ImageGallery}" IsRunning="{Binding IsLoading}"/>
+                                            </Grid>
                                         </DataTemplate>
                                     </CollectionView.ItemTemplate>
                                 </CollectionView>

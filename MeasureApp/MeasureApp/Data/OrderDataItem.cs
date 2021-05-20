@@ -1,15 +1,10 @@
 ﻿using SQLite;
 using System;
-using System.Collections.Generic;
-using Xamarin.Essentials;
 
-namespace SureMeasure.Data
+namespace SureOrder.Data
 {
     public class OrderDataItem
     {
-        private string imagesUrls = string.Empty;
-
-
         [PrimaryKey, AutoIncrement]
         /// <summary>
         /// Name or other label
@@ -33,16 +28,7 @@ namespace SureMeasure.Data
         /// <summary>
         /// Location order.
         /// </summary>
-        public string Adress 
-        {
-            get => Location == null ? "Empty" : Location.Latitude.ToString();
-            set
-            {
-                adress = value;
-            }
-        }
-        public string adress;
-        public Location Location;
+        public string Adress { get; set; }
 
         public string Details { get; set; }
 

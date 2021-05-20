@@ -128,7 +128,7 @@
         <ShellContent Route="AboutPage" ContentTemplate="{DataTemplate local:AboutPage}" />
     </FlyoutItem>
 
-    <MenuItem Text="Logout" StyleClass="MenuItemLayoutStyle" Clicked="OnMenuItemClicked">
+    <MenuItem Text="Logout" StyleClass="MenuItemLayoutStyle">
     </MenuItem>
 
 </Shell>

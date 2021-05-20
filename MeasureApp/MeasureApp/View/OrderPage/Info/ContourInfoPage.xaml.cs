@@ -69,7 +69,7 @@ namespace SureMeasure.View.OrderPage
         }
 
 
-        private async void ShareBtn_Clicked(object sender, EventArgs e)
+        private void ShareBtn_Clicked(object sender, EventArgs e)
         {
             AppShell.ShareOrder(this.GetOrder);
         }
@@ -80,7 +80,7 @@ namespace SureMeasure.View.OrderPage
             await Navigation.PushPopupAsync(new ImagePopUp((string)ImageGallery.SelectedItem, GetOrder.ImagesUrls));
         }
 
-        private async void MapButton_Clicked(object sender, EventArgs e)
+        private void MapButton_Clicked(object sender, EventArgs e)
         {
             //await Navigation.PushPopupAsync(new MapPopup());
         }

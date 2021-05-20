@@ -1,7 +1,6 @@
 ﻿using Plugin.Segmented.Control;
-using SureMeasure.CadObjects;
+using SureCadSystem.CadObjects;
 using SureMeasure.Orders;
-using SureMeasure.ShapeObj.Canvas;
 using SureMeasure.Tools;
 using SureMeasure.View.OrderPage.Canvas;
 using System;
@@ -9,7 +8,6 @@ using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Windows.Input;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using static SureMeasure.Orders.Contour;
@@ -20,19 +18,6 @@ namespace SureMeasure.View.OrderPage
     public partial class CadCanvasPage : ContentPage
     {
         public static CadVariable MeasureVariable;
-
-        public Command AddContour => new Command(() =>
-        {
-            Contour tempContor = new Contour($"Contour {this.order.Contours.Count + 1}");
-            this.order.Contours.Add(tempContor);
-            ContourPicker.Dispatcher.BeginInvokeOnMainThread(() =>
-            {
-                ContourPicker.ItemsSource = null;
-                ContourPicker.ItemsSource = this.order.Contours;
-                ContourPicker.SelectedItem = tempContor;
-            });
-        });
-
 
         private Order order => (Order)this.BindingContext;
         private Contour contour => (Contour)ContourPicker.SelectedItem;
@@ -64,8 +49,8 @@ namespace SureMeasure.View.OrderPage
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            this.MainCanvas.VisualClear();
-            this.MainCanvas.DrawContour(this.contour);
+            await this.MainCanvas.VisualClear();
+            await this.MainCanvas.DrawContour(this.contour);
             this.BindingContext = AppShell.SelectOrder;
 
         }
@@ -184,7 +169,7 @@ namespace SureMeasure.View.OrderPage
             }
         }
 
-        private async void ShareBtn_Clicked(object sender, EventArgs e)
+        private void ShareBtn_Clicked(object sender, EventArgs e)
         {
             AppShell.ShareOrder(this.order);
         }
@@ -253,6 +238,18 @@ namespace SureMeasure.View.OrderPage
             {
                 Console.WriteLine(er.ToString());
             }
+        }
+
+        private void AddContourButton_Clicked(object sender, EventArgs e)
+        {
+            Contour tempContor = new Contour($"Contour {this.order.Contours.Count + 1}");
+            this.order.Contours.Add(tempContor);
+            ContourPicker.Dispatcher.BeginInvokeOnMainThread(() =>
+            {
+                ContourPicker.ItemsSource = null;
+                ContourPicker.ItemsSource = this.order.Contours;
+                ContourPicker.SelectedItem = tempContor;
+            });
         }
     }
 }

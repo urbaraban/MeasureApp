@@ -1,11 +1,11 @@
-﻿using SureMeasure.ShapeObj.Constraints;
+﻿using SureCadSystem.Constraints;
 using SureMeasure.ShapeObj.Interface;
 using System;
 using Xamarin.Forms;
 
 namespace SureMeasure.ShapeObj
 {
-    public abstract class  ConstraitLabel : Label, CanvasObject, ActiveObject
+    public abstract class  ConstraitLabel : Label, ICanvasObject, IActiveObject
     {
         public virtual event EventHandler<object> Dropped;
         public virtual event EventHandler<bool> Removed;

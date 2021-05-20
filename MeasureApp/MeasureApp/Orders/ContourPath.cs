@@ -1,11 +1,10 @@
-﻿using SureMeasure.CadObjects;
-using SureMeasure.ShapeObj.Constraints;
+﻿using SureCadSystem.CadObjects;
+using SureCadSystem.Constraints;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using Xamarin.Forms;
 
 namespace SureMeasure.Orders
 {
@@ -13,23 +12,6 @@ namespace SureMeasure.Orders
     {
         public bool IsSubstract { get; set; } = false;
 
-
-        public Rect Bounds
-        {
-            get
-            {
-                CadPoint[] cadPoints = this.Points;
-                double minX = cadPoints[0].X, minY = cadPoints[0].Y, maxX = cadPoints[0].X, maxY = cadPoints[0].Y;
-                foreach(CadPoint cadPoint in cadPoints)
-                {
-                    minX = Math.Min(minX, cadPoint.X);
-                    minY = Math.Min(minY, cadPoint.Y);
-                    maxX = Math.Min(maxX, cadPoint.X);
-                    maxY = Math.Min(maxY, cadPoint.Y);
-                }
-                return new Rect(minX, minY, maxX - minX, maxY - minY);
-            }
-        }
 
         /// <summary>
         /// Contour sqare

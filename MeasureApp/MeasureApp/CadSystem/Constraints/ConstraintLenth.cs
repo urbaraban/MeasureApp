@@ -1,8 +1,7 @@
-﻿namespace SureMeasure.ShapeObj.Constraints
+﻿namespace SureCadSystem.Constraints
 {
-    using SureMeasure.CadObjects;
-    using SureMeasure.CadObjects.Interface;
-    using SureMeasure.Tools;
+    using SureCadSystem.CadObjects;
+    using SureCadSystem.Tools;
     using System;
     using System.ComponentModel;
     using System.Numerics;
@@ -11,7 +10,7 @@
     /// <summary>
     /// Defines the <see cref="ConstraintLenth" />.
     /// </summary>
-    public class ConstraintLenth : CadConstraint, CadObject
+    public class ConstraintLenth : CadConstraint, ICadObject
     {
         public event EventHandler<bool> Fixed;
 
@@ -343,5 +342,12 @@
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
+    }
+
+    public enum Orientaton : int
+    {
+        OFF = -1,
+        Vertical = 0,
+        Horizontal = 1
     }
 }

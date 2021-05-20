@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Collections.ObjectModel;
+using SureOrder.Data;
 
 namespace SureMeasure.Data
 {
@@ -57,7 +57,7 @@ namespace SureMeasure.Data
         /// <returns></returns>
         public Task<int> SaveItemAsync(Order item)
         {
-            xmlrw.Write(item);
+            xmlrw.Write(item, Constants.NewOrderPath);
 
             if (item.ID != 0)
             {

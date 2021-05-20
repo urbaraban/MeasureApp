@@ -1,12 +1,7 @@
-﻿using SureMeasure.CadObjects;
-using SureMeasure.ShapeObj;
+﻿using SureCadSystem.CadObjects;
 using System;
-using System.Collections.Generic;
-using System.Numerics;
-using System.Text;
-using Xamarin.Forms;
 
-namespace SureMeasure.Tools
+namespace SureCadSystem.Tools
 {
     public static class Sizing
     {
@@ -20,7 +15,7 @@ namespace SureMeasure.Tools
             double Lenth = PtPLenth(Point1, Point2);
 
             double pos = newLenth / Lenth;
-            Point pointH = new Point(Point2.X + (Point1.X - Point2.X) * pos, Point2.Y + (Point1.Y - Point2.Y) * pos);
+            CadPoint pointH = new CadPoint(Point2.X + (Point1.X - Point2.X) * pos, Point2.Y + (Point1.Y - Point2.Y) * pos);
             double angleInRadians = angle * (Math.PI / 180);
             double cosTheta = Math.Cos(angleInRadians);
             double sinTheta = Math.Sin(angleInRadians);

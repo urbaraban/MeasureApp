@@ -1,19 +1,13 @@
-﻿using SureMeasure.CadObjects.Interface;
-using SureMeasure.ShapeObj;
-using SureMeasure.ShapeObj.Canvas;
-using SureMeasure.ShapeObj.Constraints;
-using SureMeasure.ShapeObj.Interface;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using Xamarin.Forms;
 
-namespace SureMeasure.CadObjects
+namespace SureCadSystem.CadObjects
 {
-    public class CadPoint : INotifyPropertyChanged, CadObject
+    public class CadPoint : INotifyPropertyChanged, ICadObject
     {
+        public static CadPoint ZeroPoint = new CadPoint(5000, 5000);
+
         public event EventHandler<bool> Selected;
         public event PropertyChangedEventHandler PropertyChanged;
         public event EventHandler<bool> Fixed;
@@ -55,12 +49,12 @@ namespace SureMeasure.CadObjects
         /// </summary>
         public double OX 
         {
-            get => _x + CadCanvas.ZeroPoint.X;
+            get => _x + CadPoint.ZeroPoint.X;
             set 
             {
                 if (this._isfix == false) 
                 {
-                    _x = value - CadCanvas.ZeroPoint.X;
+                    _x = value - CadPoint.ZeroPoint.X;
                     OnPropertyChanged("Point");
                 }
             }
@@ -87,12 +81,12 @@ namespace SureMeasure.CadObjects
         /// </summary>
         public double OY
         {
-            get => _y + CadCanvas.ZeroPoint.Y;
+            get => _y + CadPoint.ZeroPoint.Y;
             set
             {
                 if (this._y != value && this._isfix == false)
                 {
-                    _y = value - CadCanvas.ZeroPoint.Y;
+                    _y = value - CadPoint.ZeroPoint.Y;
                     OnPropertyChanged("Point");
                 }
             }
@@ -101,16 +95,6 @@ namespace SureMeasure.CadObjects
         public void OnPropertyChanged([CallerMemberName] string prop = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
-        }
-
-        public Point Point
-        {
-            get => new Point(this.X, this.Y);
-            set
-            {
-                this.X = value.X;
-                this.Y = value.Y;
-            }
         }
 
         public bool IsFix
@@ -165,10 +149,16 @@ namespace SureMeasure.CadObjects
 
         }
 
+        public CadPoint(double X, double Y, bool Adapt = false)
+        {
+            this._x = X - (Adapt == true ? CadPoint.ZeroPoint.X : 0);
+            this._y = Y - (Adapt == true ? CadPoint.ZeroPoint.Y : 0);
+        }
+
         public CadPoint(double X, double Y, string ID, bool Adapt = false)
         {
-            this._x = X - (Adapt == true ? CadCanvas.ZeroPoint.X : 0);
-            this._y = Y - (Adapt == true ? CadCanvas.ZeroPoint.Y : 0);
+            this._x = X - (Adapt == true ? CadPoint.ZeroPoint.X : 0);
+            this._y = Y - (Adapt == true ? CadPoint.ZeroPoint.Y : 0);
             this._id = ID;
         }
 
@@ -178,16 +168,6 @@ namespace SureMeasure.CadObjects
             TryRemove();
         }
         public void Update(CadPoint cadPoint) => update(cadPoint.X, cadPoint.Y);
-
-
-        public bool Update(Point Point) => update(Point.X, Point.Y);
-
-
-        public void Add(Point cadPoint)
-        {
-            this._x += cadPoint.X;
-            this._y += cadPoint.Y;
-        }
 
         public bool Update(double X, double Y) => update(X, Y);
 

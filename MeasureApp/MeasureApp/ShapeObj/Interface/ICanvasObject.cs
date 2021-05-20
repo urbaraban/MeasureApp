@@ -2,7 +2,7 @@
 
 namespace SureMeasure.ShapeObj.Interface
 {
-    public interface CanvasObject
+    public interface ICanvasObject
     {
         event EventHandler<bool> Removed;
 

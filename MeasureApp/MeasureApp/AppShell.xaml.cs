@@ -1,6 +1,4 @@
 ﻿using InTheHand.Bluetooth;
-using SureMeasure.Data;
-using SureMeasure.Orders;
 using SureMeasure.ShapeObj;
 using SureMeasure.BLEDevice;
 using SureMeasure.View.OrderPage;
@@ -12,9 +10,12 @@ using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Essentials;
 using System.IO;
-using SureMeasure.ShapeObj.Constraints;
 using IxMilia.Dxf;
 using IxMilia.Dxf.Entities;
+using SureCadSystem.Constraints;
+using SureMeasure.Orders;
+using SureOrder.Data;
+using SureMeasure.Data;
 
 namespace SureMeasure
 {
@@ -58,16 +59,16 @@ namespace SureMeasure
             {
                 if (_bledevice != null)
                 {
-                    _bledevice.LenthUpdated -= _bledevice_LenthUpdated;
+                    _bledevice.LenthUpdated -= Bledevice_LenthUpdated;
                 }
                 _bledevice = value;
                 if (_bledevice != null)
                 {
-                    AppShell._bledevice.LenthUpdated += _bledevice_LenthUpdated; ;
+                    AppShell._bledevice.LenthUpdated += Bledevice_LenthUpdated; ;
                 }
             }
         }
-        private static void _bledevice_LenthUpdated(object sender, Tuple<double, double> e) => LenthUpdated?.Invoke(null, e);
+        private static void Bledevice_LenthUpdated(object sender, Tuple<double, double> e) => LenthUpdated?.Invoke(null, e);
 
         private static DistanceMeter _bledevice;
 
@@ -83,10 +84,6 @@ namespace SureMeasure
             AppShell.SelectOrder = new Order();
         }
 
-        private async void OnMenuItemClicked(object sender, EventArgs e)
-        {
-           // await Shell.Current.GoToAsync("//LoginPage");
-        }
 
         //Call Dialog
         public async Task<string> SheetMenuDialog(SheetMenu sheetMenu)
@@ -108,8 +105,10 @@ namespace SureMeasure
 
         public async Task LoadBleScan()
         {
-            RequestDeviceOptions options = new RequestDeviceOptions();
-            options.AcceptAllDevices = true;
+            RequestDeviceOptions options = new RequestDeviceOptions
+            {
+                AcceptAllDevices = true
+            };
             BluetoothDevice device = await Bluetooth.RequestDeviceAsync(options);
 
             if (device != null)
@@ -150,7 +149,7 @@ namespace SureMeasure
 
         private async void DeviceItem_Clicked(object sender, EventArgs e)
         {
-            LoadBleScan();
+            await LoadBleScan();
         }
 
         public async static Task<string> TakePhotoAsync()
@@ -159,7 +158,7 @@ namespace SureMeasure
             {
                 var photo = await MediaPicker.CapturePhotoAsync(new MediaPickerOptions
                 {
-                    Title = $"SureMeasure.{DateTime.Now.ToString("dd.MM.yyyy_hh.mm.ss")}.png"
+                    Title = $"SureMeasure.{DateTime.Now:dd.MM.yyyy_hh.mm.ss}.png"
                 });
 
                 // для примера сохраняем файл в локальном хранилище

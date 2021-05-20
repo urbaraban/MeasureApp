@@ -2,7 +2,7 @@
 
 namespace SureMeasure.ShapeObj.Interface
 {
-    public interface ActiveObject
+    public interface IActiveObject
     {
         event EventHandler<object> Dropped;
 

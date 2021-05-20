@@ -5,12 +5,7 @@ using System.Linq;
 
 namespace SureMeasure.ShapeObj
 {
-        public enum Orientaton : int
-        {
-            OFF = -1,
-            Vertical = 0,
-            Horizontal = 1
-        }
+
 
     public class EnumTools
     {

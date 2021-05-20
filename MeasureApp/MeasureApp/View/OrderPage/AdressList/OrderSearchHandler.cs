@@ -1,5 +1,6 @@
 ﻿using SureMeasure.Data;
 using SureMeasure.Orders;
+using SureOrder.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,7 +31,7 @@ namespace SureMeasure.OrderPage.Controls
             }
         }
 
-        protected override async void OnItemSelected(object item)
+        protected override void OnItemSelected(object item)
         {
             base.OnItemSelected(item);
 

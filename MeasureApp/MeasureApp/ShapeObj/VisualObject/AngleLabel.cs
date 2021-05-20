@@ -1,7 +1,7 @@
-﻿using SureMeasure.CadObjects;
-using SureMeasure.CadObjects.Constraints;
+﻿using SureCadSystem.CadObjects;
+using SureCadSystem.Constraints;
+using SureCadSystem.Tools;
 using SureMeasure.ShapeObj.Canvas;
-using SureMeasure.Tools;
 using SureMeasure.View.OrderPage;
 using System;
 using System.Collections.Generic;
@@ -14,52 +14,52 @@ namespace SureMeasure.ShapeObj
     {
         private ICommand CallValueDialog => new Command(async () => 
         {
-            string callresult = await AppShell.Instance.DisplayPromtDialog(_angleConstrait.Variable.Name, _angleConstrait.Value.ToString());
+            string callresult = await AppShell.Instance.DisplayPromtDialog(angleConstrait.Variable.Name, angleConstrait.Value.ToString());
             if (callresult != null)
             {
-                this._angleConstrait.Variable.Value = double.Parse(callresult);
+                this.angleConstrait.Variable.Value = double.Parse(callresult);
             }
         });
-        private ICommand Measure => new Command(async () =>
+        private ICommand SendMeasure => new Command(() =>
         {
-            CadCanvasPage.MeasureVariable = this._angleConstrait.Variable;
+            CadCanvasPage.MeasureVariable = this.angleConstrait.Variable;
             AppShell.BLEDevice.OnDevice();
         });
-        private ICommand InvertAngle => new Command(async () =>
+        private ICommand InvertAngle => new Command(() =>
         {
-            this._angleConstrait.Value = Math.Abs((this._angleConstrait.Value - 360) % 360);
+            this.angleConstrait.Value = Math.Abs((this.angleConstrait.Value - 360) % 360);
         });
-        private ICommand FreeAngle => new Command(async () =>
+        private ICommand FreeAngle => new Command(() =>
         {
-            this._angleConstrait.Variable.Value = -1;
+            this.angleConstrait.Variable.Value = -1;
         });
-        private ICommand Remove => new Command(async () =>
+        private ICommand Remove => new Command(() =>
         {
-            this._angleConstrait.TryRemove();
+            this.angleConstrait.TryRemove();
         });
 
         private List<SheetMenuItem> commands = new List<SheetMenuItem>();
 
 
-        private ConstraintAngle _angleConstrait;
+        private readonly ConstraintAngle angleConstrait;
         public AngleLabel(ConstraintAngle AngleConstrait) : base(AngleConstrait)
         {
-            this._angleConstrait = AngleConstrait;
-            CadPoint point = Sizing.GetPositionLineFromAngle(this._angleConstrait.Point1, this._angleConstrait.Point2, 10, this._angleConstrait.Value / 2d);
+            this.angleConstrait = AngleConstrait;
+            CadPoint point = Sizing.GetPositionLineFromAngle(this.angleConstrait.Point1, this.angleConstrait.Point2, 10, this.angleConstrait.Value / 2d);
             this.TranslationX = point.OX;
             this.TranslationY = point.OY;
-            this.Text = Math.Round(this._angleConstrait.Value, 1).ToString();
+            this.Text = Math.Round(this.angleConstrait.Value, 1).ToString();
             this.BackgroundColor = Color.Yellow;
             this.ScaleY = -1;
             this.HorizontalTextAlignment = TextAlignment.Center;
             this.VerticalTextAlignment = TextAlignment.End;
             this.BackgroundColor = Color.Yellow;
-            this._angleConstrait.PropertyChanged += AngleConstrait_PropertyChanged;
-            this._angleConstrait.Removed += _angleConstrait_Removed;
+            this.angleConstrait.PropertyChanged += AngleConstrait_PropertyChanged;
+            this.angleConstrait.Removed += AngleConstrait_Removed;
             CadCanvas.RegularSize += CadCanvas_RegularSize;
 
             this.commands.Add(new SheetMenuItem(CallValueDialog, "{CALL_VALUE_DIALOG}"));
-            this.commands.Add(new SheetMenuItem(Measure, "{MEASURE}"));
+            this.commands.Add(new SheetMenuItem(SendMeasure, "{MEASURE}"));
             this.commands.Add(new SheetMenuItem(InvertAngle, "{INVERT_ANGLE}"));
             this.commands.Add(new SheetMenuItem(FreeAngle, "{FREE_ANGLE}"));
             this.commands.Add(new SheetMenuItem(Remove, "{REMOVE}"));
@@ -67,14 +67,14 @@ namespace SureMeasure.ShapeObj
             this.SheetMenu = new SheetMenu(this.commands);
         }
 
-        private void _angleConstrait_Removed(object sender, bool e)
+        private void AngleConstrait_Removed(object sender, bool e)
         {
             this.TryRemove();
         }
 
         private void AngleConstrait_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            CadPoint point = Sizing.GetPositionLineFromAngle(this._angleConstrait.Point1, this._angleConstrait.Point2, 30 * this.Scale, this._angleConstrait.Value / 2d);
+            CadPoint point = Sizing.GetPositionLineFromAngle(this.angleConstrait.Point1, this.angleConstrait.Point2, 30 * this.Scale, this.angleConstrait.Value / 2d);
             this.TranslationX = point.OX;
             this.TranslationY = point.OY;
         }

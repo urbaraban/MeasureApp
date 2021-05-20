@@ -1,14 +1,16 @@
-﻿using SureMeasure.CadObjects;
+﻿using SureCadSystem.CadObjects;
 using SureMeasure.ShapeObj.Canvas;
+using SureMeasure.ShapeObj.Interface;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Forms;
 using Xamarin.Forms.Shapes;
 
 namespace SureMeasure.ShapeObj
 {
-    public class VisualAnchor : VisualObject
+    public class VisualAnchor : VisualObject, ICanvasObject
     {
         private ICommand Fix => new Command(() =>
         {
@@ -18,12 +20,12 @@ namespace SureMeasure.ShapeObj
         {
             this.cadPoint.TryRemove();
         });
-        private ICommand LastPoint => new Command(async () =>
+        private ICommand LastPoint => new Command(() =>
         {
             this.cadPoint.IsSelect = true;
         });
 
-        private ICommand BasePoint => new Command(async () =>
+        private ICommand BasePoint => new Command(() =>
         {
             this.cadPoint.IsBase = true;
         });
@@ -99,7 +101,7 @@ namespace SureMeasure.ShapeObj
             Update("Point");
         }
 
-        public void ChangedPoint(CadPoint cadPoint)
+        public async Task ChangedPoint(CadPoint cadPoint)
         {
             this.cadPoint.ChangePoint(cadPoint);
             Removed?.Invoke(this, true);
@@ -117,7 +119,7 @@ namespace SureMeasure.ShapeObj
 
         private void CadPoint_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) => this.Update(e.PropertyName);
 
-        public override void Update(string Param)
+        public void Update(string Param)
         {
             if (Param == "Point")
             {
@@ -148,7 +150,7 @@ namespace SureMeasure.ShapeObj
 
         public override string ToString()
         {
-            return $"{this.ID}:{this.X.ToString()} {this.Y.ToString()}";
+            return $"{this.ID}:{this.X} {this.Y}";
         }
     }
 }

@@ -1,12 +1,11 @@
 ﻿namespace SureMeasure.Orders
 {
-    using SureMeasure.Data;
+    using SureOrder.Data;
     using System;
     using System.Collections.ObjectModel;
     using System.ComponentModel;
     using System.IO;
     using System.Runtime.CompilerServices;
-    using Xamarin.Essentials;
 
     /// <summary>
     /// Defines the <see cref="Order" />.
@@ -48,7 +47,6 @@
                 Name = "{NewOrder}",
                 Details = string.Empty,
                 PhoneNumber = string.Empty,
-                Location = new Location(),
                 XmlUrl = string.Empty,
                 ImagesUrls = string.Empty
             };
@@ -128,14 +126,7 @@
         /// Gets or sets the Location
         /// Location order..
         /// </summary>
-        public Location Location
-        {
-            get => this.DataItem.Location;
-            set
-            {
-                this.DataItem.Location = value;
-            }
-        }
+
 
         /// <summary>
         /// Gets or sets the Adress.

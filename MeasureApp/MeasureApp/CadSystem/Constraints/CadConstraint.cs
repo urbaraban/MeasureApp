@@ -1,10 +1,9 @@
-﻿using SureMeasure.CadObjects;
+﻿using SureCadSystem.CadObjects;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 
-namespace SureMeasure.ShapeObj.Constraints
+namespace SureCadSystem.Constraints
 {
     public interface CadConstraint : INotifyPropertyChanged
     {

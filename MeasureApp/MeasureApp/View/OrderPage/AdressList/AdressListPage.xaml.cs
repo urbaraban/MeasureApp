@@ -1,5 +1,6 @@
 ﻿using SureMeasure.Data;
 using SureMeasure.Orders;
+using SureOrder.Data;
 using System;
 using System.Windows.Input;
 using Xamarin.Essentials;
@@ -54,7 +55,7 @@ namespace SureMeasure.View.OrderPage
             }
         }
 
-        protected override async void OnAppearing()
+        protected override void OnAppearing()
         {
             base.OnAppearing();
 
@@ -121,7 +122,7 @@ namespace SureMeasure.View.OrderPage
 
         private async void WayButton_Clicked(object sender, EventArgs e)
         {
-            if (sender is Button button)
+            if (sender is Button)
             {
                 //var location = new Location(latitude, longitude);
                 var options = new MapLaunchOptions { NavigationMode = NavigationMode.Driving };

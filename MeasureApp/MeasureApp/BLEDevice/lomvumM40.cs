@@ -48,8 +48,6 @@ namespace SureMeasure.BLEDevice
             LoadDevice(device);
         }
 
-        private GattCharacteristic _gattchart;
-
         private async void LoadDevice(BluetoothDevice device)
         {
             await device.Gatt.ConnectAsync();

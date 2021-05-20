@@ -1,17 +1,14 @@
-﻿namespace SureMeasure.Orders
-{
-    using SureMeasure.CadObjects;
-    using SureMeasure.CadObjects.Constraints;
-    using SureMeasure.CadObjects.Interface;
-    using SureMeasure.ShapeObj;
-    using SureMeasure.ShapeObj.Constraints;
-    using SureMeasure.Tools;
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.ComponentModel;
-    using System.Runtime.CompilerServices;
+﻿using SureCadSystem.CadObjects;
+using SureCadSystem.Constraints;
+using SureCadSystem.Tools;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
+namespace SureMeasure.Orders
+{
     /// <summary>
     /// Defines the <see cref="Contour" />.
     /// </summary>
@@ -266,7 +263,7 @@
         /// <returns>The <see cref="object"/>.</returns>
         public object Add(object Object, bool Last)
         {
-            if (Object is CadObject cadObject)
+            if (Object is ICadObject cadObject)
             {
                 cadObject.Selected += CadObject_Selected;
                 cadObject.Removed += CadObject_Removed;
@@ -308,10 +305,7 @@
                 ObjectAdded?.Invoke(this, Object);
                 return Object;
             }
-            else if (Object is ConstraitLabel constraitLabel)
-            {
-                this.ObjectAdded(this, constraitLabel);
-            }
+
             return null;
         }
 
@@ -459,7 +453,7 @@
         /// <param name="Object">.</param>
         public void Remove(object Object)
         {
-            if (Object is CadObject cadObject)
+            if (Object is ICadObject cadObject)
             {
                 cadObject.Selected -= CadObject_Selected;
                 cadObject.Removed -= CadObject_Removed;

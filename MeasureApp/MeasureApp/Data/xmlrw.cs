@@ -1,7 +1,7 @@
-﻿using SureMeasure.CadObjects;
-using SureMeasure.CadObjects.Constraints;
+﻿using SureCadSystem.CadObjects;
+using SureCadSystem.Constraints;
 using SureMeasure.Orders;
-using SureMeasure.ShapeObj.Constraints;
+using SureOrder.Data;
 using System.Globalization;
 using System.IO;
 using System.Xml.Linq;
@@ -83,7 +83,7 @@ namespace SureMeasure.Data
             return null;
         }
 
-        public static void Write(Order order)
+        public static void Write(Order order, string Path)
         {
             XElement Measure = new XElement("Measure");
 
@@ -92,7 +92,7 @@ namespace SureMeasure.Data
             info.Add(new XElement("Name", order.Name));
             info.Add(new XElement("Details", order.Details));
             info.Add(new XElement("Phone", order.Phone));
-            info.Add(new XElement("Location", order.Location));
+            info.Add(new XElement("Adress", order.Adress));
             info.Add(new XElement("ImagesUrls", string.Concat(order.ImagesUrls, '%')));
             Measure.Add(info);
 
@@ -161,7 +161,7 @@ namespace SureMeasure.Data
             //Check path
             if (File.Exists(order.DataItem.XmlUrl) == false)
             {
-                order.DataItem.XmlUrl = Constants.NewOrderPath;
+                order.DataItem.XmlUrl = Path;
             }
              xml.Save(order.DataItem.XmlUrl);
  

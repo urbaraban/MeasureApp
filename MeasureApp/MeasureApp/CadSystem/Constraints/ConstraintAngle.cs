@@ -1,22 +1,19 @@
-﻿using SureMeasure.CadObjects.Interface;
-using SureMeasure.ShapeObj;
-using SureMeasure.ShapeObj.Constraints;
-using SureMeasure.Tools;
+﻿using SureCadSystem.CadObjects;
+using SureCadSystem.Tools;
 using System;
 using System.ComponentModel;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
-namespace SureMeasure.CadObjects.Constraints
+namespace SureCadSystem.Constraints
 {
-    public class ConstraintAngle : CadConstraint, CadObject
+    public class ConstraintAngle : CadConstraint, ICadObject
     {
         public ConstraintLenth anchorAnchor1;
         public ConstraintLenth anchorAnchor2;
 
         public event EventHandler<bool> Fixed;
         public event EventHandler<bool> Removed;
-        public event EventHandler<bool> LastObject;
         /// <summary>
         /// Defines the Selected.
         /// </summary>

@@ -1,5 +1,5 @@
-﻿using SureMeasure.ShapeObj.Canvas;
-using SureMeasure.ShapeObj.Constraints;
+﻿using SureCadSystem.Constraints;
+using SureMeasure.ShapeObj.Canvas;
 using SureMeasure.ShapeObj.Interface;
 using System;
 using Xamarin.Forms;
@@ -7,9 +7,9 @@ using Xamarin.Forms.Shapes;
 
 namespace SureMeasure.ShapeObj
 {
-    public class VisualLine : Path, CanvasObject
+    public class VisualLine : Path, ICanvasObject
     {
-        private ConstraintLenth constraintLenth;
+        private readonly ConstraintLenth constraintLenth;
         public event EventHandler<bool> Removed;
 
         private LineGeometry lineGeometry => (LineGeometry)this.Data;

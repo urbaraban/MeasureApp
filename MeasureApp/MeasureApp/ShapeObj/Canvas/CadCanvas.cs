@@ -1,16 +1,14 @@
-﻿using SureMeasure.CadObjects;
-using SureMeasure.CadObjects.Constraints;
-using SureMeasure.CadObjects.Interface;
+﻿using SureCadSystem.CadObjects;
+using SureCadSystem.Constraints;
 using SureMeasure.Orders;
-using SureMeasure.ShapeObj.Constraints;
 using SureMeasure.ShapeObj.Interface;
 using SureMeasure.Tools;
 using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Essentials;
 using Xamarin.Forms;
-using Xamarin.Forms.Shapes;
 
 namespace SureMeasure.ShapeObj.Canvas
 {
@@ -19,7 +17,6 @@ namespace SureMeasure.ShapeObj.Canvas
         #region static
         public static new double Width = 100000;
         public static new double Height = 100000;
-        public static Point ZeroPoint = new Point(5000, 5000);
 
         public static event EventHandler<double> DragSize;
         public static event EventHandler<bool> SellectAll;
@@ -42,11 +39,11 @@ namespace SureMeasure.ShapeObj.Canvas
         #endregion
 
         #region Layouts
-        private AbsoluteLayout MainLayout;
-        private AbsoluteLayout GroupLayout;
-        private AbsoluteLayout ObjectLayout;
-        private AbsoluteLayout AnchorLayout;
-        private DynamicBackground BackgroundLayout;
+        private readonly AbsoluteLayout MainLayout;
+        private readonly AbsoluteLayout GroupLayout;
+        private readonly AbsoluteLayout ObjectLayout;
+        private readonly AbsoluteLayout AnchorLayout;
+        private readonly DynamicBackground BackgroundLayout;
         #endregion
 
         private PanGestureRecognizer panGesture = new PanGestureRecognizer();
@@ -111,11 +108,11 @@ namespace SureMeasure.ShapeObj.Canvas
 
             this.Content = this.MainLayout;
             this.MainLayout.Children.Add(GroupLayout);
-            this.Add(this.BackgroundLayout);
-            this.Add(this.ObjectLayout);
-            this.Add(this.AnchorLayout);
-            this.GroupLayout.TranslationX = -ZeroPoint.X + 100;
-            this.GroupLayout.TranslationY = -ZeroPoint.Y + 100;
+            _ = this.Add(this.BackgroundLayout);
+            _ = this.Add(this.ObjectLayout);
+            _ = this.Add(this.AnchorLayout);
+            this.GroupLayout.TranslationX = -CadPoint.ZeroPoint.X + 100;
+            this.GroupLayout.TranslationY = -CadPoint.ZeroPoint.Y + 100;
             this.BindingContextChanged += CadCanvas_BindingContextChanged;
 
             //Drop
@@ -127,7 +124,7 @@ namespace SureMeasure.ShapeObj.Canvas
 
         private void DropGestureRecognizer_Drop(object sender, DropEventArgs e)
         {
-            if (e.Data.Properties["Object"] is CadObject cadObjects)
+            if (e.Data.Properties["Object"] is ICadObject cadObjects)
             {
                 
             }
@@ -140,7 +137,7 @@ namespace SureMeasure.ShapeObj.Canvas
 
 
 
-        private void CadCanvas_BindingContextChanged(object sender, EventArgs e)
+        private async void CadCanvas_BindingContextChanged(object sender, EventArgs e)
         {
             if (this.BindingContext is Contour contour)
             {
@@ -150,7 +147,7 @@ namespace SureMeasure.ShapeObj.Canvas
                 }
                 this.Clear();
                 this.Contour = contour;
-                DrawContour(this.Contour);
+                await DrawContour(this.Contour);
                 FitChild();
                 this.Contour.ObjectAdded += Contour_ObjectAdded;
             }
@@ -160,9 +157,9 @@ namespace SureMeasure.ShapeObj.Canvas
             }
         }
 
-        private void Contour_ObjectAdded(object sender, object e)
+        private async void Contour_ObjectAdded(object sender, object e)
         {
-            DrawObject(e);
+            await DrawObject(e);
         }
 
         /// <summary>
@@ -170,7 +167,7 @@ namespace SureMeasure.ShapeObj.Canvas
         /// </summary>
         /// <param name="Object"></param>
         /// <returns></returns>
-        public object DrawObject(object Object)
+        public async Task<object> DrawObject(object Object)
         {
             if (Object is CadPoint cadPoint)
             {
@@ -198,23 +195,23 @@ namespace SureMeasure.ShapeObj.Canvas
             return null;
         }
 
-        public async void DrawContour(Contour contour)
+        public async Task DrawContour(Contour contour)
         {
             if (contour.Paths != null)
             {
                 foreach (CadPoint point in contour.Points)
                 {
-                    DrawObject(point);
+                   await DrawObject(point);
                 }
 
                 foreach (ConstraintLenth constraintLenth in contour.Lenths)
                 {
-                    DrawObject(constraintLenth);
+                    await DrawObject(constraintLenth);
                 }
 
                 foreach (ConstraintAngle constraintAngle in contour.Angles)
                 {
-                    DrawObject(constraintAngle);
+                    await DrawObject(constraintAngle);
                 }
 
             }
@@ -224,7 +221,7 @@ namespace SureMeasure.ShapeObj.Canvas
         /// <summary>
         /// Adapt screen for size object on Canvas
         /// </summary>
-        public void FitChild()
+        public async Task FitChild()
         {
             if (this.ObjectLayout.Children.Count > 0)
             {
@@ -250,7 +247,7 @@ namespace SureMeasure.ShapeObj.Canvas
                 double scale = Math.Min(this.MainLayout.Width / (maxX - minX), this.MainLayout.Height / (maxY - minY));
                 this.GroupLayout.Scale = scale * 0.6;
 
-                TranslateToPoint(new Point((minX + maxX) / 2, (minY + maxY) / 2));
+                await TranslateToPoint(new Point((minX + maxX) / 2, (minY + maxY) / 2));
 
                 Debug.WriteLine($"Fit{this.GroupLayout.TranslationX - this.MainLayout.Width / 2 / this.GroupLayout.Scale}:{this.GroupLayout.TranslationY - this.MainLayout.Width / 2 / this.GroupLayout.Scale}");
 
@@ -267,8 +264,8 @@ namespace SureMeasure.ShapeObj.Canvas
             this.AnchorLayout.Children.Clear();
             this.ObjectLayout.Children.Clear();
             this.GroupLayout.Scale = 1;
-            this.GroupLayout.TranslationX = -ZeroPoint.X + 100;
-            this.GroupLayout.TranslationY = -ZeroPoint.Y + 100;
+            this.GroupLayout.TranslationX = -CadPoint.ZeroPoint.X + 100;
+            this.GroupLayout.TranslationY = -CadPoint.ZeroPoint.Y + 100;
 
             if (this.Contour != null)
             {
@@ -276,7 +273,7 @@ namespace SureMeasure.ShapeObj.Canvas
             }
         }
 
-        public void VisualClear()
+        public async Task VisualClear()
         {
             this.AnchorLayout.Children.Clear();
             this.ObjectLayout.Children.Clear();
@@ -288,7 +285,7 @@ namespace SureMeasure.ShapeObj.Canvas
         /// <param name="cadObject">select object</param>
         public void Remove(object sender)
         {
-            if (sender is CanvasObject canvasObject)
+            if (sender is ICanvasObject canvasObject)
             {
                 canvasObject.Removed -= CanvasObject_Removed;
             }
@@ -297,19 +294,19 @@ namespace SureMeasure.ShapeObj.Canvas
             {
                 if (sender is VisualLine visualLine)
                 {
-                    this.ObjectLayout.Children.Remove((VisualLine)sender);
+                    this.ObjectLayout.Children.Remove(visualLine);
                 }
                 if (sender is VisualAnchor visualAnchor)
                 {
-                    this.AnchorLayout.Children.Remove((VisualAnchor)sender);
+                    this.AnchorLayout.Children.Remove(visualAnchor);
                 }
-                if (sender is ConstraitLabel)
+                if (sender is ConstraitLabel label)
                 {
-                    this.AnchorLayout.Children.Remove((ConstraitLabel)sender);
+                    this.AnchorLayout.Children.Remove(label);
                 }
-                if (sender is AbsoluteLayout)
+                if (sender is AbsoluteLayout layout)
                 {
-                    this.GroupLayout.Children.Remove((AbsoluteLayout)sender);
+                    this.GroupLayout.Children.Remove(layout);
                 }
             });
         }
@@ -318,13 +315,13 @@ namespace SureMeasure.ShapeObj.Canvas
         /// Add object on Canvas. 
         /// </summary>
         /// <param name="Object"></param>
-        private object Add(object Object)
+        private async Task<object> Add(object Object)
         {
-            if (Object is CanvasObject canvasObject)
+            if (Object is ICanvasObject canvasObject)
             {
                 canvasObject.Removed += CanvasObject_Removed;
             }
-            if (Object is ActiveObject activeObject)
+            if (Object is IActiveObject activeObject)
             {
                 activeObject.Dropped += CadAnchor1_Dropped;
             }
@@ -374,7 +371,7 @@ namespace SureMeasure.ShapeObj.Canvas
             {
                 if (sender is VisualAnchor cadAnchor2 && e is VisualAnchor cadAnchor1)
                 {
-                    ICommand ConnectPoint = new Command(async () =>
+                    ICommand ConnectPoint = new Command(() =>
                     {
                         this.Contour.Add(new ConstraintLenth(cadAnchor1.cadPoint, cadAnchor2.cadPoint, -1), true);
                         cadAnchor1.Update("Point");
@@ -382,7 +379,7 @@ namespace SureMeasure.ShapeObj.Canvas
                     });
                     ICommand MergePoint = new Command(async () =>
                     {
-                        cadAnchor1.ChangedPoint(cadAnchor2.cadPoint);
+                       await cadAnchor1.ChangedPoint(cadAnchor2.cadPoint);
                     });
 
                     SheetMenu sheetMenu = new SheetMenu(new System.Collections.Generic.List<SheetMenuItem>() {
@@ -442,7 +439,7 @@ namespace SureMeasure.ShapeObj.Canvas
             }
         }
 
-        private void TranslateToPoint(Point point)
+        private async Task TranslateToPoint(Point point)
         {
             this.GroupLayout.TranslationX = -((this.GroupLayout.Width * (1 - this.GroupLayout.Scale)) / 2) - 
                 (point.X * this.GroupLayout.Scale - this.MainLayout.Width / 2 );

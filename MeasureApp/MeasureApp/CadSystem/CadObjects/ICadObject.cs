@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace SureMeasure.CadObjects.Interface
+namespace SureCadSystem.CadObjects
 {
-    public interface CadObject
+    public interface ICadObject
     {
         event EventHandler<bool> Removed;
         event EventHandler<bool> Selected;
