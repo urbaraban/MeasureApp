@@ -1,8 +1,9 @@
-﻿using SureCadSystem.Constraints;
+﻿using DrawEngine.Constraints;
 using SureCadSystem.Tools;
 using SureMeasure.ShapeObj.Canvas;
 using SureMeasure.View.OrderPage;
 using System;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Forms;
 
@@ -113,7 +114,7 @@ namespace SureMeasure.ShapeObj
             this.Update(string.Empty);
         }
 
-        public override void Update(string Param)
+        public override async Task Update(string Param)
         {
             this.TranslationX = (this._lenthConstrait.Point2.OX + this._lenthConstrait.Point1.OX) / 2;
             this.TranslationY = (this._lenthConstrait.Point2.OY + this._lenthConstrait.Point1.OY) / 2;
@@ -123,7 +124,7 @@ namespace SureMeasure.ShapeObj
             double templenth = Math.Round(Sizing.PtPLenth(this._lenthConstrait.Point1, this._lenthConstrait.Point2), 2);
             double tempdelta = Math.Abs(templenth / _lenthConstrait.Value - 1);
             if (tempdelta == 0 || tempdelta > 0.01) { 
-                Xamarin.Forms.Device.InvokeOnMainThreadAsync(() =>
+                await Xamarin.Forms.Device.InvokeOnMainThreadAsync(() =>
                 {
                     this.Text = $"{(_lenthConstrait.Value > -1 ? _lenthConstrait.Value.ToString() : string.Empty)}" +
                         $"{ (templenth != _lenthConstrait.Value ? $"({templenth.ToString()})" : string.Empty)}";

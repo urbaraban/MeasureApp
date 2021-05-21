@@ -1,7 +1,8 @@
-﻿using SureCadSystem.Constraints;
+﻿using DrawEngine.Constraints;
 using SureMeasure.ShapeObj.Canvas;
 using SureMeasure.ShapeObj.Interface;
 using System;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Shapes;
 
@@ -66,7 +67,7 @@ namespace SureMeasure.ShapeObj
         /// <summary>
         /// Update geometry and layout line
         /// </summary>
-        public void Update(string Param)
+        public async Task Update(string Param)
         {
             if (constraintLenth.IsSupport) this.Stroke = Brush.LightGray;
             else if (constraintLenth.IsSelect) this.Stroke = Brush.DarkOrange;
@@ -87,7 +88,7 @@ namespace SureMeasure.ShapeObj
             };
 
             if (CadConstraint.RuntimeConstraits.Contains(this.constraintLenth) == false)
-                this.lineGeometry.Dispatcher.BeginInvokeOnMainThread(() => {
+                await Xamarin.Forms.Device.InvokeOnMainThreadAsync(() => {
                     this.Layout(new Xamarin.Forms.Rectangle(0, 0, MaxX, MaxY));
                 });
         }
@@ -97,9 +98,9 @@ namespace SureMeasure.ShapeObj
             this.StrokeThickness = 5 / e;
         }
 
-        private void Anchors_Changed(object sender, EventArgs e)
+        private async void Anchors_Changed(object sender, EventArgs e)
         {
-            Update("Changed");
+            await Update("Changed");
         }
 
 

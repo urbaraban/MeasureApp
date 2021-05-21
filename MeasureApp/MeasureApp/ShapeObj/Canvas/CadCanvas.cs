@@ -1,6 +1,6 @@
-﻿using SureCadSystem.CadObjects;
-using SureCadSystem.Constraints;
-using SureMeasure.Orders;
+﻿using DrawEngine;
+using DrawEngine.CadObjects;
+using DrawEngine.Constraints;
 using SureMeasure.ShapeObj.Interface;
 using SureMeasure.Tools;
 using System;
@@ -171,7 +171,7 @@ namespace SureMeasure.ShapeObj.Canvas
         {
             if (Object is CadPoint cadPoint)
             {
-                this.Add(new VisualAnchor(cadPoint)
+                await this.Add(new VisualAnchor(cadPoint)
                 {
                     Scale = 1 / this.GroupLayout.Scale,
                 });
@@ -179,8 +179,8 @@ namespace SureMeasure.ShapeObj.Canvas
             }
             if (Object is ConstraintLenth lenthConstrait)
             {
-                this.Add(new LenthLabel(lenthConstrait));
-                this.Add(new VisualLine(lenthConstrait)
+                await this.Add(new LenthLabel(lenthConstrait));
+                await this.Add(new VisualLine(lenthConstrait)
                 {
                     StrokeThickness = 5 * 1 / this.GroupLayout.Scale,
                 });
@@ -188,7 +188,7 @@ namespace SureMeasure.ShapeObj.Canvas
             }
             if (Object is ConstraintAngle angleConstrait)
             {
-                this.Add(new AngleLabel(angleConstrait));
+                await this.Add(new AngleLabel(angleConstrait));
                 return angleConstrait;
             }
 
@@ -371,11 +371,11 @@ namespace SureMeasure.ShapeObj.Canvas
             {
                 if (sender is VisualAnchor cadAnchor2 && e is VisualAnchor cadAnchor1)
                 {
-                    ICommand ConnectPoint = new Command(() =>
+                    ICommand ConnectPoint = new Command(async () =>
                     {
                         this.Contour.Add(new ConstraintLenth(cadAnchor1.cadPoint, cadAnchor2.cadPoint, -1), true);
-                        cadAnchor1.Update("Point");
-                        cadAnchor2.Update("Point");
+                        await cadAnchor1.Update("Point");
+                        await cadAnchor2.Update("Point");
                     });
                     ICommand MergePoint = new Command(async () =>
                     {
@@ -409,7 +409,7 @@ namespace SureMeasure.ShapeObj.Canvas
             //Console.WriteLine($"{this.GroupLayout.TranslationX} {this.GroupLayout.TranslationY}");
         }
 
-        private void PinchGestureRecognizer_PinchUpdated(object sender, PinchGestureUpdatedEventArgs e)
+        private async void PinchGestureRecognizer_PinchUpdated(object sender, PinchGestureUpdatedEventArgs e)
         {
             if (e.Status == GestureStatus.Started)
             {
@@ -430,7 +430,7 @@ namespace SureMeasure.ShapeObj.Canvas
                 this.GroupLayout.Scale *= e.Scale;
 
                 //find new center position from start position
-                TranslateToPoint(new Point(FromCenterPosX, FromCenterPosY));
+                await TranslateToPoint(new Point(FromCenterPosX, FromCenterPosY));
             }
             if (e.Status == GestureStatus.Completed)
             {

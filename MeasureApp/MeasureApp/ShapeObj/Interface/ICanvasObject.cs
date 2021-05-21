@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace SureMeasure.ShapeObj.Interface
 {
@@ -9,7 +10,7 @@ namespace SureMeasure.ShapeObj.Interface
         /// <summary>
         /// Update visual layout;
         /// </summary>
-        void Update(string Param);
+        Task Update(string Param);
 
 
     }

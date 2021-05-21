@@ -1,16 +1,17 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
-<Shell xmlns="http://xamarin.com/schemas/2014/forms" 
-       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-       xmlns:local="clr-namespace:SureMeasure.View"
-       xmlns:orderPage="clr-namespace:SureMeasure.View.OrderPage"
-       Title="SureMeasure"
-       x:Class="SureMeasure.AppShell"
-       xmlns:common="clr-namespace:SureMeasure.Common"
-       WidthRequest="200">
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="SureMeasure.AppShell"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:common="clr-namespace:SureMeasure.Common"
+    xmlns:local="clr-namespace:SureMeasure.View"
+    xmlns:orderPage="clr-namespace:SureMeasure.View.OrderPage"
+    Title="SureMeasure"
+    WidthRequest="200">
 
     <!--
         The overall app visual hierarchy is defined here, along with navigation.
-    
+        
         https://docs.microsoft.com/xamarin/xamarin-forms/app-fundamentals/shell/
     -->
 
@@ -23,22 +24,25 @@
                 <Setter Property="Shell.DisabledColor" Value="#B4FFFFFF" />
                 <Setter Property="Shell.UnselectedColor" Value="#95FFFFFF" />
                 <Setter Property="Shell.TabBarBackgroundColor" Value="{StaticResource Primary}" />
-                <Setter Property="Shell.TabBarForegroundColor" Value="White"/>
-                <Setter Property="Shell.TabBarUnselectedColor" Value="#95FFFFFF"/>
-                <Setter Property="Shell.TabBarTitleColor" Value="White"/>
+                <Setter Property="Shell.TabBarForegroundColor" Value="White" />
+                <Setter Property="Shell.TabBarUnselectedColor" Value="#95FFFFFF" />
+                <Setter Property="Shell.TabBarTitleColor" Value="White" />
             </Style>
-            <Style TargetType="TabBar" BasedOn="{StaticResource BaseStyle}" />
-            <Style TargetType="FlyoutItem" BasedOn="{StaticResource BaseStyle}" />
+            <Style BasedOn="{StaticResource BaseStyle}" TargetType="TabBar" />
+            <Style BasedOn="{StaticResource BaseStyle}" TargetType="FlyoutItem" />
 
             <!--
-            Default Styles for all Flyout Items
-            https://docs.microsoft.com/xamarin/xamarin-forms/app-fundamentals/shell/flyout#flyoutitem-and-menuitem-style-classes
+                Default Styles for all Flyout Items
+                https://docs.microsoft.com/xamarin/xamarin-forms/app-fundamentals/shell/flyout#flyoutitem-and-menuitem-style-classes
             -->
             <Style Class="FlyoutItemLabelStyle" TargetType="Label">
-                <Setter Property="TextColor" Value="White"></Setter>
+                <Setter Property="TextColor" Value="White" />
             </Style>
-            <Style Class="FlyoutItemLayoutStyle" TargetType="Layout" ApplyToDerivedTypes="True">
-                <Setter Property="BackgroundColor" Value="LightBlue"></Setter>
+            <Style
+                ApplyToDerivedTypes="True"
+                Class="FlyoutItemLayoutStyle"
+                TargetType="Layout">
+                <Setter Property="BackgroundColor" Value="LightBlue" />
                 <Setter Property="VisualStateManager.VisualStateGroups">
                     <VisualStateGroupList>
                         <VisualStateGroup x:Name="CommonStates">
@@ -59,9 +63,12 @@
             </Style>
 
             <!--
-            Custom Style you can apply to any Flyout Item
+                Custom Style you can apply to any Flyout Item
             -->
-            <Style Class="MenuItemLayoutStyle" TargetType="Layout" ApplyToDerivedTypes="True">
+            <Style
+                ApplyToDerivedTypes="True"
+                Class="MenuItemLayoutStyle"
+                TargetType="Layout">
                 <Setter Property="VisualStateManager.VisualStateGroups">
                     <VisualStateGroupList>
                         <VisualStateGroup x:Name="CommonStates">
@@ -78,10 +85,13 @@
     </Shell.Resources>
 
     <Shell.FlyoutHeader>
-        <StackLayout BackgroundColor="White" Padding="10">
-            <Image HeightRequest="100" Aspect="AspectFit" Source="SureMeasureLogo.png" />
+        <StackLayout Padding="10" BackgroundColor="White">
+            <Image
+                Aspect="AspectFit"
+                HeightRequest="100"
+                Source="SureMeasureLogo.png" />
             <Label Text="Sure Measure" />
-            <Label Text="Все серьезно!"/>
+            <Label Text="Все серьезно!" />
         </StackLayout>
     </Shell.FlyoutHeader>
 
@@ -89,46 +99,46 @@
         <ShellContent Title="Draw" ContentTemplate="{DataTemplate orderPage:CadCanvasPage}">
             <ShellContent.Icon>
                 <FontImageSource
-                                    FontFamily="SegoeAssets"
-                                    Glyph="{x:Static common:IconFont.EditPage}"
-                                    Color="White"
-                                    Size="24"/>
+                    FontFamily="SegoeAssets"
+                    Glyph="{x:Static common:IconFont.EditPage}"
+                    Size="24"
+                    Color="White" />
             </ShellContent.Icon>
         </ShellContent>
         <ShellContent Title="Detail" ContentTemplate="{DataTemplate orderPage:ContourInfoPage}">
             <ShellContent.Icon>
                 <FontImageSource
-                                    FontFamily="SegoeAssets"
-                                    Glyph="{x:Static common:IconFont.Calculator}"
-                                    Color="White"
-                                    Size="24"/>
+                    FontFamily="SegoeAssets"
+                    Glyph="{x:Static common:IconFont.Calculator}"
+                    Size="24"
+                    Color="White" />
             </ShellContent.Icon>
         </ShellContent>
-        <ShellContent Title="Orders" Route="AdressListPage" ContentTemplate="{DataTemplate orderPage:AdressListPage}">
+        <ShellContent
+            Title="Orders"
+            ContentTemplate="{DataTemplate orderPage:AdressListPage}"
+            Route="AdressListPage">
             <ShellContent.Icon>
                 <FontImageSource
-                                    FontFamily="SegoeAssets"
-                                    Glyph="{x:Static common:IconFont.OrderPage}"
-                                    Color="White"
-                                    Size="24"/>
+                    FontFamily="SegoeAssets"
+                    Glyph="{x:Static common:IconFont.OrderPage}"
+                    Size="24"
+                    Color="White" />
             </ShellContent.Icon>
         </ShellContent>
 
     </FlyoutItem>
 
-    <MenuItem Text="Device"  Clicked="DeviceItem_Clicked" >
+    <MenuItem Clicked="DeviceItem_Clicked" Text="Device">
         <MenuItem.IconImageSource>
-            <FontImageSource
-                                    FontFamily="SegoeAssets"
-                                    Glyph="{x:Static common:IconFont.Bluetooth}"/>
+            <FontImageSource FontFamily="SegoeAssets" Glyph="{x:Static common:IconFont.Bluetooth}" />
         </MenuItem.IconImageSource>
     </MenuItem>
 
     <FlyoutItem Title="About" Icon="icon_about.png">
-        <ShellContent Route="AboutPage" ContentTemplate="{DataTemplate local:AboutPage}" />
+        <ShellContent ContentTemplate="{DataTemplate local:AboutPage}" Route="AboutPage" />
     </FlyoutItem>
 
-    <MenuItem Text="Logout" StyleClass="MenuItemLayoutStyle">
-    </MenuItem>
+    <MenuItem StyleClass="MenuItemLayoutStyle" Text="Logout" />
 
 </Shell>

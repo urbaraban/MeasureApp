@@ -1,4 +1,4 @@
-﻿using SureCadSystem.CadObjects;
+﻿using DrawEngine.CadObjects;
 using SureMeasure.ShapeObj.Canvas;
 using SureMeasure.ShapeObj.Interface;
 using System;
@@ -28,6 +28,11 @@ namespace SureMeasure.ShapeObj
         private ICommand BasePoint => new Command(() =>
         {
             this.cadPoint.IsBase = true;
+        });
+
+        private ICommand Split => new Command(() =>
+        {
+
         });
 
         public override event EventHandler<bool> Removed;
@@ -84,21 +89,21 @@ namespace SureMeasure.ShapeObj
             });
         }
 
-        private void CadPoint_Selected(object sender, bool e) => Update("IsSelected");
+        private async void CadPoint_Selected(object sender, bool e) => await Update("IsSelected");
 
         private void CadPoint_Removed(object sender, bool e)
         {
             Removed?.Invoke(this, true);
         }
 
-        private void CadPoint_ChangedPoint(object sender, CadPoint e)
+        private async void CadPoint_ChangedPoint(object sender, CadPoint e)
         {
             this.cadPoint.PropertyChanged -= CadPoint_PropertyChanged;
             this.cadPoint.ChangedPoint -= CadPoint_ChangedPoint;
             this.cadPoint = e;
             this.cadPoint.PropertyChanged += CadPoint_PropertyChanged;
             this.cadPoint.ChangedPoint += CadPoint_ChangedPoint;
-            Update("Point");
+            await Update("Point");
         }
 
         public async Task ChangedPoint(CadPoint cadPoint)
@@ -119,7 +124,7 @@ namespace SureMeasure.ShapeObj
 
         private void CadPoint_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) => this.Update(e.PropertyName);
 
-        public void Update(string Param)
+        public async Task Update(string Param)
         {
             if (Param == "Point")
             {
@@ -128,7 +133,7 @@ namespace SureMeasure.ShapeObj
             }
             else
             {
-                Xamarin.Forms.Device.BeginInvokeOnMainThread(() =>
+                await Xamarin.Forms.Device.InvokeOnMainThreadAsync(() =>
                 {
                     if (this.IsSelect == true)
                         this.Stroke = Brush.Orange;

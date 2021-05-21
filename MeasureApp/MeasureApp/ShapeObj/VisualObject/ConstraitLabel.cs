@@ -1,6 +1,7 @@
-﻿using SureCadSystem.Constraints;
+﻿using DrawEngine.Constraints;
 using SureMeasure.ShapeObj.Interface;
 using System;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace SureMeasure.ShapeObj
@@ -38,9 +39,9 @@ namespace SureMeasure.ShapeObj
             this.GestureRecognizers.Add(tapGestureRecognizer);
         }
 
-        private void Value_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private async void Value_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            Update(e.PropertyName);
+            await Update(e.PropertyName);
         }
 
         private void TapGestureRecognizer_Tapped(object sender, EventArgs e)
@@ -53,9 +54,9 @@ namespace SureMeasure.ShapeObj
             this.Removed?.Invoke(this, true);
         }
 
-        public virtual void Update(string Param)
+        public virtual async Task Update(string Param)
         {
-            Xamarin.Forms.Device.InvokeOnMainThreadAsync(() => {
+            await Xamarin.Forms.Device.InvokeOnMainThreadAsync(() => {
                 this.Text = Math.Round(this.Constraint.Value, 1).ToString();
             });
         }

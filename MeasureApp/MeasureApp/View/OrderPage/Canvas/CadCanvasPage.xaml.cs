@@ -1,5 +1,6 @@
-﻿using Plugin.Segmented.Control;
-using SureCadSystem.CadObjects;
+﻿using DrawEngine;
+using DrawEngine.CadObjects;
+using Plugin.Segmented.Control;
 using SureMeasure.Orders;
 using SureMeasure.Tools;
 using SureMeasure.View.OrderPage.Canvas;
@@ -10,7 +11,7 @@ using System.Net.Sockets;
 using System.Text;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
-using static SureMeasure.Orders.Contour;
+using static DrawEngine.Contour;
 
 namespace SureMeasure.View.OrderPage
 {
@@ -129,9 +130,9 @@ namespace SureMeasure.View.OrderPage
             }
         }
 
-        private void FitBtn_Clicked(object sender, EventArgs e)
+        private async void FitBtn_Clicked(object sender, EventArgs e)
         {
-            MainCanvas.FitChild();
+            await  MainCanvas.FitChild();
         }
 
         private void ClearBtn_Clicked(object sender, EventArgs e)
@@ -180,7 +181,7 @@ namespace SureMeasure.View.OrderPage
                 this.contour.SelectedDrawMethod = (DrawMethod)controlOption.Item;
         }
 
-        private void Button_Clicked(object sender, EventArgs e)
+        private async void Button_Clicked(object sender, EventArgs e)
         {
             if (this.order.Contours.Count > 1)
             {
@@ -195,7 +196,7 @@ namespace SureMeasure.View.OrderPage
             {
                 this.order.Contours[0].Clear();
             }
-            this.MainCanvas.DrawContour(this.contour);
+            await this.MainCanvas.DrawContour(this.contour);
         }
 
         private void LaserCutBtn_Clicked(object sender, EventArgs e)
