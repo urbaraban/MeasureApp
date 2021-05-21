@@ -49,7 +49,6 @@ namespace SureMeasure.ShapeObj.Canvas
         private PanGestureRecognizer panGesture = new PanGestureRecognizer();
         private Point startPoint = new Point(0, 0);
 
-        private Contour Contour;
 
         public CadCanvas()
         {
@@ -122,7 +121,7 @@ namespace SureMeasure.ShapeObj.Canvas
         }
 
 
-        private void DropGestureRecognizer_Drop(object sender, DropEventArgs e)
+        private async void DropGestureRecognizer_Drop(object sender, DropEventArgs e)
         {
             if (e.Data.Properties["Object"] is ICadObject cadObjects)
             {
@@ -130,7 +129,7 @@ namespace SureMeasure.ShapeObj.Canvas
             }
             if (e.Data.Properties["Message"] != null)
             {
-                this.Contour.BuildLine(Converters.ConvertDimMessage(e.Data.Properties["Message"].ToString()), true);
+               await AppShell.SelectOrder.SelectedContour.BuildLine(Converters.ConvertDimMessage(e.Data.Properties["Message"].ToString()), true);
             }
             
         }
@@ -141,15 +140,15 @@ namespace SureMeasure.ShapeObj.Canvas
         {
             if (this.BindingContext is Contour contour)
             {
-                if (this.Contour != null)
+                if (AppShell.SelectOrder.SelectedContour != null)
                 {
-                    this.Contour.ObjectAdded -= Contour_ObjectAdded;
+                    AppShell.SelectOrder.SelectedContour.ObjectAdded -= Contour_ObjectAdded;
                 }
                 this.Clear();
-                this.Contour = contour;
-                await DrawContour(this.Contour);
-                FitChild();
-                this.Contour.ObjectAdded += Contour_ObjectAdded;
+                AppShell.SelectOrder.SelectedContour = contour;
+                await DrawContour(AppShell.SelectOrder.SelectedContour);
+                await FitChild();
+                AppShell.SelectOrder.SelectedContour.ObjectAdded += Contour_ObjectAdded;
             }
             else
             {
@@ -157,10 +156,8 @@ namespace SureMeasure.ShapeObj.Canvas
             }
         }
 
-        private async void Contour_ObjectAdded(object sender, object e)
-        {
-            await DrawObject(e);
-        }
+        private async void Contour_ObjectAdded(object sender, object e) => await DrawObject(e);
+
 
         /// <summary>
         /// Select visual form for inner Contour object
@@ -266,14 +263,10 @@ namespace SureMeasure.ShapeObj.Canvas
             this.GroupLayout.Scale = 1;
             this.GroupLayout.TranslationX = -CadPoint.ZeroPoint.X + 100;
             this.GroupLayout.TranslationY = -CadPoint.ZeroPoint.Y + 100;
-
-            if (this.Contour != null)
-            {
-                this.Contour.Clear();
-            }
+            AppShell.SelectOrder.SelectedContour.Clear();
         }
 
-        public async Task VisualClear()
+        public void VisualClear()
         {
             this.AnchorLayout.Children.Clear();
             this.ObjectLayout.Children.Clear();
@@ -373,7 +366,7 @@ namespace SureMeasure.ShapeObj.Canvas
                 {
                     ICommand ConnectPoint = new Command(async () =>
                     {
-                        this.Contour.Add(new ConstraintLenth(cadAnchor1.cadPoint, cadAnchor2.cadPoint, -1), true);
+                        await AppShell.SelectOrder.SelectedContour.Add(new ConstraintLenth(cadAnchor1.cadPoint, cadAnchor2.cadPoint, -1), true);
                         await cadAnchor1.Update("Point");
                         await cadAnchor2.Update("Point");
                     });
@@ -441,10 +434,13 @@ namespace SureMeasure.ShapeObj.Canvas
 
         private async Task TranslateToPoint(Point point)
         {
-            this.GroupLayout.TranslationX = -((this.GroupLayout.Width * (1 - this.GroupLayout.Scale)) / 2) - 
-                (point.X * this.GroupLayout.Scale - this.MainLayout.Width / 2 );
-            this.GroupLayout.TranslationY = -((this.GroupLayout.Height * (1 - this.GroupLayout.Scale)) / 2) -
-                (point.Y * this.GroupLayout.Scale - this.MainLayout.Height / 2);
+            await Xamarin.Forms.Device.InvokeOnMainThreadAsync(() =>
+            {
+                this.GroupLayout.TranslationX = -((this.GroupLayout.Width * (1 - this.GroupLayout.Scale)) / 2) -
+                (point.X * this.GroupLayout.Scale - this.MainLayout.Width / 2);
+                this.GroupLayout.TranslationY = -((this.GroupLayout.Height * (1 - this.GroupLayout.Scale)) / 2) -
+                    (point.Y * this.GroupLayout.Scale - this.MainLayout.Height / 2);
+            });
         }
     }
 

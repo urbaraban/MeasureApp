@@ -1,4 +1,8 @@
-﻿namespace SureMeasure.Orders
+﻿using System.Windows.Input;
+using Xamarin.Forms;
+using System.Runtime.CompilerServices;
+
+namespace SureMeasure.Orders
 {
     using DrawEngine;
     using SureOrder.Data;
@@ -7,6 +11,7 @@
     using System.ComponentModel;
     using System.IO;
     using System.Runtime.CompilerServices;
+    using static DrawEngine.Contour;
 
     /// <summary>
     /// Defines the <see cref="Order" />.
@@ -159,7 +164,7 @@
         /// </summary>
         public string Phone
         {
-            get => this.DataItem.PhoneNumber == null ? "+7999999" : this.DataItem.PhoneNumber;
+            get => this.DataItem.PhoneNumber == null ? string.Empty : this.DataItem.PhoneNumber;
             set
             {
                 this.DataItem.PhoneNumber = value;
@@ -217,7 +222,31 @@
         /// <summary>
         /// Defines the Contours.
         /// </summary>
-        public ObservableCollection<Contour> Contours = new ObservableCollection<Contour>();
+        public ObservableCollection<Contour> Contours { get; } = new ObservableCollection<Contour>();
+        public Contour SelectedContour 
+        {
+            get
+            {
+                if (this.Contours.Count > 0)
+                {
+                    this.selectedcontour = this.Contours[0];
+                }
+                else
+                {
+                    this.selectedcontour = new Contour($"Contour {this.Contours.Count + 1}");
+                    Contours.Add(this.selectedcontour);
+                }
+
+                return this.selectedcontour;
+            }
+            set
+            {
+                this.selectedcontour = value;
+                OnPropertyChanged("SelectedContour");
+            }
+        }
+        private Contour selectedcontour;
+
 
         /// <summary>
         /// Defines the PropertyChanged.
@@ -251,6 +280,15 @@
         public override string ToString()
         {
             return Name;
+        }
+
+        private ICommand addContour;
+        public ICommand AddContour => addContour ??= new Command(PerformAddContour);
+
+        private void PerformAddContour()
+        {
+            this.Contours.Add(new Contour($"Contour {this.Contours.Count + 1}"));
+            OnPropertyChanged("Contours");
         }
     }
 }

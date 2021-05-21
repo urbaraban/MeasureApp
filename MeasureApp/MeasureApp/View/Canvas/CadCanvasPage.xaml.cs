@@ -50,7 +50,7 @@ namespace SureMeasure.View.OrderPage
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            await this.MainCanvas.VisualClear();
+            this.MainCanvas.VisualClear();
             await this.MainCanvas.DrawContour(this.contour);
             this.BindingContext = AppShell.SelectOrder;
 
@@ -83,7 +83,7 @@ namespace SureMeasure.View.OrderPage
             SizePool.Children.Remove((ContentView)sender);
         }
 
-        private void AppShell_LenthUpdated(object sender, Tuple<double, double> e)
+        private async void AppShell_LenthUpdated(object sender, Tuple<double, double> e)
         {
             if (MeasureVariable != null)
             {
@@ -92,7 +92,7 @@ namespace SureMeasure.View.OrderPage
             }
             else
             {
-                if (contour.BuildLine(e) == false) AddToSizePool(e);
+                if (await contour.BuildLine(e) == false) AddToSizePool(e);
             }
         }
 
@@ -112,9 +112,6 @@ namespace SureMeasure.View.OrderPage
                 {
                     order.Contours.Add(new Contour($"Contour {this.order.Contours.Count + 1}"));
                 }
-                ContourPicker.ItemsSource = order.Contours;
-                ContourPicker.SelectedItem = order.Contours[0];
-
             }
         }
 

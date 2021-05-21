@@ -16,7 +16,7 @@ namespace SureMeasure.ShapeObj
         {
             this.IsFix = !this.IsFix;
         });
-        private ICommand Remove => new Command(async () =>
+        private ICommand Remove => new Command(() =>
         {
             this.cadPoint.TryRemove();
         });

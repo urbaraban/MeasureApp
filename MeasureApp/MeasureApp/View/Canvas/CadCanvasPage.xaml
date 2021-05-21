@@ -5,8 +5,10 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:common="clr-namespace:SureMeasure.Common"
     xmlns:control="clr-namespace:Plugin.Segmented.Control;assembly=Plugin.Segmented"
-    xmlns:shapeobj="clr-namespace:SureMeasure.ShapeObj.Canvas" xmlns:orderpage="clr-namespace:SureMeasure.View.OrderPage"
-    Title="Drawing">
+    xmlns:orders="clr-namespace:SureMeasure.Orders"
+    xmlns:shapeobj="clr-namespace:SureMeasure.ShapeObj.Canvas"
+    Title="Drawing"
+    x:DataType="orders:Order">
     <ContentPage.Resources />
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="ID" />
@@ -84,7 +86,9 @@
                         <Picker
                             x:Name="ContourPicker"
                             Grid.Column="1"
-                            Grid.ColumnSpan="2" />
+                            Grid.ColumnSpan="2"
+                            ItemsSource="{Binding Contours}"
+                            SelectedItem="{Binding SelectedContour, Mode=TwoWay}" />
                         <Button
                             Grid.Row="0"
                             Grid.Column="4"
@@ -94,9 +98,7 @@
                             FontSize="Large"
                             HeightRequest="40"
                             VerticalOptions="Center"
-                            WidthRequest="40"
-                            Clicked="AddContourButton_Clicked"
-                            >
+                            WidthRequest="40">
                             <Button.ImageSource>
                                 <FontImageSource
                                     FontFamily="SegoeAssets"
@@ -113,8 +115,7 @@
                             BackgroundColor="White"
                             DisabledColor="Gray"
                             FontSize="Small"
-                            OnSegmentSelected="DrawMethodSelecter_OnSegmentSelected"
-                            SelectedItem="{Binding SelectedDrawMethod}"
+                            SelectedItem="{Binding SelectedContour.SelectedDrawMethod}"
                             SelectedTextColor="White"
                             TextColor="Black"
                             TintColor="{StaticResource Primary}" />
