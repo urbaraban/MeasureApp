@@ -139,9 +139,9 @@ namespace SureMeasure.ShapeObj
             this.Scale = 1 / e;
         }
 
-        private void LenthAnchorAnchor_Changed(object sender, System.EventArgs e)
+        private async void LenthAnchorAnchor_Changed(object sender, System.EventArgs e)
         {
-            this.Update("Changed");
+           await this.Update("Changed");
         }
 
         private void _lenthAnchor_Removed(object sender, bool e)
