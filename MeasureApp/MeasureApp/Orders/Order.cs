@@ -1,4 +1,7 @@
-﻿namespace SureMeasure.Orders
+﻿using System.Windows.Input;
+using Xamarin.Forms;
+
+namespace SureMeasure.Orders
 {
     using DrawEngine;
     using SureOrder.Data;
@@ -6,6 +9,7 @@
     using System.Collections.ObjectModel;
     using System.ComponentModel;
     using System.IO;
+    using System.Linq;
     using System.Runtime.CompilerServices;
 
     /// <summary>
@@ -13,6 +17,26 @@
     /// </summary>
     public class Order : INotifyPropertyChanged
     {
+        public Contour SelectContour
+        {
+            get
+            {
+                if (this._selectcontour == null)
+                {
+                    if (this.Contours.Count < 1) this.Contours.Add(new Contour($"Contour {this.Contours.Count + 1}"));
+                    this._selectcontour = this.Contours.First();
+                }
+                return this._selectcontour;
+            }
+            set
+            {
+                this._selectcontour = value;
+                OnPropertyChanged("SelectContour");
+            }
+        }
+
+        private Contour _selectcontour;
+
         /// <summary>
         /// Gets a value indicating whether IsAlive.
         /// </summary>
@@ -217,7 +241,7 @@
         /// <summary>
         /// Defines the Contours.
         /// </summary>
-        public ObservableCollection<Contour> Contours = new ObservableCollection<Contour>();
+        public ObservableCollection<Contour> Contours { get; set; } = new ObservableCollection<Contour>();
 
         /// <summary>
         /// Defines the PropertyChanged.
@@ -252,5 +276,33 @@
         {
             return Name;
         }
+
+        private ICommand addContour;
+        public ICommand AddContour => addContour ??= new Command(PerformAddContour);
+
+        private void PerformAddContour()
+        {
+            Contour tempContor = new Contour($"Contour {this.Contours.Count + 1}");
+            this.Contours.Add(tempContor);
+            this.SelectContour = tempContor;
+        }
+
+        private ICommand removeContour;
+        public ICommand RemoveContour => removeContour ??= new Command(PerformRemoveContour);
+
+        private void PerformRemoveContour()
+        {
+            if (this.Contours.Count > 1)
+            {
+                this.Contours.Remove(this.SelectContour);
+                this.SelectContour = this.Contours.Last();
+            }
+            else
+            {
+                this.SelectContour.Clear();
+            }
+        }
+
+
     }
 }

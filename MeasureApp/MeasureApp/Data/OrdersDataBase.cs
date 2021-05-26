@@ -5,11 +5,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SureOrder.Data;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace SureMeasure.Data
 {
-    public class OrdersDataBase
+    public class OrdersDataBase : INotifyPropertyChanged
     {
+        public void OnPropertyChanged([CallerMemberName] string prop = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
         static readonly Lazy<SQLiteAsyncConnection> lazyInitializer = new Lazy<SQLiteAsyncConnection>(() =>
         {
             return new SQLiteAsyncConnection(Constants.DatabasePath, Constants.Flags);
@@ -35,10 +44,8 @@ namespace SureMeasure.Data
             }
         }
 
-        public Task<List<OrderDataItem>> GetItemsAsync()
-        {
-            return Database.Table<OrderDataItem>().ToListAsync();
-        }
+        public Task<List<OrderDataItem>> GetItemsAsync => Database.Table<OrderDataItem>().ToListAsync();
+
 
         public Task<List<OrderDataItem>> GetItemsNotDoneAsync()
         {
@@ -74,9 +81,11 @@ namespace SureMeasure.Data
         /// </summary>
         /// <param name="item">remove object</param>
         /// <returns></returns>
-        public Task<int> DeleteItemAsync(OrderDataItem item)
+        public async Task<int> DeleteItemAsync(OrderDataItem item)
         {
-            return Database.DeleteAsync(item);
+            int index = await Database.DeleteAsync(item);
+            OnPropertyChanged("GetItemAsync");
+            return index;
         }
     }
 }

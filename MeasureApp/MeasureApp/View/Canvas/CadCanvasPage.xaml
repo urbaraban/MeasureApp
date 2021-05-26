@@ -5,8 +5,14 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:common="clr-namespace:SureMeasure.Common"
     xmlns:control="clr-namespace:Plugin.Segmented.Control;assembly=Plugin.Segmented"
-    xmlns:shapeobj="clr-namespace:SureMeasure.ShapeObj.Canvas" xmlns:orderpage="clr-namespace:SureMeasure.View.OrderPage"
-    Title="Drawing">
+    xmlns:orderpage="clr-namespace:SureMeasure.View.OrderPage"
+    xmlns:orders="clr-namespace:SureMeasure.Orders"
+    xmlns:shapeobj="clr-namespace:SureMeasure.ShapeObj.Canvas"
+    xmlns:shell="clr-namespace:SureMeasure"
+    x:Name="DrawingPage"
+    Title="Drawing"
+    x:DataType="orders:Order"
+    BindingContext="{Binding Source={x:Static shell:AppShell.SelectOrder}}">
     <ContentPage.Resources />
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="ID" />
@@ -48,6 +54,7 @@
                         Margin="10"
                         AbsoluteLayout.LayoutBounds="0,0,1,1"
                         AbsoluteLayout.LayoutFlags="SizeProportional"
+                        BindingContext="{Binding SelectedItem, Source={x:Reference ContourPicker}}"
                         IsClippedToBounds="true" />
 
                     <Grid Margin="10">
@@ -67,7 +74,7 @@
                             Grid.Row="0"
                             Grid.Column="0"
                             Padding="0"
-                            Clicked="Button_Clicked"
+                            Command="{Binding RemoveContour}"
                             CornerRadius="20"
                             FontSize="Large"
                             HeightRequest="40"
@@ -84,7 +91,9 @@
                         <Picker
                             x:Name="ContourPicker"
                             Grid.Column="1"
-                            Grid.ColumnSpan="2" />
+                            Grid.ColumnSpan="2"
+                            ItemsSource="{Binding Contours}"
+                            SelectedItem="{Binding SelectContour}" />
                         <Button
                             Grid.Row="0"
                             Grid.Column="4"
@@ -94,9 +103,7 @@
                             FontSize="Large"
                             HeightRequest="40"
                             VerticalOptions="Center"
-                            WidthRequest="40"
-                            Clicked="AddContourButton_Clicked"
-                            >
+                            WidthRequest="40">
                             <Button.ImageSource>
                                 <FontImageSource
                                     FontFamily="SegoeAssets"
@@ -113,8 +120,7 @@
                             BackgroundColor="White"
                             DisabledColor="Gray"
                             FontSize="Small"
-                            OnSegmentSelected="DrawMethodSelecter_OnSegmentSelected"
-                            SelectedItem="{Binding SelectedDrawMethod}"
+                            SelectedItem="{Binding SelectContour.SelectedDrawMethod, Mode=TwoWay}"
                             SelectedTextColor="White"
                             TextColor="Black"
                             TintColor="{StaticResource Primary}" />
@@ -168,8 +174,10 @@
                         </Grid.ColumnDefinitions>
 
                         <Button
-                            x:Name="GetBtn"
                             Grid.Column="2"
+                            x:DataType="orderpage:CadCanvasPage"
+                            BindingContext="{Reference DrawingPage}"
+                            Command="{Binding GetDevice}"
                             CornerRadius="30"
                             FontSize="Large"
                             HeightRequest="60"
@@ -185,8 +193,10 @@
                             </Button.ImageSource>
                         </Button>
                         <Button
-                            x:Name="AddBtn"
                             Grid.Column="1"
+                            x:DataType="orderpage:CadCanvasPage"
+                            BindingContext="{Reference DrawingPage}"
+                            Command="{Binding AddLine}"
                             CornerRadius="30"
                             HeightRequest="60"
                             HorizontalOptions="Center"
@@ -201,8 +211,10 @@
                             </Button.ImageSource>
                         </Button>
                         <Button
-                            x:Name="FitBtn"
                             Grid.Column="0"
+                            x:DataType="orderpage:CadCanvasPage"
+                            BindingContext="{Reference DrawingPage}"
+                            Command="{Binding FitPage}"
                             CornerRadius="30"
                             FontSize="Large"
                             HeightRequest="60"

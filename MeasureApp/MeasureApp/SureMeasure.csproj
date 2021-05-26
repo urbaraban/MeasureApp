@@ -50,19 +50,19 @@
     <EmbeddedResource Update="View\AboutPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="View\OrderPage\AdressList\AdressListPage.xaml">
+    <EmbeddedResource Update="View\AdressList\AdressListPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="View\OrderPage\Canvas\CadCanvasPage.xaml">
+    <EmbeddedResource Update="View\Canvas\CadCanvasPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="View\OrderPage\Info\ContourInfoPage.xaml">
+    <EmbeddedResource Update="View\Info\ContourInfoPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="View\OrderPage\Popup\ImagePopUp.xaml">
+    <EmbeddedResource Update="View\Popup\ImagePopUp.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Update="View\OrderPage\Popup\MapPopup.xaml">
+    <EmbeddedResource Update="View\Popup\MapPopup.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
   </ItemGroup>

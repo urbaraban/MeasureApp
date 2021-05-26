@@ -24,7 +24,7 @@ namespace SureMeasure.OrderPage.Controls
             }
             else
             {
-                IList<OrderDataItem> Orders = await AppShell.OrdersDB.GetItemsAsync();
+                IList<OrderDataItem> Orders = await AppShell.OrdersDB.GetItemsAsync;
                 ItemsSource = Orders.Where(Order => 
                 Order.Name.ToLower().Contains(newValue.ToLower()) || 
                 Order.Adress.ToLower().Contains(newValue.ToLower()));

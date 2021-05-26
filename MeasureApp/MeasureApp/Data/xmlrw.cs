@@ -5,6 +5,7 @@ using SureMeasure.Orders;
 using SureOrder.Data;
 using System.Globalization;
 using System.IO;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace SureMeasure.Data
@@ -16,7 +17,7 @@ namespace SureMeasure.Data
             NegativeSign = "-"
         };
 
-        public static Order Read(OrderDataItem dataItem)
+        public async static Task<Order> Read(OrderDataItem dataItem)
         {
             if (File.Exists(dataItem.XmlUrl) == true)
             {
@@ -34,7 +35,7 @@ namespace SureMeasure.Data
                     XElement XPoints = XContour.Element("Points");
                     foreach (XElement XPoint in XPoints.Elements("Point"))
                     {
-                        contour.Add(new CadPoint()
+                        await contour.Add(new CadPoint()
                         {
                             ID = XPoint.Attribute("ID").Value,
                             X = double.Parse(XPoint.Attribute("X").Value, xmlrw.dblfrm),
@@ -47,7 +48,7 @@ namespace SureMeasure.Data
                     XElement XLenths = XContour.Element("Lenths");
                     foreach (XElement XLenth in XLenths.Elements("Lenth"))
                     {
-                        contour.Add(new ConstraintLenth(
+                        await contour.Add(new ConstraintLenth(
                             contour.GetPointByName(XLenth.Attribute("P1").Value),
                             contour.GetPointByName(XLenth.Attribute("P2").Value),
                             double.Parse(XLenth.Attribute("Lenth").Value, xmlrw.dblfrm),
@@ -57,7 +58,7 @@ namespace SureMeasure.Data
                     XElement XAngles = XContour.Element("Angles");
                     foreach (XElement XAngle in XAngles.Elements("Angle"))
                     {
-                        contour.Add(new ConstraintAngle(
+                        await contour.Add(new ConstraintAngle(
                             contour.GetLenthByName(XAngle.Attribute("Lenth1").Value),
                             contour.GetLenthByName(XAngle.Attribute("Lenth2").Value),
                             double.Parse(XAngle.Attribute("Angle").Value, xmlrw.dblfrm)

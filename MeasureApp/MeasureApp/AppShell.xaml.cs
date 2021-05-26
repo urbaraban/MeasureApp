@@ -16,10 +16,12 @@ using SureMeasure.Orders;
 using SureMeasure.Data;
 using DrawEngine;
 using DrawEngine.Constraints;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace SureMeasure
 {
-    public partial class AppShell : Shell
+    public partial class AppShell : Shell, INotifyPropertyChanged
     {
         private static Order selectorder;
 
@@ -29,7 +31,6 @@ namespace SureMeasure
             set
             {
                 selectorder = value;
-                UpdatedOrder?.Invoke(null, selectorder);
             }
         }
 
@@ -48,7 +49,6 @@ namespace SureMeasure
         }
 
         public static event EventHandler<Tuple<double, double>> LenthUpdated;
-        public static event EventHandler<Order> UpdatedOrder;
 
         public static AppShell Instance { get; set; }
 
@@ -72,7 +72,7 @@ namespace SureMeasure
 
         private static DistanceMeter _bledevice;
 
-        private List<BluetoothDevice> Devices = new List<BluetoothDevice>();
+        private readonly List<BluetoothDevice> Devices = new List<BluetoothDevice>();
 
         public AppShell()
         {
@@ -235,5 +235,7 @@ namespace SureMeasure
             });
 
         }
+
+
     }
 }

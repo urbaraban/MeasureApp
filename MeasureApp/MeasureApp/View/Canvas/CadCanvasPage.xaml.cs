@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Windows.Input;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using static DrawEngine.Contour;
@@ -20,18 +21,14 @@ namespace SureMeasure.View.OrderPage
     {
         public static CadVariable MeasureVariable;
 
-        private Order order => (Order)this.BindingContext;
-        private Contour contour => (Contour)ContourPicker.SelectedItem;
+        private Order Order => (Order)this.BindingContext;
+        private Contour Contour => AppShell.SelectOrder.SelectContour;
 
         public CadCanvasPage()
         {
             InitializeComponent();
-            AddBtn.Clicked += AddBtn_Clicked;
-            FitBtn.Clicked += FitBtn_Clicked;
-            GetBtn.Clicked += GetBtn_Clicked;
 
             this.BindingContextChanged += CadCanvasPage_BindingContextChanged;
-            ContourPicker.SelectedIndexChanged += ContourPicker_SelectedIndexChanged;
             AppShell.LenthUpdated += AppShell_LenthUpdated;
 
             DrawMethodSelecter.Children.Add(new SegmentedControlOption() { Text = "Step By Step", Item = DrawMethod.StepByStep });
@@ -40,20 +37,14 @@ namespace SureMeasure.View.OrderPage
             if (this.MainCanvas.BindingContext != null)
             {
                 Debug.WriteLine(this.MainCanvas.BindingContext.ToString());
-            }
-            this.BindingContext = AppShell.SelectOrder;
-
-            AppShell.UpdatedOrder += AppShell_UpdatedOrder;
-            
+            }          
         }
 
         protected override async void OnAppearing()
         {
             base.OnAppearing();
             await this.MainCanvas.VisualClear();
-            await this.MainCanvas.DrawContour(this.contour);
-            this.BindingContext = AppShell.SelectOrder;
-
+            await this.MainCanvas.DrawContour(AppShell.SelectOrder.SelectContour);
         }
 
         protected override async void OnDisappearing()
@@ -67,23 +58,20 @@ namespace SureMeasure.View.OrderPage
 
         private void GetBtn_Clicked(object sender, EventArgs e)
         {
-            if (AppShell.BLEDevice != null)
-            {
-                AppShell.BLEDevice.OnDevice();
-            }
+
         }
 
+        private void CadCanvasPage_BindingContextChanged(object sender, EventArgs e)
+        {
 
-        private void AppShell_UpdatedOrder(object sender, Order e) => this.BindingContext = e;
-
-
+        }
 
         private void PoolDimLabel_Removed(object sender, EventArgs e)
         {
             SizePool.Children.Remove((ContentView)sender);
         }
 
-        private void AppShell_LenthUpdated(object sender, Tuple<double, double> e)
+        private async void AppShell_LenthUpdated(object sender, Tuple<double, double> e)
         {
             if (MeasureVariable != null)
             {
@@ -92,7 +80,7 @@ namespace SureMeasure.View.OrderPage
             }
             else
             {
-                if (contour.BuildLine(e) == false) AddToSizePool(e);
+                if (await Contour.BuildLine(e) == false) AddToSizePool(e);
             }
         }
 
@@ -104,35 +92,8 @@ namespace SureMeasure.View.OrderPage
         }
 
 
-        private void CadCanvasPage_BindingContextChanged(object sender, EventArgs e)
-        {
-            if (this.BindingContext is Order order)
-            {
-                if (order.Contours.Count < 1)
-                {
-                    order.Contours.Add(new Contour($"Contour {this.order.Contours.Count + 1}"));
-                }
-                ContourPicker.ItemsSource = order.Contours;
-                ContourPicker.SelectedItem = order.Contours[0];
-
-            }
-        }
-
-        private void ContourPicker_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (ContourPicker.SelectedItem is Contour contour)
-            {
-                if (contour.Paths.Count < 1)
-                {
-                    contour.Paths.Add(new ContourPath(contour.Paths.Count.ToString()));
-                }
-                MainCanvas.BindingContext = contour;
-            }
-        }
-
         private async void FitBtn_Clicked(object sender, EventArgs e)
         {
-            await  MainCanvas.FitChild();
         }
 
         private void ClearBtn_Clicked(object sender, EventArgs e)
@@ -140,64 +101,32 @@ namespace SureMeasure.View.OrderPage
             MainCanvas.Clear();
         }
 
-        private async void AddBtn_Clicked(object sender, EventArgs e)
-        {
+
+        public ICommand AddLine => new Command(async ()=> {
             Random random = new Random();
 
             string result = await DisplayPromptAsync("Добавить линию", "Мне нужны твоя длинна и угол", "Add", "Cancel", "0000&00", -1, Keyboard.Numeric, $"{random.Next(100, 200)}&{random.Next(45, 270)}");
             if (string.IsNullOrEmpty(result) == false)
             {
-                contour.BuildLine(Converters.ConvertDimMessage(result));
+                await Contour.BuildLine(Converters.ConvertDimMessage(result));
             }
-        }
+        });
 
-        
 
-        private void ContourAddBtn_Clicked(object sender, EventArgs e)
-        {
-            Contour tempContor = new Contour($"Contour {this.order.Contours.Count + 1}");
-            this.order.Contours.Add(tempContor);
-            ContourPicker.ItemsSource = null;
-            ContourPicker.ItemsSource = this.order.Contours;
-            ContourPicker.SelectedItem = tempContor;
-        }
 
         private void Switch_Toggled(object sender, ToggledEventArgs e)
         {
-            if (this.contour != null && sender is Xamarin.Forms.Switch sw)
+            if (this.Contour != null && sender is Xamarin.Forms.Switch sw)
             {
-                this.contour.SelectedDrawMethod = sw.IsToggled == true ? DrawMethod.FromPoint : DrawMethod.StepByStep;
+                this.Contour.SelectedDrawMethod = sw.IsToggled == true ? DrawMethod.FromPoint : DrawMethod.StepByStep;
             }
         }
 
         private void ShareBtn_Clicked(object sender, EventArgs e)
         {
-            AppShell.ShareOrder(this.order);
+            AppShell.ShareOrder(this.Order);
         }
 
-        private void DrawMethodSelecter_OnSegmentSelected(object sender, Plugin.Segmented.Event.SegmentSelectEventArgs e)
-        {
-            if (DrawMethodSelecter.Children[DrawMethodSelecter.SelectedSegment] is SegmentedControlOption controlOption)
-                this.contour.SelectedDrawMethod = (DrawMethod)controlOption.Item;
-        }
-
-        private async void Button_Clicked(object sender, EventArgs e)
-        {
-            if (this.order.Contours.Count > 1)
-            {
-                Contour temp = (Contour)ContourPicker.SelectedItem;
-                this.order.Contours.Remove(temp);
-
-                ContourPicker.ItemsSource = null;
-                ContourPicker.ItemsSource = this.order.Contours;
-                ContourPicker.SelectedItem = this.order.Contours[0];
-            }
-            else if (this.order.Contours.Count == 1)
-            {
-                this.order.Contours[0].Clear();
-            }
-            await this.MainCanvas.DrawContour(this.contour);
-        }
 
         private void LaserCutBtn_Clicked(object sender, EventArgs e)
         {
@@ -209,7 +138,7 @@ namespace SureMeasure.View.OrderPage
                 // Sends a message to the host to which you have connected.
                 //Byte[] sendBytes = Encoding.ASCII.GetBytes("Is anybody there?");
 
-                Byte[] sendBytes = this.contour.GetBytes();
+                Byte[] sendBytes = this.Contour.GetBytes();
 
                 udpClient.Send(sendBytes, sendBytes.Length);
 
@@ -241,16 +170,15 @@ namespace SureMeasure.View.OrderPage
             }
         }
 
-        private void AddContourButton_Clicked(object sender, EventArgs e)
-        {
-            Contour tempContor = new Contour($"Contour {this.order.Contours.Count + 1}");
-            this.order.Contours.Add(tempContor);
-            ContourPicker.Dispatcher.BeginInvokeOnMainThread(() =>
+        public ICommand FitPage => new Command( async ()=> {
+            await MainCanvas.FitChild();
+        });
+
+        public ICommand GetDevice => new Command(() => {
+            if (AppShell.BLEDevice != null)
             {
-                ContourPicker.ItemsSource = null;
-                ContourPicker.ItemsSource = this.order.Contours;
-                ContourPicker.SelectedItem = tempContor;
-            });
-        }
+                AppShell.BLEDevice.OnDevice();
+            }
+        });
     }
 }

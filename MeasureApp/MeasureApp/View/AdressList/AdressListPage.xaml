@@ -5,7 +5,9 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:common="clr-namespace:SureMeasure.Common"
     xmlns:controls="clr-namespace:SureMeasure.OrderPage.Controls"
+    xmlns:shell="clr-namespace:SureMeasure"
     Title="Orders"
+    BindingContext="{Binding Source={x:Static shell:AppShell.OrdersDB}}"
     WidthRequest="100">
     <Shell.SearchHandler>
         <controls:OrderSearchHandler
@@ -66,7 +68,8 @@
                     x:Name="listView"
                     Grid.Row="1"
                     Margin="3"
-                    SelectionMode="Single">
+                    SelectionMode="Single"
+                    BindingContext="{Binding GetItemsAsync}">
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
                             <Frame

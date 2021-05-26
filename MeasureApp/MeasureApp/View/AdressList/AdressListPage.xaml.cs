@@ -22,7 +22,6 @@ namespace SureMeasure.View.OrderPage
         {
             InitializeComponent();
             listView.SelectionChanged += ListView_SelectionChanged;
-            AppShell.UpdatedOrder += AppShell_UpdatedOrder;
         }
 
         private async void AppShell_UpdatedOrder(object sender, Order e)
@@ -38,13 +37,13 @@ namespace SureMeasure.View.OrderPage
             }
         }
 
-        private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (e.CurrentSelection[0] is OrderDataItem dataItem)
             {
                 if (AppShell.SelectOrder.ID != dataItem.ID)
                 {
-                    if (xmlrw.Read(dataItem) is Order order)
+                    if (await xmlrw.Read(dataItem) is Order order)
                     {
                         AppShell.SelectOrder = order;
                     }
@@ -71,7 +70,7 @@ namespace SureMeasure.View.OrderPage
 
         private async Task UpdateList()
         {
-            listView.ItemsSource = await AppShell.OrdersDB.GetItemsAsync();
+            listView.ItemsSource = await AppShell.OrdersDB.GetItemsAsync;
 
             if (AppShell.SelectOrder != null)
             {
@@ -101,7 +100,7 @@ namespace SureMeasure.View.OrderPage
 
         private async void ClearBtn_Clicked(object sender, EventArgs e)
         {
-            foreach(OrderDataItem dataItem in await AppShell.OrdersDB.GetItemsAsync())
+            foreach(OrderDataItem dataItem in await AppShell.OrdersDB.GetItemsAsync)
             {
                 await AppShell.OrdersDB.DeleteItemAsync(dataItem);
             }

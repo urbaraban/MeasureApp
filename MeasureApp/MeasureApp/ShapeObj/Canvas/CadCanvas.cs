@@ -122,7 +122,7 @@ namespace SureMeasure.ShapeObj.Canvas
         }
 
 
-        private void DropGestureRecognizer_Drop(object sender, DropEventArgs e)
+        private async void DropGestureRecognizer_Drop(object sender, DropEventArgs e)
         {
             if (e.Data.Properties["Object"] is ICadObject cadObjects)
             {
@@ -130,7 +130,7 @@ namespace SureMeasure.ShapeObj.Canvas
             }
             if (e.Data.Properties["Message"] != null)
             {
-                this.Contour.BuildLine(Converters.ConvertDimMessage(e.Data.Properties["Message"].ToString()), true);
+               await this.Contour.BuildLine(Converters.ConvertDimMessage(e.Data.Properties["Message"].ToString()), true);
             }
             
         }
@@ -148,7 +148,7 @@ namespace SureMeasure.ShapeObj.Canvas
                 this.Clear();
                 this.Contour = contour;
                 await DrawContour(this.Contour);
-                FitChild();
+                await FitChild();
                 this.Contour.ObjectAdded += Contour_ObjectAdded;
             }
             else
@@ -167,7 +167,7 @@ namespace SureMeasure.ShapeObj.Canvas
         /// </summary>
         /// <param name="Object"></param>
         /// <returns></returns>
-        public async Task<object> DrawObject(object Object)
+        private async Task<object> DrawObject(object Object)
         {
             if (Object is CadPoint cadPoint)
             {

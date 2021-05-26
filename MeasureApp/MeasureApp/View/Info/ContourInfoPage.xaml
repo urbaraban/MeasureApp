@@ -4,7 +4,9 @@
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:common="clr-namespace:SureMeasure.Common"
-    Title="Detail">
+    Title="Detail"
+    xmlns:shell="clr-namespace:SureMeasure"
+    BindingContext="{Binding Source={x:Static shell:AppShell.SelectOrder}}">
     <ContentPage.ToolbarItems>
         <ToolbarItem Clicked="ShareBtn_Clicked" Text="Share">
             <ToolbarItem.IconImageSource>
@@ -211,15 +213,15 @@
                                         <DataTemplate>
                                             <Grid>
                                                 <Image
-                                                Margin="3,0,3,0"
-                                                Aspect="AspectFit"
-                                                HeightRequest="100"
-                                                Source="{Binding .}">
+                                                    Margin="3,0,3,0"
+                                                    Aspect="AspectFit"
+                                                    HeightRequest="100"
+                                                    Source="{Binding .}">
                                                     <Image.GestureRecognizers>
                                                         <TapGestureRecognizer Tapped="ImageTapGestureRecognizer_Tapped" />
                                                     </Image.GestureRecognizers>
                                                 </Image>
-                                                <ActivityIndicator BindingContext="{x:Reference ImageGallery}" IsRunning="{Binding IsLoading}"/>
+                                                <ActivityIndicator BindingContext="{x:Reference ImageGallery}" IsRunning="{Binding IsLoading}" />
                                             </Grid>
                                         </DataTemplate>
                                     </CollectionView.ItemTemplate>

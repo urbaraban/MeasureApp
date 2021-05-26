@@ -1,5 +1,5 @@
-﻿using DrawEngine.Constraints;
-using SureCadSystem.Tools;
+﻿using DrawEngine;
+using DrawEngine.Constraints;
 using SureMeasure.ShapeObj.Canvas;
 using SureMeasure.View.OrderPage;
 using System;
@@ -127,7 +127,7 @@ namespace SureMeasure.ShapeObj
                 await Xamarin.Forms.Device.InvokeOnMainThreadAsync(() =>
                 {
                     this.Text = $"{(_lenthConstrait.Value > -1 ? _lenthConstrait.Value.ToString() : string.Empty)}" +
-                        $"{ (templenth != _lenthConstrait.Value ? $"({templenth.ToString()})" : string.Empty)}";
+                        $"{ (templenth != _lenthConstrait.Value ? $"({templenth})" : string.Empty)}";
             
                 });
             }
