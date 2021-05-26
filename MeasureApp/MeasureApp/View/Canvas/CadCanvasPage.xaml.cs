@@ -28,8 +28,8 @@ namespace SureMeasure.View.OrderPage
         {
             InitializeComponent();
 
-            this.BindingContextChanged += CadCanvasPage_BindingContextChanged;
             AppShell.LenthUpdated += AppShell_LenthUpdated;
+
 
             DrawMethodSelecter.Children.Add(new SegmentedControlOption() { Text = "Step By Step", Item = DrawMethod.StepByStep });
             DrawMethodSelecter.Children.Add(new SegmentedControlOption() { Text = "From Point", Item = DrawMethod.FromPoint });
@@ -40,11 +40,12 @@ namespace SureMeasure.View.OrderPage
             }          
         }
 
+
         protected override async void OnAppearing()
         {
             base.OnAppearing();
             await this.MainCanvas.VisualClear();
-            await this.MainCanvas.DrawContour(AppShell.SelectOrder.SelectContour);
+            this.BindingContext = AppShell.SelectOrder;
         }
 
         protected override async void OnDisappearing()
@@ -52,18 +53,8 @@ namespace SureMeasure.View.OrderPage
             base.OnDisappearing();
             if (AppShell.SelectOrder.IsAlive == true)
             {
-                await AppShell.OrdersDB.SaveItemAsync(AppShell.SelectOrder);
+                await AppShell.OrdersDB.SaveItemAsync(this.Order);
             }
-        }
-
-        private void GetBtn_Clicked(object sender, EventArgs e)
-        {
-
-        }
-
-        private void CadCanvasPage_BindingContextChanged(object sender, EventArgs e)
-        {
-
         }
 
         private void PoolDimLabel_Removed(object sender, EventArgs e)
@@ -89,16 +80,6 @@ namespace SureMeasure.View.OrderPage
             PoolDimLabel poolDimLabel = new PoolDimLabel($"{tuple.Item1}&{tuple.Item2}", this.Height);
             poolDimLabel.Removed += PoolDimLabel_Removed;
             SizePool.Children.Add(poolDimLabel);
-        }
-
-
-        private async void FitBtn_Clicked(object sender, EventArgs e)
-        {
-        }
-
-        private void ClearBtn_Clicked(object sender, EventArgs e)
-        {
-            MainCanvas.Clear();
         }
 
 

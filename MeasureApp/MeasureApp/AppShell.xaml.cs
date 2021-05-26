@@ -23,7 +23,12 @@ namespace SureMeasure
 {
     public partial class AppShell : Shell, INotifyPropertyChanged
     {
-        private static Order selectorder;
+        public static event PropertyChangedEventHandler StaticPropertyChanged;
+
+        private static void NotifyStaticPropertyChanged([CallerMemberName] string name = null)
+        {
+            StaticPropertyChanged?.Invoke(null, new PropertyChangedEventArgs(name));
+        }
 
         public static Order SelectOrder
         {
@@ -31,8 +36,10 @@ namespace SureMeasure
             set
             {
                 selectorder = value;
+                NotifyStaticPropertyChanged("SelectOrder");
             }
         }
+        private static Order selectorder;
 
         private static OrdersDataBase ordersDataBase;
 
@@ -47,6 +54,8 @@ namespace SureMeasure
                 return ordersDataBase;
             }
         }
+
+
 
         public static event EventHandler<Tuple<double, double>> LenthUpdated;
 

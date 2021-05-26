@@ -32,7 +32,7 @@
             Order="Secondary"
             Text="2CUT" />
         <ToolbarItem
-            Clicked="ClearBtn_Clicked"
+            Command="{Binding Clear}"
             Icon="search.png"
             Order="Secondary"
             Text="Clear" />
@@ -54,7 +54,7 @@
                         Margin="10"
                         AbsoluteLayout.LayoutBounds="0,0,1,1"
                         AbsoluteLayout.LayoutFlags="SizeProportional"
-                        BindingContext="{Binding SelectedItem, Source={x:Reference ContourPicker}}"
+                        BindingContext="{Binding SelectContour}"
                         IsClippedToBounds="true" />
 
                     <Grid Margin="10">
@@ -92,8 +92,8 @@
                             x:Name="ContourPicker"
                             Grid.Column="1"
                             Grid.ColumnSpan="2"
-                            ItemsSource="{Binding Contours}"
-                            SelectedItem="{Binding SelectContour}" />
+                            ItemsSource="{Binding Contours, Mode=OneWay}"
+                            SelectedItem="{Binding SelectContour, Mode=TwoWay}" />
                         <Button
                             Grid.Row="0"
                             Grid.Column="4"

@@ -68,8 +68,9 @@
                     x:Name="listView"
                     Grid.Row="1"
                     Margin="3"
-                    SelectionMode="Single"
-                    BindingContext="{Binding GetItemsAsync}">
+                    ItemsSource="{Binding GetItemsAsync.Result}"
+                    SelectedItem="{Binding Source={x:Static shell:AppShell.SelectOrder}, Mode=TwoWay}"
+                    SelectionMode="Single">
                     <CollectionView.ItemTemplate>
                         <DataTemplate>
                             <Frame
@@ -298,9 +299,8 @@
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
                         <Button
-                            x:Name="AddBtn"
                             Grid.Column="0"
-                            Clicked="AddBtn_Clicked"
+                            Command="{Binding AddOrder}"
                             FontFamily="SegoeAssets">
                             <Button.ImageSource>
                                 <FontImageSource
@@ -314,7 +314,7 @@
                             x:Name="RemoveBtn"
                             Grid.Column="1"
                             BackgroundColor="IndianRed"
-                            Clicked="RemoveBtn_Clicked">
+                            Command="{Binding RemoveOrder}">
                             <Button.ImageSource>
                                 <FontImageSource
                                     FontFamily="SegoeAssets"

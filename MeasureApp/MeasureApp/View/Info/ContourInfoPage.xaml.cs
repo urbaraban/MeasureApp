@@ -41,6 +41,7 @@ namespace SureMeasure.View.OrderPage
 
         protected override void OnAppearing()
         {
+            this.BindingContext = AppShell.SelectOrder;
             this.GetOrder.UpdateBinding();
         }
 

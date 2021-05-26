@@ -32,7 +32,7 @@ namespace SureMeasure.ShapeObj
                 this._lenthConstrait.Variable.Value = double.Parse(callresult);
             }
         });
-        private ICommand Measure => new Command(() =>
+        private ICommand GetMeasure => new Command(() =>
         {
             CadCanvasPage.MeasureVariable = this._lenthConstrait.Variable;
             AppShell.BLEDevice.OnDevice();
@@ -102,7 +102,7 @@ namespace SureMeasure.ShapeObj
             this.SheetMenu = new SheetMenu(new System.Collections.Generic.List<SheetMenuItem>()
             {
                 new SheetMenuItem(CallValueDialog, "{CALL_VALUE_DIALOG}"),
-                new SheetMenuItem(Measure, "{MEASURE}"),
+                new SheetMenuItem(GetMeasure, "{MEASURE}"),
                 new SheetMenuItem(SupportLine, "{SUPPORT_LINE}"),
                 new SheetMenuItem(Verical, "{VERTICAL}"),
                 new SheetMenuItem(Horizontal, "{HORIZONTAL}"),

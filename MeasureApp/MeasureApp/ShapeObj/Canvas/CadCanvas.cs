@@ -46,10 +46,10 @@ namespace SureMeasure.ShapeObj.Canvas
         private readonly DynamicBackground BackgroundLayout;
         #endregion
 
-        private PanGestureRecognizer panGesture = new PanGestureRecognizer();
+        private readonly PanGestureRecognizer panGesture = new PanGestureRecognizer();
         private Point startPoint = new Point(0, 0);
 
-        private Contour Contour;
+        private Contour Contour => (Contour)this.BindingContext;
 
         public CadCanvas()
         {
@@ -145,8 +145,7 @@ namespace SureMeasure.ShapeObj.Canvas
                 {
                     this.Contour.ObjectAdded -= Contour_ObjectAdded;
                 }
-                this.Clear();
-                this.Contour = contour;
+                await this.VisualClear();
                 await DrawContour(this.Contour);
                 await FitChild();
                 this.Contour.ObjectAdded += Contour_ObjectAdded;
@@ -259,19 +258,7 @@ namespace SureMeasure.ShapeObj.Canvas
         /// <summary>
         /// Clear canvas and return default setting
         /// </summary>
-        public void Clear()
-        {
-            this.AnchorLayout.Children.Clear();
-            this.ObjectLayout.Children.Clear();
-            this.GroupLayout.Scale = 1;
-            this.GroupLayout.TranslationX = -CadPoint.ZeroPoint.X + 100;
-            this.GroupLayout.TranslationY = -CadPoint.ZeroPoint.Y + 100;
 
-            if (this.Contour != null)
-            {
-                this.Contour.Clear();
-            }
-        }
 
         public async Task VisualClear()
         {
@@ -373,7 +360,7 @@ namespace SureMeasure.ShapeObj.Canvas
                 {
                     ICommand ConnectPoint = new Command(async () =>
                     {
-                        this.Contour.Add(new ConstraintLenth(cadAnchor1.cadPoint, cadAnchor2.cadPoint, -1), true);
+                        await this.Contour.Add(new ConstraintLenth(cadAnchor1.cadPoint, cadAnchor2.cadPoint, -1), true);
                         await cadAnchor1.Update("Point");
                         await cadAnchor2.Update("Point");
                     });

@@ -277,20 +277,14 @@ namespace SureMeasure.Orders
             return Name;
         }
 
-        private ICommand addContour;
-        public ICommand AddContour => addContour ??= new Command(PerformAddContour);
-
-        private void PerformAddContour()
+        public ICommand AddContour => new Command(()=> 
         {
             Contour tempContor = new Contour($"Contour {this.Contours.Count + 1}");
             this.Contours.Add(tempContor);
             this.SelectContour = tempContor;
-        }
+        });
 
-        private ICommand removeContour;
-        public ICommand RemoveContour => removeContour ??= new Command(PerformRemoveContour);
-
-        private void PerformRemoveContour()
+        public ICommand RemoveContour =>  new Command(()=> 
         {
             if (this.Contours.Count > 1)
             {
@@ -301,7 +295,10 @@ namespace SureMeasure.Orders
             {
                 this.SelectContour.Clear();
             }
-        }
+        });
+
+
+        public ICommand Clear => new Command(() => { this.SelectContour.Clear(); });
 
 
     }

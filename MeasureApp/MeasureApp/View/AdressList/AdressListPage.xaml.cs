@@ -13,28 +13,12 @@ namespace SureMeasure.View.OrderPage
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class AdressListPage : ContentPage
     {
-        public ICommand AddItem => new Command(async () =>
-        {
-            
-        });
+
 
         public AdressListPage()
         {
             InitializeComponent();
             listView.SelectionChanged += ListView_SelectionChanged;
-        }
-
-        private async void AppShell_UpdatedOrder(object sender, Order e)
-        {
-            foreach(OrderDataItem orderDataItem in listView.ItemsSource)
-            {
-                if (orderDataItem.ID == e.ID)
-                {
-                    await Xamarin.Forms.Device.InvokeOnMainThreadAsync(() => {
-                        listView.SelectedItem = orderDataItem;
-                    });
-                }
-            }
         }
 
         private async void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -58,44 +42,6 @@ namespace SureMeasure.View.OrderPage
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            await UpdateList();
-        }
-
-        private async void AddBtn_Clicked(object sender, EventArgs e)
-        {
-            AppShell.SelectOrder = new Order();
-            await AppShell.OrdersDB.SaveItemAsync(AppShell.SelectOrder);
-            await UpdateList();
-        }
-
-        private async Task UpdateList()
-        {
-            listView.ItemsSource = await AppShell.OrdersDB.GetItemsAsync;
-
-            if (AppShell.SelectOrder != null)
-            {
-                foreach (OrderDataItem orderDataItem in listView.ItemsSource)
-                {
-                    if (orderDataItem.ID == AppShell.SelectOrder.ID)
-                    {
-                        await Xamarin.Forms.Device.InvokeOnMainThreadAsync(() =>
-                        {
-                            listView.SelectedItem = orderDataItem;
-                            listView.ScrollTo(listView.SelectedItem);
-                        });
-                    }
-                }
-            }
-        }
-
-        private async void RemoveBtn_Clicked(object sender, EventArgs e)
-        {
-            if (listView.SelectedItem is OrderDataItem dataItem)
-            {
-                xmlrw.Remove(dataItem.XmlUrl);
-                await AppShell.OrdersDB.DeleteItemAsync(dataItem);
-            }
-            await UpdateList ();
         }
 
         private async void ClearBtn_Clicked(object sender, EventArgs e)
@@ -104,7 +50,6 @@ namespace SureMeasure.View.OrderPage
             {
                 await AppShell.OrdersDB.DeleteItemAsync(dataItem);
             }
-            await UpdateList();
         }
 
         private async void CallButton_Clicked(object sender, EventArgs e)
@@ -139,7 +84,6 @@ namespace SureMeasure.View.OrderPage
                     await AppShell.OrdersDB.DeleteItemAsync(dataItem);
                 }
             }
-            await UpdateList ();
         }
     }
 }

@@ -4,8 +4,8 @@
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:common="clr-namespace:SureMeasure.Common"
-    Title="Detail"
     xmlns:shell="clr-namespace:SureMeasure"
+    Title="Detail"
     BindingContext="{Binding Source={x:Static shell:AppShell.SelectOrder}}">
     <ContentPage.ToolbarItems>
         <ToolbarItem Clicked="ShareBtn_Clicked" Text="Share">

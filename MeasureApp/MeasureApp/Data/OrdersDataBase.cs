@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 using SureOrder.Data;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Collections.ObjectModel;
+using System.Windows.Input;
+using Xamarin.Forms;
 
 namespace SureMeasure.Data
 {
@@ -47,6 +50,7 @@ namespace SureMeasure.Data
         public Task<List<OrderDataItem>> GetItemsAsync => Database.Table<OrderDataItem>().ToListAsync();
 
 
+
         public Task<List<OrderDataItem>> GetItemsNotDoneAsync()
         {
             return Database.QueryAsync<OrderDataItem>("SELECT * FROM [OrderDataItem] WHERE [Done] = 0");
@@ -84,8 +88,19 @@ namespace SureMeasure.Data
         public async Task<int> DeleteItemAsync(OrderDataItem item)
         {
             int index = await Database.DeleteAsync(item);
-            OnPropertyChanged("GetItemAsync");
+            OnPropertyChanged("GetItemsAsync");
             return index;
         }
+        public ICommand AddOrder => new Command(async () => {
+                AppShell.SelectOrder = new Order();
+                await this.SaveItemAsync(AppShell.SelectOrder);
+                OnPropertyChanged("GetItemsAsync");
+        });
+
+        public ICommand RemoveOrder => new Command(async () => {
+                xmlrw.Remove(AppShell.SelectOrder.DataItem.XmlUrl);
+                await AppShell.OrdersDB.DeleteItemAsync(AppShell.SelectOrder.DataItem);
+            OnPropertyChanged("GetItemsAsync");
+        });
     }
 }
