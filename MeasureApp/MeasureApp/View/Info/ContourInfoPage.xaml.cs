@@ -18,14 +18,8 @@ namespace SureMeasure.View.OrderPage
         public ContourInfoPage()
         {
             InitializeComponent();
-            this.BindingContextChanged += ContourInfoPage_BindingContextChanged;
-            this.BindingContext = AppShell.SelectOrder;
         }
 
-        private void ContourInfoPage_BindingContextChanged(object sender, EventArgs e)
-        {
-            ContourPicker.ItemsSource = GetOrder.Contours;
-        }
 
         private async void PhotoButton_Clicked(object sender, EventArgs e)
         {
@@ -42,7 +36,6 @@ namespace SureMeasure.View.OrderPage
         protected override void OnAppearing()
         {
             this.BindingContext = AppShell.SelectOrder;
-            this.GetOrder.UpdateBinding();
         }
 
         protected override async void OnDisappearing()

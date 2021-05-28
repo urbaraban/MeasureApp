@@ -115,6 +115,7 @@ namespace SureMeasure.ShapeObj.Canvas
             this.GroupLayout.TranslationY = -CadPoint.ZeroPoint.Y + 100;
             this.BindingContextChanged += CadCanvas_BindingContextChanged;
 
+
             //Drop
             DropGestureRecognizer dropGestureRecognizer = new DropGestureRecognizer();
             dropGestureRecognizer.Drop += DropGestureRecognizer_Drop;
@@ -128,7 +129,7 @@ namespace SureMeasure.ShapeObj.Canvas
             {
                 
             }
-            if (e.Data.Properties["Message"] != null)
+            if (e.Data.Properties.ContainsKey("Message") == true)
             {
                await this.Contour.BuildLine(Converters.ConvertDimMessage(e.Data.Properties["Message"].ToString()), true);
             }
@@ -145,8 +146,7 @@ namespace SureMeasure.ShapeObj.Canvas
                 {
                     this.Contour.ObjectAdded -= Contour_ObjectAdded;
                 }
-                await this.VisualClear();
-                await DrawContour(this.Contour);
+
                 await FitChild();
                 this.Contour.ObjectAdded += Contour_ObjectAdded;
             }
@@ -246,7 +246,7 @@ namespace SureMeasure.ShapeObj.Canvas
                 double scale = Math.Min(this.MainLayout.Width / (maxX - minX), this.MainLayout.Height / (maxY - minY));
                 this.GroupLayout.Scale = scale * 0.6;
 
-                await TranslateToPoint(new Point((minX + maxX) / 2, (minY + maxY) / 2));
+                TranslateToPoint(new Point((minX + maxX) / 2, (minY + maxY) / 2));
 
                 Debug.WriteLine($"Fit{this.GroupLayout.TranslationX - this.MainLayout.Width / 2 / this.GroupLayout.Scale}:{this.GroupLayout.TranslationY - this.MainLayout.Width / 2 / this.GroupLayout.Scale}");
 
@@ -396,7 +396,7 @@ namespace SureMeasure.ShapeObj.Canvas
             //Console.WriteLine($"{this.GroupLayout.TranslationX} {this.GroupLayout.TranslationY}");
         }
 
-        private async void PinchGestureRecognizer_PinchUpdated(object sender, PinchGestureUpdatedEventArgs e)
+        private void PinchGestureRecognizer_PinchUpdated(object sender, PinchGestureUpdatedEventArgs e)
         {
             if (e.Status == GestureStatus.Started)
             {
@@ -417,7 +417,7 @@ namespace SureMeasure.ShapeObj.Canvas
                 this.GroupLayout.Scale *= e.Scale;
 
                 //find new center position from start position
-                await TranslateToPoint(new Point(FromCenterPosX, FromCenterPosY));
+                TranslateToPoint(new Point(FromCenterPosX, FromCenterPosY));
             }
             if (e.Status == GestureStatus.Completed)
             {
@@ -426,14 +426,18 @@ namespace SureMeasure.ShapeObj.Canvas
             }
         }
 
-        private async Task TranslateToPoint(Point point)
+        private void TranslateToPoint(Point point)
         {
             this.GroupLayout.TranslationX = -((this.GroupLayout.Width * (1 - this.GroupLayout.Scale)) / 2) - 
                 (point.X * this.GroupLayout.Scale - this.MainLayout.Width / 2 );
             this.GroupLayout.TranslationY = -((this.GroupLayout.Height * (1 - this.GroupLayout.Scale)) / 2) -
                 (point.Y * this.GroupLayout.Scale - this.MainLayout.Height / 2);
         }
+
+        public async Task Refresh()
+        {
+            await this.VisualClear();
+            await DrawContour(this.Contour);
+        }
     }
-
-
 }

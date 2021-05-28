@@ -44,7 +44,7 @@ namespace SureMeasure.View.OrderPage
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            await this.MainCanvas.VisualClear();
+            await this.MainCanvas.Refresh();
             this.BindingContext = AppShell.SelectOrder;
         }
 

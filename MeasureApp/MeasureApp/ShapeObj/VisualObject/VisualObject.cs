@@ -103,6 +103,7 @@ namespace SureMeasure.ShapeObj
             CadCanvas.SellectAll += CadCanvas_SellectAll;
         }
 
+
         private void CadCanvas_SellectAll(object sender, bool e)
         {
             this.IsSelect = e;

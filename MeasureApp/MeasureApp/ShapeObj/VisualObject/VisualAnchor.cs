@@ -32,7 +32,7 @@ namespace SureMeasure.ShapeObj
 
         private ICommand Split => new Command(() =>
         {
-
+            this.cadPoint.MakeSplit();
         });
 
         public override event EventHandler<bool> Removed;
@@ -85,7 +85,8 @@ namespace SureMeasure.ShapeObj
                 new SheetMenuItem(Fix, "{FIX}"),
                 new SheetMenuItem(Remove, "{REMOVE}"),
                 new SheetMenuItem(LastPoint, "{LASTPOINT}"),
-                new SheetMenuItem(BasePoint, "{BASEPOINT}")
+                new SheetMenuItem(BasePoint, "{BASEPOINT}"),
+                new SheetMenuItem(Split, "{SPLIT}")
             });
         }
 

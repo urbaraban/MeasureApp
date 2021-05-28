@@ -9,17 +9,6 @@ using Xamarin.Forms;
 
 namespace SureMeasure.ShapeObj
 {
-    public enum LineMenuItems
-    {
-        Edit_value,
-        Measure,
-        Temped,
-        Vertical,
-        Horizontal,
-        Free,
-        Fix_this,
-        Remove
-    }
 
     public class LenthLabel : ConstraitLabel
     {
@@ -60,6 +49,11 @@ namespace SureMeasure.ShapeObj
         private ICommand Remove => new Command(() =>
         {
             this._lenthConstrait.TryRemove();
+        });
+
+        private ICommand Split => new Command(() =>
+        {
+            this._lenthConstrait.MakeSplit();
         });
         #endregion
 
@@ -109,6 +103,7 @@ namespace SureMeasure.ShapeObj
                 new SheetMenuItem(Free_Orientation, "{FREE_ORIENTATION}"),
                 new SheetMenuItem(Fix, "{FIX}"),
                 new SheetMenuItem(Remove, "{REMOVE}"),
+                 new SheetMenuItem(Split, "{SPLIT}")
             }) ;
 
             this.Update(string.Empty);
