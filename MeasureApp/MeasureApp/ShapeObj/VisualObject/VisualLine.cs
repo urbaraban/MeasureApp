@@ -42,7 +42,7 @@ namespace SureMeasure.ShapeObj
             Update(string.Empty);
         }
 
-        private void constraintLenth_Selected(object sender, bool e) => Update("Selected");
+        private async void constraintLenth_Selected(object sender, bool e)  => await Update("Selected");
 
 
         private void constraintLenth_Supported(object sender, bool e)

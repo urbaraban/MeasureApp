@@ -68,7 +68,7 @@ namespace SureMeasure.Data
         /// <returns></returns>
         public Task<int> SaveItemAsync(Order item)
         {
-            xmlrw.Write(item, Constants.NewOrderPath);
+            XMLReadWriter.Write(item, Constants.NewOrderPath);
 
             if (item.ID != 0)
             {
@@ -98,7 +98,7 @@ namespace SureMeasure.Data
         });
 
         public ICommand RemoveOrder => new Command(async () => {
-                xmlrw.Remove(AppShell.SelectOrder.DataItem.XmlUrl);
+            XMLReadWriter.Remove(AppShell.SelectOrder.DataItem.XmlUrl);
                 await AppShell.OrdersDB.DeleteItemAsync(AppShell.SelectOrder.DataItem);
             OnPropertyChanged("GetItemsAsync");
         });

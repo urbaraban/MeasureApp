@@ -46,10 +46,7 @@ namespace SureMeasure.Orders
             {
                 foreach (Contour contour in this.Contours)
                 {
-                    foreach (ContourPath contourPath in contour.Paths)
-                    {
-                        if (contourPath.Count > 0) return true;
-                    }
+                    return contour.Count > 0;
                 }
                 return false;
             }
@@ -293,12 +290,22 @@ namespace SureMeasure.Orders
             }
             else
             {
-                this.SelectContour.Clear();
+                this.SelectContour.ClearContour();
             }
         });
 
+        public ICommand Undo => new Command(() =>
+        {
+            this.SelectContour.Last().TryRemove();
+        });
 
-        public ICommand Clear => new Command(() => { this.SelectContour.Clear(); });
+        public ICommand Redo => new Command(() =>
+        {
+
+        });
+
+
+        public ICommand Clear => new Command(() => { this.SelectContour.ClearContour(); });
 
 
     }

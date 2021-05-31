@@ -127,6 +127,7 @@
                         <Button
                             Grid.Row="1"
                             Grid.Column="2"
+                            Command="{Binding Undo}"
                             CornerRadius="10"
                             FontSize="Large"
                             HeightRequest="30"
@@ -142,6 +143,7 @@
                         <Button
                             Grid.Row="1"
                             Grid.Column="4"
+                            Command="{Binding Redo}"
                             CornerRadius="10"
                             FontSize="Large"
                             HeightRequest="30"

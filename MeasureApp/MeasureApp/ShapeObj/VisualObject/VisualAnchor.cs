@@ -107,7 +107,7 @@ namespace SureMeasure.ShapeObj
             await Update("Point");
         }
 
-        public async Task ChangedPoint(CadPoint cadPoint)
+        public void ChangedPoint(CadPoint cadPoint)
         {
             this.cadPoint.ChangePoint(cadPoint);
             Removed?.Invoke(this, true);

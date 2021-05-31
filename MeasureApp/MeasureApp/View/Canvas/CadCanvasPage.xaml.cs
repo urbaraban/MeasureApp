@@ -1,5 +1,6 @@
 ﻿using DrawEngine;
 using DrawEngine.CadObjects;
+using DrawEngine.Constraints;
 using Plugin.Segmented.Control;
 using SureMeasure.Orders;
 using SureMeasure.Tools;
@@ -44,7 +45,6 @@ namespace SureMeasure.View.OrderPage
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            await this.MainCanvas.Refresh();
             this.BindingContext = AppShell.SelectOrder;
         }
 
@@ -56,6 +56,7 @@ namespace SureMeasure.View.OrderPage
                 await AppShell.OrdersDB.SaveItemAsync(this.Order);
             }
         }
+
 
         private void PoolDimLabel_Removed(object sender, EventArgs e)
         {

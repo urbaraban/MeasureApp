@@ -18,14 +18,12 @@ namespace SureMeasure.ShapeObj.Canvas
         public static new double Width = 100000;
         public static new double Height = 100000;
 
-        public static event EventHandler<double> DragSize;
-        public static event EventHandler<bool> SellectAll;
-       
+        public static event EventHandler<double> DragSize;      
         public static double DragSizeKoeff = 1.5;
         public static event EventHandler<double> RegularSize;
         public static double RegularAnchorSize = 10;
         
-        private static double canvasscale = 1;
+        private static double canvasscale { get; set; } = 1;
 
         public static void CallDragSize()
         {
@@ -136,19 +134,13 @@ namespace SureMeasure.ShapeObj.Canvas
             
         }
 
-
-
         private async void CadCanvas_BindingContextChanged(object sender, EventArgs e)
         {
             if (this.BindingContext is Contour contour)
             {
-                if (this.Contour != null)
-                {
-                    this.Contour.ObjectAdded -= Contour_ObjectAdded;
-                }
-
+                await Refresh();
                 await FitChild();
-                this.Contour.ObjectAdded += Contour_ObjectAdded;
+                this.Contour.CollectionChanged += Contour_CollectionChanged;
             }
             else
             {
@@ -156,9 +148,22 @@ namespace SureMeasure.ShapeObj.Canvas
             }
         }
 
-        private async void Contour_ObjectAdded(object sender, object e)
+        private async void Contour_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            await DrawObject(e);
+            if (e.NewItems != null)
+            {
+                foreach (ICadObject cadObject in e.NewItems)
+                {
+                    await DrawObject(cadObject);
+                }
+            }
+            if (e.OldItems != null)
+            {
+                foreach (ICadObject cadObject1 in e.OldItems)
+                {
+                    Remove(cadObject1);
+                }
+            }
         }
 
         /// <summary>
@@ -176,7 +181,7 @@ namespace SureMeasure.ShapeObj.Canvas
                 });
                 return cadPoint;
             }
-            if (Object is ConstraintLenth lenthConstrait)
+            else if (Object is ConstraintLenth lenthConstrait)
             {
                 await this.Add(new LenthLabel(lenthConstrait));
                 await this.Add(new VisualLine(lenthConstrait)
@@ -185,7 +190,7 @@ namespace SureMeasure.ShapeObj.Canvas
                 });
                 return lenthConstrait;
             }
-            if (Object is ConstraintAngle angleConstrait)
+            else if (Object is ConstraintAngle angleConstrait)
             {
                 await this.Add(new AngleLabel(angleConstrait));
                 return angleConstrait;
@@ -196,23 +201,12 @@ namespace SureMeasure.ShapeObj.Canvas
 
         public async Task DrawContour(Contour contour)
         {
-            if (contour.Paths != null)
+            if (contour.Count > 0)
             {
-                foreach (CadPoint point in contour.Points)
+                foreach (ICadObject cadObject in contour)
                 {
-                   await DrawObject(point);
+                   await DrawObject(cadObject);
                 }
-
-                foreach (ConstraintLenth constraintLenth in contour.Lenths)
-                {
-                    await DrawObject(constraintLenth);
-                }
-
-                foreach (ConstraintAngle constraintAngle in contour.Angles)
-                {
-                    await DrawObject(constraintAngle);
-                }
-
             }
         }
 
@@ -224,34 +218,41 @@ namespace SureMeasure.ShapeObj.Canvas
         {
             if (this.ObjectLayout.Children.Count > 0)
             {
-                double minX = double.MaxValue, maxX = double.MinValue, minY = double.MaxValue, maxY = double.MinValue;
-
-                foreach (VisualElement visualElement in this.ObjectLayout.Children)
+                try
                 {
-                    if (visualElement is VisualLine cadLine)
+                    double minX = double.MaxValue, maxX = double.MinValue, minY = double.MaxValue, maxY = double.MinValue;
+
+                    foreach (VisualElement visualElement in this.ObjectLayout.Children)
                     {
-                        minX = Math.Min(minX, cadLine.Bounds.Left);
-                        maxX = Math.Max(maxX, cadLine.Bounds.Right);
-                        minY = Math.Min(minY, cadLine.Bounds.Top);
-                        maxY = Math.Max(maxY, cadLine.Bounds.Bottom);
+                        if (visualElement is VisualLine cadLine)
+                        {
+                            minX = Math.Min(minX, cadLine.Bounds.Left);
+                            maxX = Math.Max(maxX, cadLine.Bounds.Right);
+                            minY = Math.Min(minY, cadLine.Bounds.Top);
+                            maxY = Math.Max(maxY, cadLine.Bounds.Bottom);
+                        }
+                        else
+                        {
+                            minX = Math.Min(minX, visualElement.TranslationX + visualElement.Bounds.Left);
+                            maxX = Math.Max(maxX, visualElement.TranslationX + visualElement.Bounds.Right);
+                            minY = Math.Min(minY, visualElement.TranslationY + visualElement.Bounds.Top);
+                            maxY = Math.Max(maxY, visualElement.TranslationY + visualElement.Bounds.Bottom);
+                        }
                     }
-                    else
-                    {
-                        minX = Math.Min(minX, visualElement.TranslationX + visualElement.Bounds.Left);
-                        maxX = Math.Max(maxX, visualElement.TranslationX + visualElement.Bounds.Right);
-                        minY = Math.Min(minY, visualElement.TranslationY + visualElement.Bounds.Top);
-                        maxY = Math.Max(maxY, visualElement.TranslationY + visualElement.Bounds.Bottom);
-                    }
+                    double scale = Math.Min(this.MainLayout.Width / (maxX - minX), this.MainLayout.Height / (maxY - minY));
+                    this.GroupLayout.Scale = scale * 0.6;
+
+                    TranslateToPoint(new Point((minX + maxX) / 2, (minY + maxY) / 2));
+
+                    Debug.WriteLine($"Fit{this.GroupLayout.TranslationX - this.MainLayout.Width / 2 / this.GroupLayout.Scale}:{this.GroupLayout.TranslationY - this.MainLayout.Width / 2 / this.GroupLayout.Scale}");
+
+                    CadCanvas.canvasscale = this.GroupLayout.Scale == double.PositiveInfinity ? 1 : this.GroupLayout.Scale;
+                    CallRegularSize();
                 }
-                double scale = Math.Min(this.MainLayout.Width / (maxX - minX), this.MainLayout.Height / (maxY - minY));
-                this.GroupLayout.Scale = scale * 0.6;
-
-                TranslateToPoint(new Point((minX + maxX) / 2, (minY + maxY) / 2));
-
-                Debug.WriteLine($"Fit{this.GroupLayout.TranslationX - this.MainLayout.Width / 2 / this.GroupLayout.Scale}:{this.GroupLayout.TranslationY - this.MainLayout.Width / 2 / this.GroupLayout.Scale}");
-
-                CadCanvas.canvasscale = this.GroupLayout.Scale;
-                CallRegularSize();
+                catch
+                {
+                    Console.WriteLine("Fit Error");
+                }
             }
         }
 
@@ -360,13 +361,13 @@ namespace SureMeasure.ShapeObj.Canvas
                 {
                     ICommand ConnectPoint = new Command(async () =>
                     {
-                        await this.Contour.Add(new ConstraintLenth(cadAnchor1.cadPoint, cadAnchor2.cadPoint, -1), true);
+                        this.Contour.Add(new ConstraintLenth(cadAnchor1.cadPoint, cadAnchor2.cadPoint, -1));
                         await cadAnchor1.Update("Point");
                         await cadAnchor2.Update("Point");
                     });
-                    ICommand MergePoint = new Command(async () =>
+                    ICommand MergePoint = new Command(() =>
                     {
-                       await cadAnchor1.ChangedPoint(cadAnchor2.cadPoint);
+                       cadAnchor1.ChangedPoint(cadAnchor2.cadPoint);
                     });
 
                     SheetMenu sheetMenu = new SheetMenu(new System.Collections.Generic.List<SheetMenuItem>() {

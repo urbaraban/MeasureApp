@@ -27,7 +27,7 @@ namespace SureMeasure.View.OrderPage
             {
                 if (AppShell.SelectOrder.ID != dataItem.ID)
                 {
-                    if (await xmlrw.Read(dataItem) is Order order)
+                    if (await XMLReadWriter.Read(dataItem) is Order order)
                     {
                         AppShell.SelectOrder = order;
                     }
@@ -80,7 +80,7 @@ namespace SureMeasure.View.OrderPage
             {
                 if (swipeItem.BindingContext is OrderDataItem dataItem)
                 {
-                    xmlrw.Remove(dataItem.XmlUrl);
+                    XMLReadWriter.Remove(dataItem.XmlUrl);
                     await AppShell.OrdersDB.DeleteItemAsync(dataItem);
                 }
             }

@@ -99,15 +99,8 @@ namespace SureMeasure.ShapeObj
             this.dropGesture.AllowDrop = true;
             this.dropGesture.Drop += DropGesture_Drop;
             this.GestureRecognizers.Add(this.dropGesture);
-
-            CadCanvas.SellectAll += CadCanvas_SellectAll;
         }
 
-
-        private void CadCanvas_SellectAll(object sender, bool e)
-        {
-            this.IsSelect = e;
-        }
 
         private void DragGesture_DropCompleted(object sender, DropCompletedEventArgs e)
         {
