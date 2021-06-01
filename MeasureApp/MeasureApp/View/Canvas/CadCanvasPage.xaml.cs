@@ -1,5 +1,4 @@
 ﻿using DrawEngine;
-using DrawEngine.CadObjects;
 using DrawEngine.Constraints;
 using Plugin.Segmented.Control;
 using SureMeasure.Orders;
@@ -13,7 +12,6 @@ using System.Text;
 using System.Windows.Input;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
-using static DrawEngine.Contour;
 
 namespace SureMeasure.View.OrderPage
 {
