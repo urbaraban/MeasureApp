@@ -130,8 +130,8 @@ namespace SureMeasure.Data
                 else if (cadObject is ConstraintAngle constraintAngle)
                 {
                     return new XElement("Angle",
-                        new XAttribute("Lenth1", constraintAngle.anchorAnchor1.ID),
-                        new XAttribute("Lenth2", constraintAngle.anchorAnchor2.ID),
+                        new XAttribute("Lenth1", constraintAngle.Lenth1.ID),
+                        new XAttribute("Lenth2", constraintAngle.Lenth2.ID),
                         new XAttribute("Angle", constraintAngle.Value));
                 }
                 return null;
