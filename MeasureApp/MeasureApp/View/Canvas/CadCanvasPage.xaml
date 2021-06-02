@@ -8,7 +8,7 @@
     xmlns:orderpage="clr-namespace:SureMeasure.View.OrderPage"
     xmlns:orders="clr-namespace:SureMeasure.Orders"
     xmlns:shapeobj="clr-namespace:SureMeasure.ShapeObj.Canvas"
-    xmlns:shell="clr-namespace:SureMeasure"
+    xmlns:shell="clr-namespace:SureMeasure" xmlns:canvas="clr-namespace:SureMeasure.View.Canvas"
     x:Name="DrawingPage"
     Title="Drawing"
     x:DataType="orders:Order"
@@ -38,16 +38,15 @@
             Text="Clear" />
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
-        <StackLayout Orientation="Vertical" VerticalOptions="FillAndExpand">
-            <AbsoluteLayout BackgroundColor="White" VerticalOptions="FillAndExpand">
+        <AbsoluteLayout BackgroundColor="White">
                 <Grid AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="SizeProportional">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="auto" />
-                        <RowDefinition />
-                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="1*" />
+                        <RowDefinition Height="1*" />
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*" />
                     </Grid.RowDefinitions>
-                    <shapeobj:CadCanvas
+                    <!--<shapeobj:CadCanvas
                         x:Name="MainCanvas"
                         Grid.Row="0"
                         Grid.RowSpan="4"
@@ -55,9 +54,20 @@
                         AbsoluteLayout.LayoutBounds="0,0,1,1"
                         AbsoluteLayout.LayoutFlags="SizeProportional"
                         BindingContext="{Binding SelectContour}"
-                        IsClippedToBounds="true" />
+                        IsClippedToBounds="true" />-->
+                    <canvas:CanvasView
+                        x:Name="MainCanvas"
+                        Grid.Row="0"
+                        Grid.RowSpan="4"
+                        Margin="10"
+                        VerticalOptions="CenterAndExpand"
+                        HorizontalOptions="StartAndExpand"
+                        BindingContext="{Binding SelectContour}"
+                        IsClippedToBounds="true"
+                    />
 
-                    <Grid Margin="10">
+
+                <Grid Margin="10" Grid.Row="0" >
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="auto" />
                             <ColumnDefinition Width="1*" />
@@ -117,13 +127,14 @@
                             Grid.Row="1"
                             Grid.ColumnSpan="2"
                             Margin="8,8,8,8"
-                            BackgroundColor="White"
+                            BackgroundColor="Green"
                             DisabledColor="Gray"
                             FontSize="Small"
                             SelectedItem="{Binding SelectContour.SelectedDrawMethod, Mode=TwoWay}"
                             SelectedTextColor="White"
                             TextColor="Black"
-                            TintColor="{StaticResource Primary}" />
+                            TintColor="{StaticResource Primary}" 
+                            HeightRequest="30"/>
                         <Button
                             Grid.Row="1"
                             Grid.Column="2"
@@ -156,7 +167,6 @@
                                     Color="White" />
                             </Button.ImageSource>
                         </Button>
-
                         <StackLayout
                             x:Name="SizePool"
                             Grid.Row="2"
@@ -166,8 +176,6 @@
                     <Grid
                         Grid.Row="3"
                         Padding="20"
-                        AbsoluteLayout.LayoutBounds="0, 1, -1, 1"
-                        AbsoluteLayout.LayoutFlags="PositionProportional"
                         HorizontalOptions="FillAndExpand">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="1*" />
@@ -231,11 +239,9 @@
                                     Color="White" />
                             </Button.ImageSource>
                         </Button>
-
                     </Grid>
 
                 </Grid>
             </AbsoluteLayout>
-        </StackLayout>
     </ContentPage.Content>
 </ContentPage>

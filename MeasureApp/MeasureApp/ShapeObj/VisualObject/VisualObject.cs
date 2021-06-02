@@ -67,10 +67,10 @@ namespace SureMeasure.ShapeObj
         private SheetMenu _sheetMenu;
 
         #region Gestured
-        private PanGestureRecognizer panGesture = new PanGestureRecognizer();
-        private TapGestureRecognizer tapGesture = new TapGestureRecognizer();
-        private DropGestureRecognizer dropGesture = new DropGestureRecognizer();
-        private DragGestureRecognizer dragGesture = new DragGestureRecognizer();
+        private readonly PanGestureRecognizer panGesture = new PanGestureRecognizer();
+        private readonly TapGestureRecognizer tapGesture = new TapGestureRecognizer();
+        private readonly DropGestureRecognizer dropGesture = new DropGestureRecognizer();
+        private readonly DragGestureRecognizer dragGesture = new DragGestureRecognizer();
         #endregion
 
         private int taps = 0;

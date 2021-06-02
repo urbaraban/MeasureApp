@@ -1,10 +1,11 @@
 ﻿using DrawEngine.CadObjects;
 using DrawEngine.Constraints;
+using SureMeasure.ShapeObj;
 using System;
 using System.Globalization;
 using Xamarin.Forms;
 
-namespace SureMeasure.ShapeObj.Canvas
+namespace SureMeasure.View.Canvas
 {
 
     public class CadObjectConverter : IValueConverter

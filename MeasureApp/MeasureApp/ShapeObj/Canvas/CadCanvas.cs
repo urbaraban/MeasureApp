@@ -123,7 +123,7 @@ namespace SureMeasure.ShapeObj.Canvas
 
         private async void DropGestureRecognizer_Drop(object sender, DropEventArgs e)
         {
-            if (e.Data.Properties["Object"] is ICadObject cadObjects)
+            if (e.Data.Properties["Object"] is ICadObject)
             {
                 
             }

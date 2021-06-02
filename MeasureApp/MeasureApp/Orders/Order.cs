@@ -180,7 +180,7 @@ namespace SureMeasure.Orders
         /// </summary>
         public string Phone
         {
-            get => this.DataItem.PhoneNumber == null ? "+7999999" : this.DataItem.PhoneNumber;
+            get => this.DataItem.PhoneNumber ?? "+7999999";
             set
             {
                 this.DataItem.PhoneNumber = value;
