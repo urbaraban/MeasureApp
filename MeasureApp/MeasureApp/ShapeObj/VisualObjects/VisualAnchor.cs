@@ -1,6 +1,6 @@
 ﻿using DrawEngine.CadObjects;
-using SureMeasure.ShapeObj.Canvas;
 using SureMeasure.ShapeObj.Interface;
+using SureMeasure.View.Canvas;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -65,18 +65,18 @@ namespace SureMeasure.ShapeObj
             this.cadPoint.Selected += CadPoint_Selected;
             this._ellipse = new EllipseGeometry()
             {
-                Center = new Point(CadCanvas.RegularAnchorSize + CadCanvas.RegularAnchorSize / 2, CadCanvas.RegularAnchorSize + CadCanvas.RegularAnchorSize / 2),
-                RadiusX = CadCanvas.RegularAnchorSize,
-                RadiusY = CadCanvas.RegularAnchorSize,
+                Center = new Point(CanvasView.RegularAnchorSize + CanvasView.RegularAnchorSize / 2, CanvasView.RegularAnchorSize + CanvasView.RegularAnchorSize / 2),
+                RadiusX = CanvasView.RegularAnchorSize,
+                RadiusY = CanvasView.RegularAnchorSize,
             };
 
-            this.TranslationX = this.X - CadCanvas.RegularAnchorSize - this.StrokeThickness;
-            this.TranslationY = this.Y - CadCanvas.RegularAnchorSize - this.StrokeThickness;
+            this.TranslationX = this.X - CanvasView.RegularAnchorSize - this.StrokeThickness;
+            this.TranslationY = this.Y - CanvasView.RegularAnchorSize - this.StrokeThickness;
 
             this.Data = this._ellipse;
 
-            CadCanvas.DragSize += CadCanvas_DragSize;
-            CadCanvas.RegularSize += CadCanvas_RegularSize;
+            CanvasView.DragSize += CadCanvas_DragSize;
+            CanvasView.RegularSize += CadCanvas_RegularSize;
 
             this.Stroke = cadPoint.IsSelect == true ? Brush.Orange : Brush.Blue;
 
@@ -113,28 +113,20 @@ namespace SureMeasure.ShapeObj
             Removed?.Invoke(this, true);
         }
 
-        private void CadCanvas_RegularSize(object sender, double e)
-        {
-            this.ScaleTo(1/e, 250, Easing.Linear);
-        }
+        private void CadCanvas_RegularSize(object sender, double e) => this.ScaleTo(1 / e, 250, Easing.Linear);
 
-        private void CadCanvas_DragSize(object sender, double e)
-        {
-            this.ScaleTo(1/e * 1.5, 250, Easing.Linear);
-        }
+
+        private void CadCanvas_DragSize(object sender, double e) => this.ScaleTo((1 / e) * 1.5, 250, Easing.Linear);
+
 
         private void CadPoint_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e) => this.Update(e.PropertyName);
 
         public async Task Update(string Param)
         {
-            if (Param == "Point")
-            {
-                this.TranslationX = this.X - CadCanvas.RegularAnchorSize - this.StrokeThickness;
-                this.TranslationY = this.Y - CadCanvas.RegularAnchorSize - this.StrokeThickness;
-            }
-            else
-            {
-                await Xamarin.Forms.Device.InvokeOnMainThreadAsync(() =>
+            this.TranslationX = this.X - CanvasView.RegularAnchorSize - this.StrokeThickness;
+            this.TranslationY = this.Y - CanvasView.RegularAnchorSize - this.StrokeThickness;
+
+            await Xamarin.Forms.Device.InvokeOnMainThreadAsync(() =>
                 {
                     if (this.IsSelect == true)
                         this.Stroke = Brush.Orange;
@@ -145,7 +137,7 @@ namespace SureMeasure.ShapeObj
                     else
                         this.Stroke = Brush.Blue;
                 });
-            }
+            
             this.OnPropertyChanged("Point");
         }
 

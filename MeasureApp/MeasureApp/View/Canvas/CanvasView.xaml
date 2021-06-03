@@ -23,21 +23,30 @@
                             WidthRequest="{StaticResource Width}"
                             HeightRequest="{StaticResource Height}"
                             TranslationX="-4900"
-                            TranslationY="-4900">
+                            TranslationY="-4800">
+
+                <Image Source="{StaticResource BackTile}" TranslationX="5000"
+                            TranslationY="5000"/>
+
+                <Line Stroke="Gray" X1="5000" Y1="5000" X2="5000" Y2="5100"/>
+                <Line Stroke="Gray" X1="5000" Y1="5000" X2="5100" Y2="5000"/>
+
                 <AbsoluteLayout x:Name="ObjectLayout"
                                 VerticalOptions="FillAndExpand"
                                 HorizontalOptions="FillAndExpand"
                                 AbsoluteLayout.LayoutFlags="All"
                                 AbsoluteLayout.LayoutBounds="1,1,1,1"
-                               >
-                </AbsoluteLayout>
-                <AbsoluteLayout x:Name="AnchorLayout"
+                               />
+
+               <!--<AbsoluteLayout x:Name="AnchorLayout"
                                 VerticalOptions="FillAndExpand"
                                 HorizontalOptions="FillAndExpand"
                                 AbsoluteLayout.LayoutFlags="All"
                                 AbsoluteLayout.LayoutBounds="1,1,1,1"
-                                >
-                </AbsoluteLayout>
+                                />-->
+
+
+
             </AbsoluteLayout>
         </AbsoluteLayout>
     </ContentView.Content>

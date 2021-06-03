@@ -3,6 +3,7 @@ using DrawEngine.CadObjects;
 using DrawEngine.Constraints;
 using SureMeasure.ShapeObj;
 using SureMeasure.ShapeObj.Interface;
+using SureMeasure.ShapeObj.VisualObjects;
 using System;
 using System.Linq;
 using System.Text;
@@ -24,7 +25,7 @@ namespace SureMeasure.View.Canvas
 
         public static void CallDragSize(double value)
         {
-            DragSize?.Invoke(null, value);
+            DragSize?.Invoke(null, value / 1.1);
         }
 
         public static void CallRegularSize(double value)
@@ -39,6 +40,7 @@ namespace SureMeasure.View.Canvas
             {
                 if (_contour != null) _contour.CollectionChanged -= _contour_CollectionChanged;
                 _contour = value;
+                Refresh();
                 _contour.CollectionChanged += _contour_CollectionChanged;
             }
         }
@@ -65,6 +67,7 @@ namespace SureMeasure.View.Canvas
             }
             if (Object is IActiveObject activeObject)
             {
+                activeObject.Draging += ActiveObject_Draging;
                 activeObject.Dropped += CadAnchor1_Dropped;
             }
 
@@ -75,17 +78,18 @@ namespace SureMeasure.View.Canvas
 
             MainThread.BeginInvokeOnMainThread(() =>
             {
-                if (Object is VisualLine cadLine)
+                if (Object is LineView cadLine)
                 {
-                    this.ObjectLayout.Children.Add(cadLine);
+                    this.ObjectLayout.Children.Insert(0,cadLine);
                 }
                 else if (Object is VisualAnchor cadAnchor)
                 {
-                    this.AnchorLayout.Children.Add(cadAnchor);
+                    this.ObjectLayout.Children.Insert(this.ObjectLayout.Children.Count, cadAnchor);
+                    //this.AnchorLayout.Children.Add(cadAnchor);
                 }
                 else if (Object is ConstraitLabel constraitLabel)
                 {
-                    this.AnchorLayout.Children.Add(constraitLabel);
+                    this.ObjectLayout.Children.Add(constraitLabel);
                 }
                 else if (Object is AbsoluteLayout absoluteLayout)
                 {
@@ -94,6 +98,12 @@ namespace SureMeasure.View.Canvas
             });
 
             return Object;
+        }
+
+        private void ActiveObject_Draging(object sender, bool e)
+        {
+            if (e == true) CallDragSize(this.CanvasScale);
+            else CallRegularSize(this.CanvasScale);
         }
 
         private void CadAnchor1_Dropped(object sender, object e)
@@ -156,18 +166,18 @@ namespace SureMeasure.View.Canvas
 
             MainThread.BeginInvokeOnMainThread(() =>
             {
-                if (sender is VisualLine visualLine)
+                if (sender is LineView visualLine)
                 {
                     this.ObjectLayout.Children.Remove(visualLine);
                 }
-                if (sender is VisualAnchor visualAnchor)
+                /*if (sender is VisualAnchor visualAnchor)
                 {
                     this.AnchorLayout.Children.Remove(visualAnchor);
                 }
                 if (sender is ConstraitLabel label)
                 {
                     this.AnchorLayout.Children.Remove(label);
-                }
+                }*/
                 if (sender is AbsoluteLayout layout)
                 {
                     this.GroupLayout.Children.Remove(layout);
@@ -186,6 +196,28 @@ namespace SureMeasure.View.Canvas
             this.Contour = (Contour)this.BindingContext;
         }
 
+        public async Task Refresh()
+        {
+            await this.VisualClear();
+            await DrawContour(this.Contour);
+        }
+
+        public async Task DrawContour(Contour contour)
+        {
+            if (contour.Count > 0)
+            {
+                foreach (ICadObject cadObject in contour)
+                {
+                    await DrawObject(cadObject);
+                }
+            }
+        }
+
+        public async Task VisualClear()
+        {
+           // this.AnchorLayout.Children.Clear();
+            this.ObjectLayout.Children.Clear();
+        }
 
         public async Task FitChild()
         {
@@ -225,9 +257,7 @@ namespace SureMeasure.View.Canvas
                     Console.WriteLine("Fit Error");
                 }
             }
-
         }
-
         private async Task<object> DrawObject(object Object)
         {
             if (Object is CadPoint cadPoint)
@@ -240,11 +270,7 @@ namespace SureMeasure.View.Canvas
             }
             else if (Object is ConstraintLenth lenthConstrait)
             {
-                await this.Add(new LenthLabel(lenthConstrait));
-                await this.Add(new VisualLine(lenthConstrait)
-                {
-                    StrokeThickness = 5 * 1 / this.GroupLayout.Scale,
-                });
+                await this.Add(new LineView() { BindingContext = lenthConstrait });
                 return lenthConstrait;
             }
             else if (Object is ConstraintAngle angleConstrait)

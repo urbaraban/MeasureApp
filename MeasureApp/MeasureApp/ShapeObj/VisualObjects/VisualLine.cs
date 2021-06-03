@@ -1,7 +1,8 @@
 ﻿using DrawEngine.Constraints;
-using SureMeasure.ShapeObj.Canvas;
 using SureMeasure.ShapeObj.Interface;
+using SureMeasure.View.Canvas;
 using System;
+using System.Numerics;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Shapes;
@@ -11,6 +12,7 @@ namespace SureMeasure.ShapeObj
     public class VisualLine : Path, ICanvasObject
     {
         private readonly ConstraintLenth constraintLenth;
+
         public event EventHandler<bool> Removed;
 
         private LineGeometry lineGeometry => (LineGeometry)this.Data;
@@ -27,7 +29,8 @@ namespace SureMeasure.ShapeObj
         /// <param name="anchorAnchorLenth"></param>
         public VisualLine(ConstraintLenth anchorAnchorLenth)
         {
-            this.Data = new LineGeometry();
+            this.AnchorX = 0;
+            this.AnchorY = 0;
             this.HorizontalOptions = LayoutOptions.Start;
             this.VerticalOptions = LayoutOptions.Start;
             this.StrokeThickness = 5;
@@ -35,11 +38,30 @@ namespace SureMeasure.ShapeObj
             this.constraintLenth = anchorAnchorLenth;
             this.constraintLenth.PropertyChanged += Anchors_Changed;
             this.constraintLenth.Removed += constraintLenth_Removed;
-            this.constraintLenth.Supported += constraintLenth_Supported;
             this.constraintLenth.Selected += constraintLenth_Selected;
+            this.constraintLenth.Variable.PropertyChanged += Variable_PropertyChanged;
             this.StrokeLineCap = PenLineCap.Round;
-            CadCanvas.RegularSize += CadCanvas_RegularSize;
+            CanvasView.RegularSize += CadCanvas_RegularSize;
+            UpdateLayout();
             Update(string.Empty);
+        }
+
+        private void Variable_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            UpdateLayout();
+        }
+
+        private async void UpdateLayout()
+        {
+            this.Data = new LineGeometry()
+            {
+                StartPoint = new Point(0, 0),
+                EndPoint = new Point(this.constraintLenth.Value, 0)
+            };
+
+            await Xamarin.Forms.Device.InvokeOnMainThreadAsync(() => {
+                this.Layout(new Xamarin.Forms.Rectangle(0, 0, this.constraintLenth.Value, this.StrokeThickness));
+            });
         }
 
         private async void constraintLenth_Selected(object sender, bool e)  => await Update("Selected");
@@ -75,22 +97,12 @@ namespace SureMeasure.ShapeObj
 
             if (constraintLenth.IsSupport == true) this.StrokeDashArray = new DoubleCollection() { 1, 2 };
             else new DoubleCollection() { 1 };
+          
 
-            double MinX = Math.Min(this.constraintLenth.Point1.OX, this.constraintLenth.Point2.OX);
-            double MinY = Math.Min(this.constraintLenth.Point1.OY, this.constraintLenth.Point2.OY);
-            double MaxX = Math.Max(this.constraintLenth.Point2.OX, this.constraintLenth.Point1.OX) + CadCanvas.RegularAnchorSize;
-            double MaxY = Math.Max(this.constraintLenth.Point2.OY, this.constraintLenth.Point1.OY) + CadCanvas.RegularAnchorSize;
+            this.TranslationX = this.constraintLenth.Point1.OX;
+            this.TranslationY = this.constraintLenth.Point1.OY;
 
-            this.Data = new LineGeometry()
-            {
-                StartPoint = new Point(this.constraintLenth.Point1.OX, this.constraintLenth.Point1.OY),
-                EndPoint = new Point(this.constraintLenth.Point2.OX, this.constraintLenth.Point2.OY)
-            };
-
-            if (CadConstraint.RuntimeConstraits.Contains(this.constraintLenth) == false)
-                await Xamarin.Forms.Device.InvokeOnMainThreadAsync(() => {
-                    this.Layout(new Xamarin.Forms.Rectangle(0, 0, MaxX, MaxY));
-                });
+            this.Rotation = Math.Atan2(constraintLenth.Vector.Y, constraintLenth.Vector.X) * (180 / Math.PI);
         }
 
         private void CadCanvas_RegularSize(object sender, double e)

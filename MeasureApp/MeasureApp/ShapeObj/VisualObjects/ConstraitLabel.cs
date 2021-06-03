@@ -10,6 +10,7 @@ namespace SureMeasure.ShapeObj
     {
         public virtual event EventHandler<object> Dropped;
         public virtual event EventHandler<bool> Removed;
+        public event EventHandler<bool> Draging;
 
         public CadConstraint Constraint;
 

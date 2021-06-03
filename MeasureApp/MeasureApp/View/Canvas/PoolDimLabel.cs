@@ -1,5 +1,5 @@
 ﻿using SureMeasure.ShapeObj;
-using SureMeasure.ShapeObj.Canvas;
+using SureMeasure.View.Canvas;
 using System;
 using System.Diagnostics;
 using System.Windows.Input;
@@ -62,7 +62,7 @@ namespace SureMeasure.View.OrderPage.Canvas
 
         private void DragGesture_DropCompleted(object sender, DropCompletedEventArgs e)
         {
-            CadCanvas.CallRegularSize();
+            CanvasView.CallRegularSize(1);
         }
 
         private void TapGesture_Tapped(object sender, EventArgs e)
@@ -73,7 +73,7 @@ namespace SureMeasure.View.OrderPage.Canvas
         private void DragGesture_DragStarting(object sender, DragStartingEventArgs e)
         {
             e.Data.Properties.Add("Message", this.message);
-            CadCanvas.CallDragSize();
+            CanvasView.CallDragSize(1);
         }
 
         private ICommand Remove => new Command(() =>

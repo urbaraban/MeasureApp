@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView x:Name="LineMain"
+             xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+             xmlns:constraints="clr-namespace:DrawEngine.Constraints;assembly=2DrawContourEngine" 
+             xmlns:visualobjects="clr-namespace:SureMeasure.ShapeObj.VisualObjects"
+             x:Class="SureMeasure.ShapeObj.VisualObjects.LineView"
+             x:DataType="constraints:ConstraintLenth"
+             TranslationX="{Binding Point1.OX}" 
+             TranslationY="{Binding Point1.OY}" 
+             Rotation="{Binding VectorAngle}" AnchorX="0"
+             WidthRequest="{Binding Value}">
+    <ContentView.Resources>
+        <ResourceDictionary>
+            <visualobjects:ValueToPointConverter x:Key="LenthToLine" />
+            <visualobjects:StatusColorConverter x:Key="StatusColorConverter" />
+            <visualobjects:SupportDashConverter x:Key="SupportDashConverter" />
+        </ResourceDictionary>
+    </ContentView.Resources>
+    <ContentView.GestureRecognizers>
+        <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"/>
+    </ContentView.GestureRecognizers>
+    <ContentView.Content>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="1"/>
+            </Grid.ColumnDefinitions>
+            <Path 
+                x:Name="LinePath"
+                VerticalOptions="Center" 
+                HorizontalOptions="Center"
+                Grid.ColumnSpan="3" 
+                Grid.Column="0"
+                StrokeDashArray="{Binding IsSupport, Converter={StaticResource SupportDashConverter}}"
+                Stroke="{Binding ObjectStatus, Converter={StaticResource StatusColorConverter}}"
+                StrokeThickness="5"
+                Data="{Binding Value, Converter={StaticResource LenthToLine}}"/>
+
+            <Frame Grid.Column="1" Grid.ColumnSpan="1" VerticalOptions="Center" HorizontalOptions="Center" CornerRadius="5" Padding="2">
+                <Label Text="{Binding Value}" ScaleY="-1"/>
+            </Frame>
+        </Grid>
+        
+  </ContentView.Content>
+</ContentView>

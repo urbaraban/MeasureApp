@@ -1,7 +1,7 @@
 ﻿using DrawEngine;
 using DrawEngine.CadObjects;
 using DrawEngine.Constraints;
-using SureMeasure.ShapeObj.Canvas;
+using SureMeasure.View.Canvas;
 using SureMeasure.View.OrderPage;
 using System;
 using System.Collections.Generic;
@@ -56,7 +56,7 @@ namespace SureMeasure.ShapeObj
             this.BackgroundColor = Color.Yellow;
             this.angleConstrait.PropertyChanged += AngleConstrait_PropertyChanged;
             this.angleConstrait.Removed += AngleConstrait_Removed;
-            CadCanvas.RegularSize += CadCanvas_RegularSize;
+            CanvasView.RegularSize += CadCanvas_RegularSize;
 
             this.commands.Add(new SheetMenuItem(CallValueDialog, "{CALL_VALUE_DIALOG}"));
             this.commands.Add(new SheetMenuItem(SendMeasure, "{MEASURE}"));

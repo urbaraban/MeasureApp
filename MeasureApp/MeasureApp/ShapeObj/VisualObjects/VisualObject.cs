@@ -1,5 +1,5 @@
-﻿using SureMeasure.ShapeObj.Canvas;
-using SureMeasure.ShapeObj.Interface;
+﻿using SureMeasure.ShapeObj.Interface;
+using SureMeasure.View.Canvas;
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -13,6 +13,7 @@ namespace SureMeasure.ShapeObj
         public virtual event EventHandler<bool> Selected;
         public virtual event EventHandler<object> Dropped;
         public virtual event EventHandler<bool> Removed;
+        public event EventHandler<bool> Draging;
 
         public virtual string ID { get; set; }
 
@@ -102,16 +103,13 @@ namespace SureMeasure.ShapeObj
         }
 
 
-        private void DragGesture_DropCompleted(object sender, DropCompletedEventArgs e)
-        {
-            CadCanvas.CallRegularSize();
-        }
+        private void DragGesture_DropCompleted(object sender, DropCompletedEventArgs e) => Draging?.Invoke(this, false);
 
 
         private void DragGesture_DragStarting(object sender, DragStartingEventArgs e)
         {
             e.Data.Properties.Add("Object", this);
-            CadCanvas.CallDragSize();
+            Draging?.Invoke(this, true);
         }
 
         private void DropGesture_Drop(object sender, DropEventArgs e)
