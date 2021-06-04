@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:cadobjects="clr-namespace:DrawEngine.CadObjects;assembly=2DrawContourEngine" xmlns:visualobjects="clr-namespace:SureMeasure.ShapeObj.VisualObjects"
+             x:Class="SureMeasure.ShapeObj.VisualObjects.DotView"
+             x:DataType="cadobjects:CadPoint"
+             TranslationX="{Binding X, Mode=TwoWay, Converter={StaticResource PositionXConverter}}"
+             TranslationY="{Binding Y, Mode=TwoWay, Converter={StaticResource PositionYConverter}}"
+             Scale="{Binding Source={RelativeSource AncestorType={x:Type AbsoluteLayout}, AncestorLevel=2}, Path=Scale, Converter={StaticResource ScaleConverter}}">
+    <ContentView.GestureRecognizers>
+        <PanGestureRecognizer PanUpdated="PanGestureRecognizer_PanUpdated"/>
+        <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"/>
+        <DragGestureRecognizer DragStarting="DragGesture_DragStarting"/>
+        <DropGestureRecognizer Drop="DropGesture_Drop"/>
+    </ContentView.GestureRecognizers>
+    <ContentView.Resources>
+        <ResourceDictionary>
+            <visualobjects:StatusColorConverter x:Key="StatusColorConverter" />
+            <visualobjects:CircleYPointConverter        x:Key="PositionYConverter" />
+            <visualobjects:CircleXPointConverter        x:Key="PositionXConverter" />
+            <visualobjects:ScaleConverter x:Key="ScaleConverter"/>
+        </ResourceDictionary>
+    </ContentView.Resources>
+  <ContentView.Content>
+        <Grid>
+            <Ellipse   
+                VerticalOptions="Center" HorizontalOptions="Center"
+                 Fill="White"
+                Stroke="{Binding ObjectStatus, Converter={StaticResource StatusColorConverter}}"
+                  StrokeThickness="4"
+                HeightRequest="24" WidthRequest="24"/>
+            <Label HorizontalOptions="Center" VerticalOptions="Center" Text="{Binding ID}" ScaleY="-1"/>
+        </Grid>
+  </ContentView.Content>
+</ContentView>

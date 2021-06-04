@@ -6,39 +6,46 @@
              xmlns:visualobjects="clr-namespace:SureMeasure.ShapeObj.VisualObjects"
              x:Class="SureMeasure.ShapeObj.VisualObjects.LineView"
              x:DataType="constraints:ConstraintLenth"
-             TranslationX="{Binding Point1.OX}" 
-             TranslationY="{Binding Point1.OY}" 
-             Rotation="{Binding VectorAngle}" AnchorX="0"
-             WidthRequest="{Binding Value}">
+             AnchorX="0" 
+             AnchorY="{Binding Source={x:Reference MainGrid}, Path=Height, Converter={StaticResource AnchorYConverter}}"
+             Rotation="{Binding VectorAngle}"
+             WidthRequest="{Binding Value}" 
+             TranslationX="{Binding Point1.X, Converter={StaticResource PositionXConverter}}"
+             TranslationY="{Binding Point1.Y, Converter={StaticResource PositionYConverter}}"
+              BackgroundColor="DarkOrange">
     <ContentView.Resources>
         <ResourceDictionary>
             <visualobjects:ValueToPointConverter x:Key="LenthToLine" />
             <visualobjects:StatusColorConverter x:Key="StatusColorConverter" />
             <visualobjects:SupportDashConverter x:Key="SupportDashConverter" />
+            <visualobjects:YPointConverter x:Key="PositionYConverter" />
+            <visualobjects:XPointConverter x:Key="PositionXConverter" />
+            <visualobjects:ScaleConverter x:Key="ScaleConverter"/>
+            <visualobjects:AnchorYConverter x:Key="AnchorYConverter"/>
         </ResourceDictionary>
     </ContentView.Resources>
     <ContentView.GestureRecognizers>
         <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"/>
     </ContentView.GestureRecognizers>
     <ContentView.Content>
-        <Grid>
+        <Grid x:Name="MainGrid">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1"/>
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="1"/>
             </Grid.ColumnDefinitions>
-            <Path 
-                x:Name="LinePath"
-                VerticalOptions="Center" 
-                HorizontalOptions="Center"
+            <Line
+                HorizontalOptions="StartAndExpand"
+                VerticalOptions="Center"
                 Grid.ColumnSpan="3" 
                 Grid.Column="0"
-                StrokeDashArray="{Binding IsSupport, Converter={StaticResource SupportDashConverter}}"
-                Stroke="{Binding ObjectStatus, Converter={StaticResource StatusColorConverter}}"
-                StrokeThickness="5"
-                Data="{Binding Value, Converter={StaticResource LenthToLine}}"/>
+                StrokeThickness="{Binding Source={RelativeSource AncestorType={x:Type AbsoluteLayout}, AncestorLevel=2}, Path=Scale, Converter={StaticResource ScaleConverter}}"
+                X1="0" Y1="0" X2="{Binding Value}" Y2="0" 
+                  Stroke="{Binding ObjectStatus, Converter={StaticResource StatusColorConverter}}"
+                  StrokeDashArray="{Binding IsSupport, Converter={StaticResource SupportDashConverter}}"/>
 
-            <Frame Grid.Column="1" Grid.ColumnSpan="1" VerticalOptions="Center" HorizontalOptions="Center" CornerRadius="5" Padding="2">
+            <Frame Grid.Column="1" Grid.ColumnSpan="1" VerticalOptions="Center" HorizontalOptions="Center" CornerRadius="5" Padding="2"
+                   Scale="{Binding Source={RelativeSource AncestorType={x:Type AbsoluteLayout}, AncestorLevel=2}, Path=Scale, Converter={StaticResource ScaleConverter}}">
                 <Label Text="{Binding Value}" ScaleY="-1"/>
             </Frame>
         </Grid>

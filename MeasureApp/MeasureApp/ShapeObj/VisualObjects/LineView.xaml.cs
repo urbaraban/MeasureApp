@@ -1,12 +1,9 @@
 ﻿using DrawEngine.CadObjects;
 using DrawEngine.Constraints;
+using SureMeasure.View.Canvas;
 using SureMeasure.View.OrderPage;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Forms;
 using Xamarin.Forms.Shapes;
@@ -25,8 +22,6 @@ namespace SureMeasure.ShapeObj.VisualObjects
         public LineView()
         {
             InitializeComponent();
-
-
 
             this.SheetMenu = new SheetMenu(new System.Collections.Generic.List<SheetMenuItem>()
             {
@@ -162,6 +157,58 @@ namespace SureMeasure.ShapeObj.VisualObjects
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
           return 0;
+        }
+    }
+
+    public class YPointConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (double)value + CanvasView.ZeroPoint.Y;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (double)value - CanvasView.ZeroPoint.Y;
+        }
+    }
+
+    public class XPointConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (double)value + CanvasView.ZeroPoint.X;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (double)value - CanvasView.ZeroPoint.X;
+        }
+    }
+
+    public class LineThinkessConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return 15 * (1 / (double)value);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return 1;
+        }
+    }
+
+    public class AnchorYConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return 0;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return 1;
         }
     }
 }

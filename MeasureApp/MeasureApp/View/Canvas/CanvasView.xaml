@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:drawengine="clr-namespace:DrawEngine;assembly=2DrawContourEngine" xmlns:canvas="clr-namespace:SureMeasure.View.Canvas"
              x:Class="SureMeasure.View.Canvas.CanvasView"
              x:DataType="drawengine:Contour"
-             IsClippedToBounds="True"             >
+             IsClippedToBounds="True">
     <ContentView.Resources>
         <x:Double x:Key="Width">100000</x:Double>
         <x:Double x:Key="Height">100000</x:Double>
@@ -12,11 +12,13 @@
         <ImageSource x:Key="BackTile">Grid.svg</ImageSource>
     </ContentView.Resources>
     <ContentView.GestureRecognizers>
-        <PanGestureRecognizer PanUpdated="PanGestureRecognizer_PanUpdated"/>
         <PinchGestureRecognizer PinchUpdated="PinchGestureRecognizer_PinchUpdated"/>
     </ContentView.GestureRecognizers>
     <ContentView.Content>
         <AbsoluteLayout x:Name="MainLayout" ScaleY="-1">
+            <AbsoluteLayout.GestureRecognizers>
+                <PanGestureRecognizer PanUpdated="PanGestureRecognizer_PanUpdated"/>
+            </AbsoluteLayout.GestureRecognizers>
             <AbsoluteLayout x:Name="GroupLayout"  
                             VerticalOptions="StartAndExpand"
                             HorizontalOptions="EndAndExpand"
@@ -37,16 +39,6 @@
                                 AbsoluteLayout.LayoutFlags="All"
                                 AbsoluteLayout.LayoutBounds="1,1,1,1"
                                />
-
-               <!--<AbsoluteLayout x:Name="AnchorLayout"
-                                VerticalOptions="FillAndExpand"
-                                HorizontalOptions="FillAndExpand"
-                                AbsoluteLayout.LayoutFlags="All"
-                                AbsoluteLayout.LayoutBounds="1,1,1,1"
-                                />-->
-
-
-
             </AbsoluteLayout>
         </AbsoluteLayout>
     </ContentView.Content>

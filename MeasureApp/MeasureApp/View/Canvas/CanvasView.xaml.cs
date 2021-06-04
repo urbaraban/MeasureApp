@@ -5,8 +5,6 @@ using SureMeasure.ShapeObj;
 using SureMeasure.ShapeObj.Interface;
 using SureMeasure.ShapeObj.VisualObjects;
 using System;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Essentials;
@@ -18,6 +16,9 @@ namespace SureMeasure.View.Canvas
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class CanvasView : ContentView
     {
+        public static Point ZeroPoint = new Point(5000, 5000);
+        public static object RunningGestureObject;
+
         public static event EventHandler<double> DragSize;
         public static double DragSizeKoeff = 1.5;
         public static event EventHandler<double> RegularSize;
@@ -80,12 +81,11 @@ namespace SureMeasure.View.Canvas
             {
                 if (Object is LineView cadLine)
                 {
-                    this.ObjectLayout.Children.Insert(0,cadLine);
+                    this.ObjectLayout.Children.Insert(0, cadLine);
                 }
-                else if (Object is VisualAnchor cadAnchor)
+                else if (Object is DotView cadAnchor)
                 {
                     this.ObjectLayout.Children.Insert(this.ObjectLayout.Children.Count, cadAnchor);
-                    //this.AnchorLayout.Children.Add(cadAnchor);
                 }
                 else if (Object is ConstraitLabel constraitLabel)
                 {
@@ -100,6 +100,32 @@ namespace SureMeasure.View.Canvas
             return Object;
         }
 
+        private async Task<object> DrawObject(object Object)
+        {
+            if (Object is CadPoint cadPoint)
+            {
+                /*await this.Add(new VisualAnchor(cadPoint)
+                {
+                    Scale = 1 / this.GroupLayout.Scale,
+                });*/
+                await this.Add(new DotView() 
+                { BindingContext = cadPoint });
+                return cadPoint;
+            }
+            else if (Object is ConstraintLenth lenthConstrait)
+            {
+                await this.Add(new LineView() { BindingContext = lenthConstrait });
+                return lenthConstrait;
+            }
+            else if (Object is ConstraintAngle angleConstrait)
+            {
+                await this.Add(new AngleLabel(angleConstrait));
+                return angleConstrait;
+            }
+
+            return null;
+        }
+
         private void ActiveObject_Draging(object sender, bool e)
         {
             if (e == true) CallDragSize(this.CanvasScale);
@@ -110,17 +136,17 @@ namespace SureMeasure.View.Canvas
         {
             if (sender != e)
             {
-                if (sender is VisualAnchor cadAnchor2 && e is VisualAnchor cadAnchor1)
+                if (sender is DotView cadAnchor2 && e is DotView cadAnchor1)
                 {
                     ICommand ConnectPoint = new Command(async () =>
                     {
-                        this.Contour.Add(new ConstraintLenth(cadAnchor1.cadPoint, cadAnchor2.cadPoint, -1));
-                        await cadAnchor1.Update("Point");
-                        await cadAnchor2.Update("Point");
+                        this.Contour.Add(new ConstraintLenth(cadAnchor1.point, cadAnchor2.point, -1));
                     });
                     ICommand MergePoint = new Command(() =>
                     {
-                        cadAnchor1.ChangedPoint(cadAnchor2.cadPoint);
+                        CadPoint point = cadAnchor1.point;
+                        cadAnchor1.BindingContext = cadAnchor2.BindingContext;
+                        cadAnchor1.point.TryRemove();
                     });
 
                     SheetMenu sheetMenu = new SheetMenu(new System.Collections.Generic.List<SheetMenuItem>() {
@@ -166,7 +192,7 @@ namespace SureMeasure.View.Canvas
 
             MainThread.BeginInvokeOnMainThread(() =>
             {
-                if (sender is LineView visualLine)
+                if (sender is ContentView visualLine)
                 {
                     this.ObjectLayout.Children.Remove(visualLine);
                 }
@@ -229,19 +255,12 @@ namespace SureMeasure.View.Canvas
 
                     foreach (VisualElement visualElement in this.ObjectLayout.Children)
                     {
-                        if (visualElement is VisualLine cadLine)
+                        if (visualElement is DotView dotView)
                         {
-                            minX = Math.Min(minX, cadLine.Bounds.Left);
-                            maxX = Math.Max(maxX, cadLine.Bounds.Right);
-                            minY = Math.Min(minY, cadLine.Bounds.Top);
-                            maxY = Math.Max(maxY, cadLine.Bounds.Bottom);
-                        }
-                        else
-                        {
-                            minX = Math.Min(minX, visualElement.TranslationX + visualElement.Bounds.Left);
-                            maxX = Math.Max(maxX, visualElement.TranslationX + visualElement.Bounds.Right);
-                            minY = Math.Min(minY, visualElement.TranslationY + visualElement.Bounds.Top);
-                            maxY = Math.Max(maxY, visualElement.TranslationY + visualElement.Bounds.Bottom);
+                            minX = Math.Min(minX, dotView.point.X + CanvasView.ZeroPoint.X);
+                            maxX = Math.Max(maxX, dotView.point.X + CanvasView.ZeroPoint.X);
+                            minY = Math.Min(minY, dotView.point.Y + CanvasView.ZeroPoint.Y);
+                            maxY = Math.Max(maxY, dotView.point.Y + CanvasView.ZeroPoint.Y);
                         }
                     }
                     double scale = Math.Min(this.MainLayout.Width / (maxX - minX), this.MainLayout.Height / (maxY - minY));
@@ -258,29 +277,7 @@ namespace SureMeasure.View.Canvas
                 }
             }
         }
-        private async Task<object> DrawObject(object Object)
-        {
-            if (Object is CadPoint cadPoint)
-            {
-                await this.Add(new VisualAnchor(cadPoint)
-                {
-                    Scale = 1 / this.GroupLayout.Scale,
-                });
-                return cadPoint;
-            }
-            else if (Object is ConstraintLenth lenthConstrait)
-            {
-                await this.Add(new LineView() { BindingContext = lenthConstrait });
-                return lenthConstrait;
-            }
-            else if (Object is ConstraintAngle angleConstrait)
-            {
-                await this.Add(new AngleLabel(angleConstrait));
-                return angleConstrait;
-            }
 
-            return null;
-        }
         private void TranslateToPoint(Point point)
         {
             this.GroupLayout.TranslationX = -((this.GroupLayout.Width * (1 - this.GroupLayout.Scale)) / 2) -
@@ -289,7 +286,8 @@ namespace SureMeasure.View.Canvas
                 (point.Y * this.GroupLayout.Scale - this.MainLayout.Height / 2);
         }
 
-        private Point startPoint = new Point(0, 0);
+        private Point startPoint = new Point();
+
         private void PanGestureRecognizer_PanUpdated(object sender, PanUpdatedEventArgs e)
         {
             if (e.StatusType == GestureStatus.Started)
@@ -299,8 +297,11 @@ namespace SureMeasure.View.Canvas
             }
             if (e.StatusType == GestureStatus.Running)
             {
-                this.GroupLayout.TranslationX = startPoint.X + e.TotalX;
-                this.GroupLayout.TranslationY = startPoint.Y - e.TotalY;
+                if (CanvasView.RunningGestureObject == null)
+                {
+                    this.GroupLayout.TranslationX = startPoint.X + e.TotalX;
+                    this.GroupLayout.TranslationY = startPoint.Y + e.TotalY;
+                }
             }
         }
 
@@ -333,6 +334,5 @@ namespace SureMeasure.View.Canvas
             }
         }
     }
-
 
 }

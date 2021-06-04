@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:constraints="clr-namespace:DrawEngine.Constraints;assembly=2DrawContourEngine"
+             x:Class="SureMeasure.ShapeObj.VisualObjects.AngleView"
+             x:DataType="constraints:ConstraintAngle"
+             TranslationX="{Binding Point2.X, Converter={StaticResource PositionXConverter}}"
+             TranslationY="{Binding Point2.Y, Converter={StaticResource PositionYConverter}}">
+    <ContentView.GestureRecognizers>
+        <TapGestureRecognizer />
+    </ContentView.GestureRecognizers>
+    <ContentView.Content>
+      <StackLayout>
+          <Label Text="Hello Xamarin.Forms!" />
+      </StackLayout>
+  </ContentView.Content>
+</ContentView>

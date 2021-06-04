@@ -46,8 +46,8 @@ namespace SureMeasure.ShapeObj
         {
             this.angleConstrait = AngleConstrait;
             CadPoint point = Sizing.GetPositionLineFromAngle(this.angleConstrait.Point1, this.angleConstrait.Point2, 10, this.angleConstrait.Value / 2d);
-            this.TranslationX = point.OX;
-            this.TranslationY = point.OY;
+            this.TranslationX = point.X;
+            this.TranslationY = point.Y;
             this.Text = Math.Round(this.angleConstrait.Value, 1).ToString();
             this.BackgroundColor = Color.Yellow;
             this.ScaleY = -1;
@@ -75,8 +75,8 @@ namespace SureMeasure.ShapeObj
         private void AngleConstrait_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             CadPoint point = Sizing.GetPositionLineFromAngle(this.angleConstrait.Point1, this.angleConstrait.Point2, 30 * this.Scale, this.angleConstrait.Value / 2d);
-            this.TranslationX = point.OX;
-            this.TranslationY = point.OY;
+            this.TranslationX = point.X;
+            this.TranslationY = point.Y;
         }
 
         private void CadCanvas_RegularSize(object sender, double e)
