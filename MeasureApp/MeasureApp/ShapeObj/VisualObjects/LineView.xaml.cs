@@ -33,9 +33,10 @@ namespace SureMeasure.ShapeObj.VisualObjects
                 new SheetMenuItem(Free_Orientation, "{FREE_ORIENTATION}"),
                 new SheetMenuItem(Fix, "{FIX}"),
                 new SheetMenuItem(Remove, "{REMOVE}"),
-                 new SheetMenuItem(Split, "{SPLIT}")
+                new SheetMenuItem(Split, "{SPLIT}")
             });
         }
+
 
 
         private void TapGestureRecognizer_Tapped(object sender, EventArgs e) => TapManager();
@@ -164,7 +165,7 @@ namespace SureMeasure.ShapeObj.VisualObjects
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (double)value + CanvasView.ZeroPoint.Y;
+            return (double)value + CanvasView.ZeroPoint.Y - 11;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -190,20 +191,7 @@ namespace SureMeasure.ShapeObj.VisualObjects
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return 15 * (1 / (double)value);
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return 1;
-        }
-    }
-
-    public class AnchorYConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return 0;
+            return 5 * (1 / (double)value);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

@@ -79,9 +79,9 @@ namespace SureMeasure.View.Canvas
 
             MainThread.BeginInvokeOnMainThread(() =>
             {
-                if (Object is LineView cadLine)
+                if (Object is LineView || Object is AngleView)
                 {
-                    this.ObjectLayout.Children.Insert(0, cadLine);
+                    this.ObjectLayout.Children.Insert(0, (Xamarin.Forms.View)Object);
                 }
                 else if (Object is DotView cadAnchor)
                 {
@@ -119,7 +119,7 @@ namespace SureMeasure.View.Canvas
             }
             else if (Object is ConstraintAngle angleConstrait)
             {
-                await this.Add(new AngleLabel(angleConstrait));
+                await this.Add(new AngleView() { BindingContext = angleConstrait });
                 return angleConstrait;
             }
 

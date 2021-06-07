@@ -1,16 +1,59 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:constraints="clr-namespace:DrawEngine.Constraints;assembly=2DrawContourEngine"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:constraints="clr-namespace:DrawEngine.Constraints;assembly=2DrawContourEngine" xmlns:visualobjects="clr-namespace:SureMeasure.ShapeObj.VisualObjects"
              x:Class="SureMeasure.ShapeObj.VisualObjects.AngleView"
              x:DataType="constraints:ConstraintAngle"
              TranslationX="{Binding Point2.X, Converter={StaticResource PositionXConverter}}"
-             TranslationY="{Binding Point2.Y, Converter={StaticResource PositionYConverter}}">
+             TranslationY="{Binding Point2.Y, Converter={StaticResource PositionYConverter}}"
+             Rotation="{Binding Lenth1.VectorAngle}">
+    <ContentView.Resources>
+        <ResourceDictionary>
+            <visualobjects:ValueToPointConverter x:Key="LenthToLine" />
+            <visualobjects:StatusColorConverter x:Key="StatusColorConverter" />
+            <visualobjects:SupportDashConverter x:Key="SupportDashConverter" />
+            <visualobjects:YPointConverter x:Key="PositionYConverter" />
+            <visualobjects:XPointConverter x:Key="PositionXConverter" />
+            <visualobjects:PointConverter x:Key="PointConverter"/>
+            <visualobjects:LineThinkessConverter x:Key="ThinkessConverter"/>
+            <visualobjects:ScaleConverter x:Key="ScaleConverter"/>
+            <visualobjects:RoundConverter x:Key="RoundConverter"/>
+            <visualobjects:LabelAngleConverter x:Key="LabelAngleConverter"/>
+        </ResourceDictionary>
+    </ContentView.Resources>
     <ContentView.GestureRecognizers>
-        <TapGestureRecognizer />
+        <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"/>
     </ContentView.GestureRecognizers>
     <ContentView.Content>
-      <StackLayout>
-          <Label Text="Hello Xamarin.Forms!" />
-      </StackLayout>
+        <Grid>
+            <Path Stroke="Red" StrokeThickness="4"
+                     VerticalOptions="Start" HorizontalOptions="Start">
+                <Path.Data>
+                    <PathGeometry>
+                        <PathGeometry.Figures>
+                            <PathFigureCollection>
+                                <PathFigure StartPoint="50,0">
+                                    <PathFigure.Segments>
+                                        <PathSegmentCollection>
+                                            <ArcSegment Size="50,50"
+                                            RotationAngle="{Binding RadAngle}"
+                                            IsLargeArc="True"
+                                            SweepDirection="CounterClockwise"
+                                            Point="50,50" />
+                                        </PathSegmentCollection>
+                                    </PathFigure.Segments>
+                                </PathFigure>
+                            </PathFigureCollection>
+                        </PathGeometry.Figures>
+                    </PathGeometry>
+                </Path.Data>
+            </Path>
+            <Frame Grid.Column="1" Grid.ColumnSpan="1" BackgroundColor="Green" 
+                   VerticalOptions="Start" HorizontalOptions="Center" 
+                   CornerRadius="5" Padding="2"
+                   Rotation="{Binding Value, Converter= {StaticResource LabelAngleConverter}}"
+                   Scale="{Binding Source={RelativeSource AncestorType={x:Type AbsoluteLayout}, AncestorLevel=2}, Path=Scale, Converter={StaticResource ScaleConverter}}">
+                <Label Text="{Binding Value, Converter={StaticResource RoundConverter}}" ScaleY="-1"/>
+            </Frame>
+        </Grid>
   </ContentView.Content>
 </ContentView>
