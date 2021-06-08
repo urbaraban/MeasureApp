@@ -11,8 +11,7 @@
              Rotation="{Binding VectorAngle}"
              WidthRequest="{Binding Value}" 
              TranslationX="{Binding Point1.X, Converter={StaticResource PositionXConverter}}"
-             TranslationY="{Binding Point1.Y, Converter={StaticResource PositionYConverter}}"
-             BackgroundColor="AliceBlue">
+             TranslationY="{Binding Point1.Y, Converter={StaticResource PositionYConverter}}">
     <ContentView.Resources>
         <ResourceDictionary>
             <visualobjects:ValueToPointConverter x:Key="LenthToLine" />

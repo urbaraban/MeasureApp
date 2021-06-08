@@ -3,10 +3,8 @@ using DrawEngine.Constraints;
 using SureMeasure.View.Canvas;
 using SureMeasure.View.OrderPage;
 using System;
-using System.Globalization;
 using System.Windows.Input;
 using Xamarin.Forms;
-using Xamarin.Forms.Shapes;
 using Xamarin.Forms.Xaml;
 
 namespace SureMeasure.ShapeObj.VisualObjects
@@ -78,7 +76,10 @@ namespace SureMeasure.ShapeObj.VisualObjects
         private ICommand GetMeasure => new Command(() =>
         {
             CadCanvasPage.MeasureVariable = this._lenthConstrait.Variable;
-            AppShell.BLEDevice.OnDevice();
+            if (AppShell.BLEDevice != null)
+            {
+                AppShell.BLEDevice.OnDevice();
+            }
         });
         private ICommand SupportLine => new Command(() =>
         {
@@ -112,91 +113,4 @@ namespace SureMeasure.ShapeObj.VisualObjects
         #endregion
     }
 
-    public class ValueToPointConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return new LineGeometry(new Point(0, 0), new Point((double)value, 0));
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return null;
-        }
-    }
-
-    public class StatusColorConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            if (value is ObjectStatus objectStatus)
-            {
-                if (objectStatus == ObjectStatus.Select) return Brush.Orange;
-                if (objectStatus == ObjectStatus.Fix) return Brush.Gray;
-                if (objectStatus == ObjectStatus.Regular) return Brush.Blue;
-            }
-            return null;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return null;
-        }
-    }
-
-    public class SupportDashConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            if (value is bool bl && bl == true)
-            {
-                return new DoubleCollection() { 2, 1 };
-            }
-            return new DoubleCollection() { 1 }; 
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-          return 0;
-        }
-    }
-
-    public class YPointConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return (double)value + CanvasView.ZeroPoint.Y - 11;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return (double)value - CanvasView.ZeroPoint.Y;
-        }
-    }
-
-    public class XPointConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return (double)value + CanvasView.ZeroPoint.X;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return (double)value - CanvasView.ZeroPoint.X;
-        }
-    }
-
-    public class LineThinkessConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return 5 * (1 / (double)value);
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return 1;
-        }
-    }
 }

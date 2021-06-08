@@ -19,21 +19,6 @@ namespace SureMeasure.View.Canvas
         public static Point ZeroPoint = new Point(5000, 5000);
         public static object RunningGestureObject;
 
-        public static event EventHandler<double> DragSize;
-        public static double DragSizeKoeff = 1.5;
-        public static event EventHandler<double> RegularSize;
-        public static double RegularAnchorSize = 10;
-
-        public static void CallDragSize(double value)
-        {
-            DragSize?.Invoke(null, value / 1.1);
-        }
-
-        public static void CallRegularSize(double value)
-        {
-            RegularSize?.Invoke(null, value);
-        }
-
         private Contour Contour
         {
             get => _contour;
@@ -48,13 +33,24 @@ namespace SureMeasure.View.Canvas
 
         private Contour _contour;
 
-        public double CanvasScale => this.GroupLayout.Scale != double.PositiveInfinity ? this.GroupLayout.Scale : 1;
+        public double CommonScale
+        {
+            get => (this.GroupLayout.Scale != double.PositiveInfinity ? this.GroupLayout.Scale : 1) / (draggingstatus ? 1.5 : 1);
+            set
+            {
+                this.GroupLayout.Scale = value;
+                OnPropertyChanged("CommonScale");
+            }
+        }
+        private bool draggingstatus = false;
 
         public CanvasView()
         {
             InitializeComponent();
             this.BindingContextChanged += CanvasView_BindingContextChanged;
         }
+
+
 
         /// <summary>
         /// Add object on Canvas. 
@@ -65,11 +61,6 @@ namespace SureMeasure.View.Canvas
             if (Object is ICanvasObject canvasObject)
             {
                 canvasObject.Removed += CanvasObject_Removed;
-            }
-            if (Object is IActiveObject activeObject)
-            {
-                activeObject.Draging += ActiveObject_Draging;
-                activeObject.Dropped += CadAnchor1_Dropped;
             }
 
             if (Object is ConstraitLabel constraitLabel)
@@ -124,12 +115,6 @@ namespace SureMeasure.View.Canvas
             }
 
             return null;
-        }
-
-        private void ActiveObject_Draging(object sender, bool e)
-        {
-            if (e == true) CallDragSize(this.CanvasScale);
-            else CallRegularSize(this.CanvasScale);
         }
 
         private void CadAnchor1_Dropped(object sender, object e)
@@ -196,14 +181,6 @@ namespace SureMeasure.View.Canvas
                 {
                     this.ObjectLayout.Children.Remove(visualLine);
                 }
-                /*if (sender is VisualAnchor visualAnchor)
-                {
-                    this.AnchorLayout.Children.Remove(visualAnchor);
-                }
-                if (sender is ConstraitLabel label)
-                {
-                    this.AnchorLayout.Children.Remove(label);
-                }*/
                 if (sender is AbsoluteLayout layout)
                 {
                     this.GroupLayout.Children.Remove(layout);
@@ -264,12 +241,9 @@ namespace SureMeasure.View.Canvas
                         }
                     }
                     double scale = Math.Min(this.MainLayout.Width / (maxX - minX), this.MainLayout.Height / (maxY - minY));
-                    this.GroupLayout.Scale = scale * 0.6;
+                    this.CommonScale = scale * 0.6;
 
                     TranslateToPoint(new Point((minX + maxX) / 2, (minY + maxY) / 2));
-
-                    
-                    CallRegularSize(this.CanvasScale);
                 }
                 catch
                 {
@@ -286,21 +260,68 @@ namespace SureMeasure.View.Canvas
                 (point.Y * this.GroupLayout.Scale - this.MainLayout.Height / 2);
         }
 
+        public ICommand DraggingStartObject => new Command(() =>
+        {
+            draggingstatus = true;
+            OnPropertyChanged("CommonScale");
+        });
+
+        public ICommand DraggingComplitObject => new Command(() =>
+        {
+            draggingstatus = false;
+            OnPropertyChanged("CommonScale");
+        });
+
+        public ICommand DropComplit => new Command((object sender) =>
+        {
+            if (sender is Tuple<object, object> tuple)
+            {
+                if (tuple.Item1 is CadPoint point1 && tuple.Item2 is CadPoint point2)
+                {
+                    ICommand ConnectPoint = new Command(() =>
+                    {
+                        this.Contour.Add(new ConstraintLenth(point1, point2, -1));
+                    });
+                    ICommand MergePoint = new Command(() =>
+                    {
+                       point1.ChangePoint(point2);
+                    });
+
+                    SheetMenu sheetMenu = new SheetMenu(new System.Collections.Generic.List<SheetMenuItem>() {
+                        new SheetMenuItem(ConnectPoint, "{CONNECT_POINT}"),
+                        new SheetMenuItem(MergePoint, "{MERGE_POINT}")
+                    });
+
+                    sheetMenu.ShowMenu(this);
+                }
+            }
+        });
+
         private Point startPoint = new Point();
 
         private void PanGestureRecognizer_PanUpdated(object sender, PanUpdatedEventArgs e)
         {
-            if (e.StatusType == GestureStatus.Started)
+            Console.WriteLine($"PanGesture Canvas {sender}");
+            if (CanvasView.RunningGestureObject == sender
+             || CanvasView.RunningGestureObject == null)
             {
-                startPoint.X = this.GroupLayout.TranslationX;
-                startPoint.Y = this.GroupLayout.TranslationY;
-            }
-            if (e.StatusType == GestureStatus.Running)
-            {
-                if (CanvasView.RunningGestureObject == null)
+                if (e.StatusType == GestureStatus.Started)
                 {
-                    this.GroupLayout.TranslationX = startPoint.X + e.TotalX;
-                    this.GroupLayout.TranslationY = startPoint.Y + e.TotalY;
+                    startPoint.X = this.GroupLayout.TranslationX;
+                    startPoint.Y = this.GroupLayout.TranslationY;
+                }
+                else if (e.StatusType == GestureStatus.Running)
+                {
+                    if (CanvasView.RunningGestureObject == null)
+                    {
+                        this.GroupLayout.TranslationX = startPoint.X + e.TotalX;
+                        this.GroupLayout.TranslationY = startPoint.Y + e.TotalY;
+                    }
+                }
+                else if(e.StatusType == GestureStatus.Completed)
+                {
+                    startPoint.X = this.GroupLayout.TranslationX;
+                    startPoint.Y = this.GroupLayout.TranslationY;
                 }
             }
         }
@@ -323,14 +344,13 @@ namespace SureMeasure.View.Canvas
 
                 //setup new scale
                 // Apply scale factor.
-                this.GroupLayout.Scale *= e.Scale;
-
+                this.CommonScale = this.GroupLayout.Scale * e.Scale;
                 //find new center position from start position
                 TranslateToPoint(new Point(FromCenterPosX, FromCenterPosY));
             }
             if (e.Status == GestureStatus.Completed)
             {
-                CallRegularSize(this.CanvasScale);
+                
             }
         }
     }

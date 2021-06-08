@@ -89,47 +89,4 @@ namespace SureMeasure.ShapeObj.VisualObjects
             this.constraintAngle.TryRemove();
         });
     }
-
-    public class PointConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            if (value is CadPoint cadPoint)
-            {
-                return new Point(cadPoint.X + CanvasView.ZeroPoint.X, cadPoint.Y + CanvasView.ZeroPoint.Y);
-            }
-            return new Point();
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return 1;
-        }
-    }
-
-    public class RoundConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return Math.Round((double)value, 1);
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return 1;
-        }
-    }
-
-    public class LabelAngleConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return (double)value / 2 + 90;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return 1;
-        }
-    }
 }

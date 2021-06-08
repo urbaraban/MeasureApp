@@ -1,8 +1,8 @@
 ﻿using DrawEngine.CadObjects;
+using SureMeasure.ShapeObj.Interface;
 using SureMeasure.View.Canvas;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Windows.Input;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -10,11 +10,11 @@ using Xamarin.Forms.Xaml;
 namespace SureMeasure.ShapeObj.VisualObjects
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class DotView : ContentView
+    public partial class DotView : ContentView, IActiveObject
     {
         public CadPoint point => (CadPoint)this.BindingContext;
 
-        protected SheetMenu SheetMenu
+        public SheetMenu SheetMenu
         {
             get => _sheetMenu;
             set
@@ -28,6 +28,7 @@ namespace SureMeasure.ShapeObj.VisualObjects
         {
             InitializeComponent();
 
+
             this.SheetMenu = new SheetMenu(new List<SheetMenuItem>()
             {
                 new SheetMenuItem(Fix, "{FIX}"),
@@ -40,7 +41,8 @@ namespace SureMeasure.ShapeObj.VisualObjects
 
         private void PanGestureRecognizer_PanUpdated(object sender, PanUpdatedEventArgs e)
         {
-            if (CanvasView.RunningGestureObject == this 
+            Console.WriteLine($"PanGesture Dot {sender}");
+            if (CanvasView.RunningGestureObject == sender
                 || CanvasView.RunningGestureObject == null)
             {
                 if (e.StatusType == GestureStatus.Started)
@@ -85,16 +87,27 @@ namespace SureMeasure.ShapeObj.VisualObjects
         #endregion
 
         private void DropGesture_Drop(object sender, DropEventArgs e)
-        {
-            //this.Dropped?.Invoke(this, e.Data.Properties["Object"]);
+        { 
+            object Obj = this;
+            while((Obj is CanvasView) == false)
+            {
+                if (Obj is Element element)
+                {
+                    Obj = element.Parent;
+                }
+            }
+
+            if (Obj is CanvasView canvasView)
+            {
+                Tuple<object, object> tuple = new Tuple<object, object>(this.point, e.Data.Properties["Object"]);
+                canvasView.DropComplit.Execute(tuple);
+            }
         }
 
         private void DragGesture_DragStarting(object sender, DragStartingEventArgs e)
         {
-            e.Data.Properties.Add("Object", this);
-            //Draging?.Invoke(this, true);
+            e.Data.Properties.Add("Object", this.point);
         }
-
 
         private void TapGestureRecognizer_Tapped(object sender, EventArgs e)
         {
@@ -103,6 +116,7 @@ namespace SureMeasure.ShapeObj.VisualObjects
 
         private int taps = 0;
         private bool runtimer = false;
+
         private void TapManager()
         {
             taps += 1;
@@ -126,45 +140,8 @@ namespace SureMeasure.ShapeObj.VisualObjects
                 this.runtimer = false;
             }
         }
+
     }
 
 
-    public class CircleXPointConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return (double)value + CanvasView.ZeroPoint.X - 12;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return (double)value - CanvasView.ZeroPoint.X + 12;
-        }
-    }
-
-    public class CircleYPointConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return (double)value + CanvasView.ZeroPoint.Y - 12;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return (double)value - CanvasView.ZeroPoint.Y + 12;
-        }
-    }
-
-    public class ScaleConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return 1 / (double)value;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return 1;
-        }
-    }
 }

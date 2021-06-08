@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:drawengine="clr-namespace:DrawEngine;assembly=2DrawContourEngine" xmlns:canvas="clr-namespace:SureMeasure.View.Canvas"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:drawengine="clr-namespace:DrawEngine;assembly=2DrawContourEngine" 
              x:Class="SureMeasure.View.Canvas.CanvasView"
              x:DataType="drawengine:Contour"
              IsClippedToBounds="True">
@@ -17,7 +17,7 @@
     <ContentView.Content>
         <AbsoluteLayout x:Name="MainLayout" ScaleY="-1">
             <AbsoluteLayout.GestureRecognizers>
-                <PanGestureRecognizer PanUpdated="PanGestureRecognizer_PanUpdated"/>
+                <PanGestureRecognizer  PanUpdated="PanGestureRecognizer_PanUpdated"/>
             </AbsoluteLayout.GestureRecognizers>
             <AbsoluteLayout x:Name="GroupLayout"  
                             VerticalOptions="StartAndExpand"
@@ -26,9 +26,6 @@
                             HeightRequest="{StaticResource Height}"
                             TranslationX="-4900"
                             TranslationY="-4800">
-
-                <Image Source="{StaticResource BackTile}" TranslationX="5000"
-                            TranslationY="5000"/>
 
                 <Line Stroke="Gray" X1="5000" Y1="5000" X2="5000" Y2="5100"/>
                 <Line Stroke="Gray" X1="5000" Y1="5000" X2="5100" Y2="5000"/>

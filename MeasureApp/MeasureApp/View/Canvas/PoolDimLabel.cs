@@ -62,7 +62,7 @@ namespace SureMeasure.View.OrderPage.Canvas
 
         private void DragGesture_DropCompleted(object sender, DropCompletedEventArgs e)
         {
-            CanvasView.CallRegularSize(1);
+
         }
 
         private void TapGesture_Tapped(object sender, EventArgs e)
@@ -73,7 +73,6 @@ namespace SureMeasure.View.OrderPage.Canvas
         private void DragGesture_DragStarting(object sender, DragStartingEventArgs e)
         {
             e.Data.Properties.Add("Message", this.message);
-            CanvasView.CallDragSize(1);
         }
 
         private ICommand Remove => new Command(() =>

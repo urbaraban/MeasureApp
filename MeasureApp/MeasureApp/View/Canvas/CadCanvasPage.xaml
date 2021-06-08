@@ -7,7 +7,6 @@
     xmlns:control="clr-namespace:Plugin.Segmented.Control;assembly=Plugin.Segmented"
     xmlns:orderpage="clr-namespace:SureMeasure.View.OrderPage"
     xmlns:orders="clr-namespace:SureMeasure.Orders"
-    xmlns:shapeobj="clr-namespace:SureMeasure.ShapeObj.Canvas"
     xmlns:shell="clr-namespace:SureMeasure" xmlns:canvas="clr-namespace:SureMeasure.View.Canvas"
     x:Name="DrawingPage"
     Title="Drawing"
