@@ -16,7 +16,7 @@
             <visualobjects:PointConverter x:Key="PointConverter"/>
             <visualobjects:LineThinkessConverter x:Key="ThinkessConverter"/>
             <visualobjects:ScaleConverter x:Key="ScaleConverter"/>
-            <visualobjects:RoundConverter x:Key="RoundConverter"/>
+            <visualobjects:RoundAngleConverter x:Key="RoundAngleConverter"/>
             <visualobjects:LabelAngleConverter x:Key="LabelAngleConverter"/>
         </ResourceDictionary>
     </ContentView.Resources>
@@ -25,7 +25,7 @@
     </ContentView.GestureRecognizers>
     <ContentView.Content>
         <Grid>
-            <Path Stroke="Red" StrokeThickness="4"
+            <!--<Path Stroke="Red" StrokeThickness="4"
                      VerticalOptions="Start" HorizontalOptions="Start">
                 <Path.Data>
                     <PathGeometry>
@@ -46,13 +46,13 @@
                         </PathGeometry.Figures>
                     </PathGeometry>
                 </Path.Data>
-            </Path>
-            <Frame Grid.Column="1" Grid.ColumnSpan="1" BackgroundColor="Green" 
-                   VerticalOptions="Start" HorizontalOptions="Center" 
+            </Path>-->
+            <Frame BackgroundColor="LightBlue" 
+                   VerticalOptions="Center" HorizontalOptions="Center" 
                    CornerRadius="5" Padding="2"
                    Rotation="{Binding Value, Converter= {StaticResource LabelAngleConverter}}"
                    Scale="{Binding Source={RelativeSource AncestorType={x:Type AbsoluteLayout}, AncestorLevel=2}, Path=Scale, Converter={StaticResource ScaleConverter}}">
-                <Label Text="{Binding Value, Converter={StaticResource RoundConverter}}" ScaleY="-1"/>
+                <Label VerticalOptions="Center" HorizontalOptions="Center" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" Text="{Binding Value, Converter={StaticResource RoundAngleConverter}}" ScaleY="-1"/>
             </Frame>
         </Grid>
   </ContentView.Content>

@@ -4,19 +4,22 @@
              xmlns:cadobjects="clr-namespace:DrawEngine.CadObjects;assembly=2DrawContourEngine"
              xmlns:visualobjects="clr-namespace:SureMeasure.ShapeObj.VisualObjects"
              xmlns:canvas="clr-namespace:SureMeasure.View.Canvas"
+             InputTransparent="False"
              x:Class="SureMeasure.ShapeObj.VisualObjects.DotView"
              x:DataType="cadobjects:CadPoint"
              TranslationX="{Binding X, Mode=TwoWay, Converter={StaticResource PositionConverter}}"
              TranslationY="{Binding Y, Mode=TwoWay, Converter={StaticResource PositionConverter}}"
              Scale="{Binding Source={RelativeSource AncestorType={x:Type canvas:CanvasView}, AncestorLevel=0}, Path=CommonScale, Converter={StaticResource ScaleConverter}}">
     <ContentView.GestureRecognizers>
-        <PanGestureRecognizer PanUpdated="PanGestureRecognizer_PanUpdated"/>
-        <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"/>
+        
         <DragGestureRecognizer DragStartingCommand="{Binding Source={RelativeSource AncestorType={x:Type canvas:CanvasView}, AncestorLevel=0}, Path=DraggingStartObject}"
                                DropCompletedCommand="{Binding Source={RelativeSource AncestorType={x:Type canvas:CanvasView}, AncestorLevel=0}, Path=DraggingComplitObject}" DragStarting="DragGesture_DragStarting"/>
+        <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"/>
+        <PanGestureRecognizer PanUpdated="PanGestureRecognizer_PanUpdated"/>
         <DropGestureRecognizer Drop="DropGesture_Drop"/>
 
     </ContentView.GestureRecognizers>
+
     <ContentView.Resources>
         <ResourceDictionary>
             <visualobjects:StatusColorConverter x:Key="StatusColorConverter" />

@@ -3,6 +3,7 @@ using DrawEngine.Constraints;
 using Plugin.Segmented.Control;
 using SureMeasure.Orders;
 using SureMeasure.Tools;
+using SureMeasure.View.Canvas;
 using SureMeasure.View.OrderPage.Canvas;
 using System;
 using System.Diagnostics;
@@ -58,7 +59,7 @@ namespace SureMeasure.View.OrderPage
 
         private void PoolDimLabel_Removed(object sender, EventArgs e)
         {
-            SizePool.Children.Remove((ContentView)sender);
+            //SizePool.Children.Remove((ContentView)sender);
         }
 
         private async void AppShell_LenthUpdated(object sender, Tuple<double, double> e)
@@ -78,7 +79,7 @@ namespace SureMeasure.View.OrderPage
         {
             PoolDimLabel poolDimLabel = new PoolDimLabel($"{tuple.Item1}&{tuple.Item2}", this.Height);
             poolDimLabel.Removed += PoolDimLabel_Removed;
-            SizePool.Children.Add(poolDimLabel);
+           // SizePool.Children.Add(poolDimLabel);
         }
 
 

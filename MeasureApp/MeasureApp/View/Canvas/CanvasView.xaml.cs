@@ -5,6 +5,7 @@ using SureMeasure.ShapeObj;
 using SureMeasure.ShapeObj.Interface;
 using SureMeasure.ShapeObj.VisualObjects;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Essentials;
@@ -16,8 +17,8 @@ namespace SureMeasure.View.Canvas
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class CanvasView : ContentView
     {
-        public static Point ZeroPoint = new Point(5000, 5000);
-        public static object RunningGestureObject;
+        public static Point ZeroPoint = new Point(20, 20);
+        public static List<object> RunningGestureObject = new List<object>();
 
         private Contour Contour
         {
@@ -33,6 +34,7 @@ namespace SureMeasure.View.Canvas
 
         private Contour _contour;
 
+
         public double CommonScale
         {
             get => (this.GroupLayout.Scale != double.PositiveInfinity ? this.GroupLayout.Scale : 1) / (draggingstatus ? 1.5 : 1);
@@ -47,9 +49,14 @@ namespace SureMeasure.View.Canvas
         public CanvasView()
         {
             InitializeComponent();
+            this.MainScroll.Scrolled += MainScroll_Scrolled;
             this.BindingContextChanged += CanvasView_BindingContextChanged;
         }
 
+        private void MainScroll_Scrolled(object sender, ScrolledEventArgs e)
+        {
+
+        }
 
 
         /// <summary>
@@ -240,24 +247,26 @@ namespace SureMeasure.View.Canvas
                             maxY = Math.Max(maxY, dotView.point.Y + CanvasView.ZeroPoint.Y);
                         }
                     }
-                    double scale = Math.Min(this.MainLayout.Width / (maxX - minX), this.MainLayout.Height / (maxY - minY));
+                    double scale = Math.Min(this.MainScroll.Width / (maxX - minX), this.MainScroll.Height / (maxY - minY));
                     this.CommonScale = scale * 0.6;
 
                     TranslateToPoint(new Point((minX + maxX) / 2, (minY + maxY) / 2));
+                    
                 }
                 catch
                 {
                     Console.WriteLine("Fit Error");
                 }
             }
+            TranslateToPoint(ZeroPoint);
         }
 
-        private void TranslateToPoint(Point point)
+        public void TranslateToPoint(Point point)
         {
-            this.GroupLayout.TranslationX = -((this.GroupLayout.Width * (1 - this.GroupLayout.Scale)) / 2) -
-                (point.X * this.GroupLayout.Scale - this.MainLayout.Width / 2);
-            this.GroupLayout.TranslationY = -((this.GroupLayout.Height * (1 - this.GroupLayout.Scale)) / 2) -
-                (point.Y * this.GroupLayout.Scale - this.MainLayout.Height / 2);
+            double X = point.X;
+            double Y = point.Y;
+
+            MainScroll.ScrollToAsync(X, this.MainScroll.Content.Height - Y - this.MainScroll.Height, false);
         }
 
         public ICommand DraggingStartObject => new Command(() =>
@@ -299,32 +308,28 @@ namespace SureMeasure.View.Canvas
 
         private Point startPoint = new Point();
 
-        private void PanGestureRecognizer_PanUpdated(object sender, PanUpdatedEventArgs e)
+        /*private void PanGestureRecognizer_PanUpdated(object sender, PanUpdatedEventArgs e)
         {
-            Console.WriteLine($"PanGesture Canvas {sender}");
-            if (CanvasView.RunningGestureObject == sender
-             || CanvasView.RunningGestureObject == null)
+            Console.WriteLine($"PanGesture Canvas {sender} TouchID {e.GestureId}");
+            if (e.StatusType == GestureStatus.Started)
             {
-                if (e.StatusType == GestureStatus.Started)
-                {
-                    startPoint.X = this.GroupLayout.TranslationX;
-                    startPoint.Y = this.GroupLayout.TranslationY;
-                }
-                else if (e.StatusType == GestureStatus.Running)
-                {
-                    if (CanvasView.RunningGestureObject == null)
-                    {
-                        this.GroupLayout.TranslationX = startPoint.X + e.TotalX;
-                        this.GroupLayout.TranslationY = startPoint.Y + e.TotalY;
-                    }
-                }
-                else if(e.StatusType == GestureStatus.Completed)
-                {
-                    startPoint.X = this.GroupLayout.TranslationX;
-                    startPoint.Y = this.GroupLayout.TranslationY;
-                }
+                CanvasView.RunningGestureObject.Add(this);
+                startPoint.X = this.GroupLayout.TranslationX;
+                startPoint.Y = this.GroupLayout.TranslationY;
             }
-        }
+            else if (e.StatusType == GestureStatus.Running)
+            {
+                Console.WriteLine($"PanGesture Canvas DeltaX {e.TotalX} DeltaY {e.TotalY}");
+                this.GroupLayout.TranslationX = startPoint.X + (e.TotalX * this.GroupLayout.Scale);
+                this.GroupLayout.TranslationY = startPoint.Y + (e.TotalY * this.GroupLayout.Scale);
+            }
+            else if (e.StatusType == GestureStatus.Completed)
+            {
+                CanvasView.RunningGestureObject.Remove(this);
+                startPoint.X = this.GroupLayout.TranslationX;
+                startPoint.Y = this.GroupLayout.TranslationY;
+            }
+        }*/
 
         private void PinchGestureRecognizer_PinchUpdated(object sender, PinchGestureUpdatedEventArgs e)
         {
@@ -336,9 +341,9 @@ namespace SureMeasure.View.Canvas
             {
 
                 //start center position
-                double FromCenterPosX = ((this.MainLayout.Width / 2 - this.GroupLayout.TranslationX) -
+                double FromCenterPosX = ((this.MainScroll.Width / 2 - this.GroupLayout.TranslationX) -
                     (this.GroupLayout.Width * (1 - this.GroupLayout.Scale) / 2)) / this.GroupLayout.Scale;
-                double FromCenterPosY = ((this.MainLayout.Height / 2 - this.GroupLayout.TranslationY) -
+                double FromCenterPosY = ((this.MainScroll.Height / 2 - this.GroupLayout.TranslationY) -
                     (this.GroupLayout.Height * (1 - this.GroupLayout.Scale) / 2)) / this.GroupLayout.Scale; ;
 
 
@@ -353,6 +358,8 @@ namespace SureMeasure.View.Canvas
                 
             }
         }
+
+
     }
 
 }

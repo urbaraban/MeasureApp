@@ -147,7 +147,20 @@ namespace SureMeasure.ShapeObj.VisualObjects
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return Math.Round((double)value, 1);
+            return $"{Math.Round((double)value, 1)}";
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return 1;
+        }
+    }
+
+    public class RoundAngleConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return $"{Math.Round((double)value, 1)}°";
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

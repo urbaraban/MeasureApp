@@ -39,22 +39,13 @@
     <ContentPage.Content>
         <AbsoluteLayout BackgroundColor="White">
                 <Grid AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="SizeProportional">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="1*" />
-                        <RowDefinition Height="1*" />
-                        <RowDefinition Height="1*"/>
-                        <RowDefinition Height="1*" />
-                    </Grid.RowDefinitions>
-                    <!--<shapeobj:CadCanvas
-                        x:Name="MainCanvas"
-                        Grid.Row="0"
-                        Grid.RowSpan="4"
-                        Margin="10"
-                        AbsoluteLayout.LayoutBounds="0,0,1,1"
-                        AbsoluteLayout.LayoutFlags="SizeProportional"
-                        BindingContext="{Binding SelectContour}"
-                        IsClippedToBounds="true" />-->
-                    <canvas:CanvasView
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="2*" />
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*" />
+                </Grid.RowDefinitions>
+                <canvas:CanvasView
                         x:Name="MainCanvas"
                         Grid.Row="0"
                         Grid.RowSpan="4"
@@ -66,7 +57,7 @@
                     />
 
 
-                <Grid Margin="10" Grid.Row="0" >
+                <Grid Margin="10" Grid.Row="0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="auto" />
                             <ColumnDefinition Width="1*" />
@@ -77,8 +68,7 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="auto" />
                             <RowDefinition Height="auto" />
-                            <RowDefinition Height="auto" />
-                        </Grid.RowDefinitions>
+                    </Grid.RowDefinitions>
                         <Button
                             Grid.Row="0"
                             Grid.Column="0"
@@ -126,7 +116,7 @@
                             Grid.Row="1"
                             Grid.ColumnSpan="2"
                             Margin="8,8,8,8"
-                            BackgroundColor="Green"
+                            BackgroundColor="Gray"
                             DisabledColor="Gray"
                             FontSize="Small"
                             SelectedItem="{Binding SelectContour.SelectedDrawMethod, Mode=TwoWay}"
@@ -150,7 +140,7 @@
                                     Color="White" />
                             </Button.ImageSource>
                         </Button>
-                        <Button
+                    <Button
                             Grid.Row="1"
                             Grid.Column="4"
                             Command="{Binding Redo}"
@@ -158,20 +148,15 @@
                             FontSize="Large"
                             HeightRequest="30"
                             WidthRequest="40">
-                            <Button.ImageSource>
-                                <FontImageSource
+                        <Button.ImageSource>
+                            <FontImageSource
                                     FontFamily="SegoeAssets"
                                     Glyph="{x:Static common:IconFont.Redo}"
                                     Size="20"
                                     Color="White" />
-                            </Button.ImageSource>
-                        </Button>
-                        <StackLayout
-                            x:Name="SizePool"
-                            Grid.Row="2"
-                            Padding="5"
-                            Orientation="Horizontal" />
-                    </Grid>
+                        </Button.ImageSource>
+                    </Button>
+                </Grid>
                     <Grid
                         Grid.Row="3"
                         Padding="20"

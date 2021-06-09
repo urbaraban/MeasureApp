@@ -40,25 +40,24 @@ namespace SureMeasure.ShapeObj.VisualObjects
         }
 
         private void PanGestureRecognizer_PanUpdated(object sender, PanUpdatedEventArgs e)
-        {
-            Console.WriteLine($"PanGesture Dot {sender}");
-            if (CanvasView.RunningGestureObject == sender
-                || CanvasView.RunningGestureObject == null)
+        { 
+            if (e.StatusType == GestureStatus.Started)
             {
-                if (e.StatusType == GestureStatus.Started)
-                {
-                    CanvasView.RunningGestureObject = this;
-                }
-                if (e.StatusType == GestureStatus.Running)
-                {
-                    this.point.X += e.TotalX;
-                    this.point.Y += e.TotalY;
-                }
-                if (e.StatusType == GestureStatus.Completed)
-                {
-                    CanvasView.RunningGestureObject = null;
-                }
+                CanvasView.RunningGestureObject.Add(this);
+                Console.WriteLine($"Start PanGesture Dot {sender} TouchID {e.GestureId}");
             }
+            if (e.StatusType == GestureStatus.Running)
+            {
+                Console.WriteLine($"PanGesture Dot DeltaX {e.TotalX} DeltaY {e.TotalY}");
+                this.point.X += e.TotalX;
+                this.point.Y += e.TotalY;
+            }
+            if (e.StatusType == GestureStatus.Completed)
+            {
+                CanvasView.RunningGestureObject.Remove(this);
+                Console.WriteLine($"Completed PanGesture Dot {sender} TouchID {e.GestureId}");
+            }
+
         }
 
         #region Command
@@ -140,7 +139,6 @@ namespace SureMeasure.ShapeObj.VisualObjects
                 this.runtimer = false;
             }
         }
-
     }
 
 
