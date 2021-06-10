@@ -1,11 +1,11 @@
 ﻿using SureMeasure.ShapeObj;
-using SureMeasure.View.Canvas;
+using SureMeasure.Views.Canvas;
 using System;
 using System.Diagnostics;
 using System.Windows.Input;
 using Xamarin.Forms;
 
-namespace SureMeasure.View.OrderPage.Canvas
+namespace SureMeasure.Views.OrderPage.Canvas
 {
     public class PoolDimLabel : ContentView
     {

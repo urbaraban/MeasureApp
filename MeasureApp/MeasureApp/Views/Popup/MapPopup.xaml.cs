@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-namespace SureMeasure.View.OrderPage.Popup
+namespace SureMeasure.Views.OrderPage.Popup
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class MapPopup : Rg.Plugins.Popup.Pages.PopupPage

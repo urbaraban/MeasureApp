@@ -8,7 +8,7 @@ using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-namespace SureMeasure.View.OrderPage
+namespace SureMeasure.Views.OrderPage
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class AdressListPage : ContentPage

@@ -5,7 +5,7 @@ using System.Collections.ObjectModel;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-namespace SureMeasure.View.OrderPage.Popup
+namespace SureMeasure.Views.OrderPage.Popup
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class ImagePopUp : Rg.Plugins.Popup.Pages.PopupPage

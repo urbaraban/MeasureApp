@@ -1,6 +1,6 @@
 ﻿using DrawEngine.CadObjects;
 using SureMeasure.ShapeObj.Interface;
-using SureMeasure.View.Canvas;
+using SureMeasure.Views.Canvas;
 using System;
 using System.Collections.Generic;
 using System.Windows.Input;
@@ -13,6 +13,32 @@ namespace SureMeasure.ShapeObj.VisualObjects
     public partial class DotView : ContentView, IActiveObject
     {
         public CadPoint point => (CadPoint)this.BindingContext;
+
+        double IActiveObject.X
+        {
+            get => point.X;
+            set
+            {
+                point.X = value;
+                OnPropertyChanged("X");
+            }
+        }
+
+        double IActiveObject.Y
+        {
+            get => point.Y;
+            set
+            {
+                point.Y = value;
+                OnPropertyChanged("Y");
+            }
+        }
+
+        bool IActiveObject.ContainsPoint(Point InnerPoint) => 
+            (InnerPoint.X > TranslationX 
+            && InnerPoint.X < TranslationX + Width
+            && InnerPoint.Y > TranslationY 
+            && InnerPoint.Y < TranslationY + Height);
 
         public SheetMenu SheetMenu
         {
@@ -139,6 +165,12 @@ namespace SureMeasure.ShapeObj.VisualObjects
                 this.runtimer = false;
             }
         }
+
+        public void TapAction()
+        {
+            point.IsSelect = !point.IsSelect;
+        }
+
     }
 
 

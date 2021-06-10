@@ -20,9 +20,6 @@
             <visualobjects:LabelAngleConverter x:Key="LabelAngleConverter"/>
         </ResourceDictionary>
     </ContentView.Resources>
-    <ContentView.GestureRecognizers>
-        <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"/>
-    </ContentView.GestureRecognizers>
     <ContentView.Content>
         <Grid>
             <!--<Path Stroke="Red" StrokeThickness="4"

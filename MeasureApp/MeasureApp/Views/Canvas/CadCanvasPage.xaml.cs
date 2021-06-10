@@ -3,8 +3,8 @@ using DrawEngine.Constraints;
 using Plugin.Segmented.Control;
 using SureMeasure.Orders;
 using SureMeasure.Tools;
-using SureMeasure.View.Canvas;
-using SureMeasure.View.OrderPage.Canvas;
+using SureMeasure.Views.Canvas;
+using SureMeasure.Views.OrderPage.Canvas;
 using System;
 using System.Diagnostics;
 using System.Net;
@@ -14,7 +14,7 @@ using System.Windows.Input;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-namespace SureMeasure.View.OrderPage
+namespace SureMeasure.Views.OrderPage
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class CadCanvasPage : ContentPage
@@ -30,9 +30,9 @@ namespace SureMeasure.View.OrderPage
 
             AppShell.LenthUpdated += AppShell_LenthUpdated;
 
-
             DrawMethodSelecter.Children.Add(new SegmentedControlOption() { Text = "Step By Step", Item = DrawMethod.StepByStep });
             DrawMethodSelecter.Children.Add(new SegmentedControlOption() { Text = "From Point", Item = DrawMethod.FromPoint });
+            DrawMethodSelecter.Children.Add(new SegmentedControlOption() { Text = "Manual", Item = DrawMethod.Manual });
 
             if (this.MainCanvas.BindingContext != null)
             {
@@ -93,15 +93,6 @@ namespace SureMeasure.View.OrderPage
             }
         });
 
-
-
-        private void Switch_Toggled(object sender, ToggledEventArgs e)
-        {
-            if (this.Contour != null && sender is Xamarin.Forms.Switch sw)
-            {
-                this.Contour.SelectedDrawMethod = sw.IsToggled == true ? DrawMethod.FromPoint : DrawMethod.StepByStep;
-            }
-        }
 
         private void ShareBtn_Clicked(object sender, EventArgs e)
         {

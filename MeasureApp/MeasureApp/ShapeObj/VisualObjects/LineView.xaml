@@ -24,9 +24,6 @@
             <visualobjects:RoundConverter x:Key="RoundConverter"/>
         </ResourceDictionary>
     </ContentView.Resources>
-    <ContentView.GestureRecognizers>
-        <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"/>
-    </ContentView.GestureRecognizers>
     <ContentView.Content>
         <Grid x:Name="MainGrid">
             <Grid.ColumnDefinitions>

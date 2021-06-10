@@ -1,7 +1,7 @@
 ﻿using InTheHand.Bluetooth;
 using SureMeasure.ShapeObj;
 using SureMeasure.BLEDevice;
-using SureMeasure.View.OrderPage;
+using SureMeasure.Views.OrderPage;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

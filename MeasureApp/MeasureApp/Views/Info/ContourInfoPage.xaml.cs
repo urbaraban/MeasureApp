@@ -1,6 +1,6 @@
 ﻿using Rg.Plugins.Popup.Extensions;
 using SureMeasure.Orders;
-using SureMeasure.View.OrderPage.Popup;
+using SureMeasure.Views.OrderPage.Popup;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,7 +8,7 @@ using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
-namespace SureMeasure.View.OrderPage
+namespace SureMeasure.Views.OrderPage
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class ContourInfoPage : ContentPage

@@ -1,5 +1,5 @@
 ﻿using DrawEngine.CadObjects;
-using SureMeasure.View.Canvas;
+using SureMeasure.Views.Canvas;
 using System;
 using System.Globalization;
 using System.Linq;

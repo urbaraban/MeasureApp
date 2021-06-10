@@ -1,25 +1,19 @@
-﻿using DrawEngine.CadObjects;
-using DrawEngine.Constraints;
-using SureMeasure.ShapeObj;
-using System;
+﻿using System;
 using System.Globalization;
 using Xamarin.Forms;
 
-namespace SureMeasure.View.Canvas
+namespace SureMeasure.Views.OrderPage
 {
-
-    public class CadObjectConverter : IValueConverter
+    public class ToStringConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-           
-            return null;
+            return value.ToString();
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return null;
+            return value;
         }
     }
-
 }

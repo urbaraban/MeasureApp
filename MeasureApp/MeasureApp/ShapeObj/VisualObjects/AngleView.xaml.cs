@@ -1,7 +1,8 @@
 ﻿using DrawEngine.CadObjects;
 using DrawEngine.Constraints;
-using SureMeasure.View.Canvas;
-using SureMeasure.View.OrderPage;
+using SureMeasure.ShapeObj.Interface;
+using SureMeasure.Views.Canvas;
+using SureMeasure.Views.OrderPage;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -13,7 +14,7 @@ using Xamarin.Forms.Xaml;
 namespace SureMeasure.ShapeObj.VisualObjects
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class AngleView : ContentView
+    public partial class AngleView : ContentView, IActiveObject
     {
         private ConstraintAngle constraintAngle => (ConstraintAngle)this.BindingContext;
 
@@ -36,32 +37,13 @@ namespace SureMeasure.ShapeObj.VisualObjects
         }
 
 
-        private void TapGestureRecognizer_Tapped(object sender, EventArgs e) => TapManager();
-        private int taps = 0;
-        private bool runtimer = false;
-        private void TapManager()
-        {
-            taps += 1;
-            if (this.runtimer == false)
-            {
-                this.runtimer = true;
-                Device.StartTimer(TimeSpan.FromSeconds(0.5), () =>
-                {
-                    if (taps < 2)
-                    {
-                        constraintAngle.IsSelect = !constraintAngle.IsSelect;
-                    }
-                    else
-                    {
-                        this.SheetMenu.ShowMenu(this);
-                    }
+        bool IActiveObject.ContainsPoint(Point InnerPoint) =>
+    (InnerPoint.X > TranslationX
+    && InnerPoint.X < TranslationX + Width
+    && InnerPoint.Y > TranslationY
+    && InnerPoint.Y < TranslationY + Height);
 
-                    taps = 0;
-                    return false; // return true to repeat counting, false to stop timer
-                });
-                this.runtimer = false;
-            }
-        }
+        public void TapAction() { }
 
         private ICommand CallValueDialog => new Command(async () =>
         {
@@ -88,5 +70,8 @@ namespace SureMeasure.ShapeObj.VisualObjects
         {
             this.constraintAngle.TryRemove();
         });
+
+        double IActiveObject.X { get; set; }
+        double IActiveObject.Y { get; set; }
     }
 }

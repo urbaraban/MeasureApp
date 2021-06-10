@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage
-    x:Class="SureMeasure.View.OrderPage.CadCanvasPage"
+    x:Class="SureMeasure.Views.OrderPage.CadCanvasPage"
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:common="clr-namespace:SureMeasure.Common"
     xmlns:control="clr-namespace:Plugin.Segmented.Control;assembly=Plugin.Segmented"
-    xmlns:orderpage="clr-namespace:SureMeasure.View.OrderPage"
+    xmlns:orderpage="clr-namespace:SureMeasure.Views.OrderPage"
     xmlns:orders="clr-namespace:SureMeasure.Orders"
-    xmlns:shell="clr-namespace:SureMeasure" xmlns:canvas="clr-namespace:SureMeasure.View.Canvas"
+    xmlns:shell="clr-namespace:SureMeasure" xmlns:canvas="clr-namespace:SureMeasure.Views.Canvas"
     x:Name="DrawingPage"
     Title="Drawing"
     x:DataType="orders:Order"

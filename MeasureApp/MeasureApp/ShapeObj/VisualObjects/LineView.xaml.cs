@@ -1,16 +1,18 @@
 ﻿using DrawEngine.CadObjects;
 using DrawEngine.Constraints;
-using SureMeasure.View.Canvas;
-using SureMeasure.View.OrderPage;
+using SureMeasure.ShapeObj.Interface;
+using SureMeasure.Views.Canvas;
+using SureMeasure.Views.OrderPage;
 using System;
 using System.Windows.Input;
 using Xamarin.Forms;
+using Xamarin.Forms.Shapes;
 using Xamarin.Forms.Xaml;
 
 namespace SureMeasure.ShapeObj.VisualObjects
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class LineView : ContentView
+    public partial class LineView : ContentView, IActiveObject
     {
         private ConstraintLenth _lenthConstrait => (ConstraintLenth)this.BindingContext;
 
@@ -36,32 +38,24 @@ namespace SureMeasure.ShapeObj.VisualObjects
         }
 
 
-
-        private void TapGestureRecognizer_Tapped(object sender, EventArgs e) => TapManager();
-        private int taps = 0;
-        private bool runtimer = false;
-        private void TapManager()
+        bool IActiveObject.ContainsPoint(Point InnerPoint)
         {
-            taps += 1;
-            if (this.runtimer == false)
+            RotateTransform rotateTransform = new RotateTransform
             {
-                this.runtimer = true;
-                Device.StartTimer(TimeSpan.FromSeconds(0.5), () =>
-                {
-                    if (taps < 2)
-                    {
-                        _lenthConstrait.IsSelect = !_lenthConstrait.IsSelect;
-                    }
-                    else
-                    {
-                        this.SheetMenu.ShowMenu(this);
-                    }
+                CenterX = TranslationX,
+                CenterY = TranslationY,
+                Angle = -this.Rotation
+            };
+            Point transformPoint = rotateTransform.Value.Transform(InnerPoint);
+            return (transformPoint.X > TranslationX
+            && transformPoint.X < TranslationX + Width
+            && transformPoint.Y > TranslationY
+            && transformPoint.Y < TranslationY + Height);
+        }
 
-                    taps = 0;
-                    return false; // return true to repeat counting, false to stop timer
-                });
-                this.runtimer = false;
-            }
+        public void TapAction()
+        {
+            this._lenthConstrait.IsSelect = !this._lenthConstrait.IsSelect;
         }
 
         #region Command
@@ -110,6 +104,23 @@ namespace SureMeasure.ShapeObj.VisualObjects
         {
             this._lenthConstrait.MakeSplit();
         });
+
+        double IActiveObject.X 
+        { 
+            get => this._lenthConstrait.Point1.X;
+            set
+            {
+                this._lenthConstrait.Point1.X = value;
+            }
+        }
+        double IActiveObject.Y 
+        {
+            get => this._lenthConstrait.Point1.Y;
+            set
+            {
+                this._lenthConstrait.Point1.Y = value;
+            }
+        }
         #endregion
     }
 
