@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using TouchTracking;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -255,8 +256,8 @@ namespace SureMeasure.Views.Canvas
             this.GroupLayout.TranslationX = -((this.GroupLayout.Width * (1 - this.GroupLayout.Scale)) / 2) -
                 (point.X * this.GroupLayout.Scale - this.MainLayout.Width / 2);
             this.GroupLayout.TranslationY = -((this.GroupLayout.Height * (1 - this.GroupLayout.Scale)) / 2) -
-                (point.Y * this.GroupLayout.Scale - this.MainLayout.Height / 2);
-        }
+                (point.Y * this.GroupLayout.Scale - this.MainLayout.Height / 2);     
+         }
 
         public ICommand DraggingStartObject => new Command(() =>
         {
@@ -345,7 +346,7 @@ namespace SureMeasure.Views.Canvas
         }
 
         private bool wasmove = false;
-        private Point startPoint = new Point();
+        private TouchTrackingPoint startPoint;
         private IActiveObject SelectActiveObject
         {
             get => selectAO == null ? this : selectAO;
@@ -355,33 +356,80 @@ namespace SureMeasure.Views.Canvas
             }
         }
         private IActiveObject selectAO;
-    
+        private Dictionary<long, TouchTrackingPoint> touchDictionary = new Dictionary<long, TouchTrackingPoint>();
+        private double pinchLenth;
+        private Point AnchorPoint;
+        private double startScale;
+
         private void TouchEffect_TouchAction(object sender, TouchTracking.TouchActionEventArgs args)
         {
+           // Console.WriteLine(args.Id);
             switch (args.Type)
             {
-                case TouchTracking.TouchActionType.Pressed:
-                    startPoint = new Point(args.Location.X, args.Location.Y);
-                    SelectActiveObject = GetActivObjectFromPoint(startPoint);
-                    break;
-                case TouchTracking.TouchActionType.Moved:
-                    wasmove = true;
-                    SelectActiveObject.X += (args.Location.X - startPoint.X) / this.GroupLayout.Scale;
-                    SelectActiveObject.Y += (args.Location.Y - startPoint.Y) / this.GroupLayout.Scale;
-                    startPoint = new Point(args.Location.X, args.Location.Y);
-                    break;
-                case TouchTracking.TouchActionType.Cancelled:
-                case TouchTracking.TouchActionType.Released:
-                    if (wasmove == true)
+                case TouchActionType.Pressed:
+
+                    if (touchDictionary.ContainsKey(args.Id) == false)
                     {
-                        SelectActiveObject = null;
+                        touchDictionary.Add(args.Id, args.Location);
+                    }
+
+                    if (touchDictionary.Count == 1)
+                    {
+                        startPoint = args.Location;
+                        SelectActiveObject = GetActivObjectFromPoint(startPoint);
+                    }
+                    else if (touchDictionary.Count > 1)
+                    {
+                        TouchTrackingPoint point2 = touchDictionary[(args.Id + 1) % touchDictionary.Count];
+                        pinchLenth = PtPLenth(args.Location, point2);
+                        AnchorPoint = ConvertMainPoint(new TouchTrackingPoint((args.Location.X + point2.X) / 2, (args.Location.Y + point2.Y) / 2));
+                        startScale = this.GroupLayout.Scale;
+                    }
+                    break;
+                case TouchActionType.Moved:
+                    if (touchDictionary.Count == 1)
+                    {
+                        wasmove = true;
+                        SelectActiveObject.X += (args.Location.X - startPoint.X) / this.GroupLayout.Scale;
+                        SelectActiveObject.Y += (args.Location.Y - startPoint.Y) / this.GroupLayout.Scale;
+                        startPoint = args.Location;
+                    }
+                    else if (touchDictionary.Count >= 2)
+                    {
+                       // Console.WriteLine(PtPLenth(args.Location, touchDictionary[(args.Id + 1) % touchDictionary.Count]) / pinchLenth);
+                       this.GroupLayout.Scale = startScale * PtPLenth(args.Location, touchDictionary[(args.Id + 1) % touchDictionary.Count]) / pinchLenth;
+                        TranslateToPoint(AnchorPoint);
+                    }
+                    break;
+                case TouchActionType.Cancelled:
+                case TouchActionType.Released:
+                    if (touchDictionary.Count == 1)
+                    {
+                        if (wasmove == true)
+                        {
+                            SelectActiveObject = null;
+                        }
+                        else
+                        {
+                            TapManager();
+                        }
                     }
                     else
                     {
-                        TapManager();
+                        this.GroupLayout.AnchorX = 0.5;
+                        this.GroupLayout.AnchorY = 0.5;
+                    }
+                    if (touchDictionary.ContainsKey(args.Id))
+                    {
+                        touchDictionary.Remove(args.Id);
                     }
                     wasmove = false;
                     break;
+            }
+
+            double PtPLenth(TouchTrackingPoint cadPoint1, TouchTrackingPoint cadPoint2)
+            {
+                return Math.Sqrt(Math.Pow(cadPoint2.X - cadPoint1.X, 2) + Math.Pow(cadPoint2.Y - cadPoint1.Y, 2));
             }
         }
 
@@ -412,7 +460,7 @@ namespace SureMeasure.Views.Canvas
             }
         }
 
-        private IActiveObject GetActivObjectFromPoint(Point innerPoint)
+        private IActiveObject GetActivObjectFromPoint(TouchTrackingPoint innerPoint)
         {
             Point ObjectLayoutPoint = ConvertMainPoint(innerPoint);
             for (int i = this.ObjectLayout.Children.Count - 1; i > -1; i -= 1)
@@ -428,14 +476,14 @@ namespace SureMeasure.Views.Canvas
             return this;
         }
 
-        private Point ConvertMainPoint(Point innerPoint)
+        private Point ConvertMainPoint(TouchTrackingPoint innerPoint)
         {
             double FromCenterPosX = ((innerPoint.X - this.GroupLayout.TranslationX) -
             (this.GroupLayout.Width * (1 - this.GroupLayout.Scale) / 2)) / this.GroupLayout.Scale;
             double FromCenterPosY = ((innerPoint.Y - this.GroupLayout.TranslationY) -
                 (this.GroupLayout.Height * (1 - this.GroupLayout.Scale) / 2)) / this.GroupLayout.Scale;
 
-            return new Point(FromCenterPosX, FromCenterPosY);
+            return new Point((float)FromCenterPosX, (float)FromCenterPosY);
         }
 
         public void TapAction()
