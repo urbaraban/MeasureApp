@@ -217,7 +217,7 @@ namespace SureMeasure
                 dxfFile.Header.DefaultDrawingUnits = DxfUnits.Millimeters;
                 dxfFile.Header.AlternateDimensioningUnits = DxfUnitFormat.Decimal;
                 dxfFile.ViewPorts.Clear();
-                foreach (ConstraintLenth constraintLenth in contour.GetLenths)
+                foreach (ConstraintLenth constraintLenth in contour.GetLenths(false))
                 {
                     if (constraintLenth.IsSupport == false)
                     {
