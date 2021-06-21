@@ -10,11 +10,11 @@ using Xamarin.Forms.Xaml;
 namespace SureMeasure.ShapeObj.VisualObjects
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class DotView : ContentView, IActiveObject
+    public partial class DotView : ContentView, ITouchObject, IActiveObject, IMoveObject
     {
         public CadPoint point => (CadPoint)this.BindingContext;
 
-        double IActiveObject.X
+        public double X
         {
             get => point.X;
             set
@@ -24,7 +24,7 @@ namespace SureMeasure.ShapeObj.VisualObjects
             }
         }
 
-        double IActiveObject.Y
+        public double Y
         {
             get => point.Y;
             set
@@ -34,11 +34,66 @@ namespace SureMeasure.ShapeObj.VisualObjects
             }
         }
 
-        bool IActiveObject.ContainsPoint(Point InnerPoint) => 
+        public bool IsSelect
+        {
+            get => this.point.IsSelect;
+            set
+            {
+                this.point.IsSelect = value;
+                OnPropertyChanged("ObjectStatus");
+            }
+        }
+
+        public bool IsSupport
+        {
+            get => this.point.IsSupport;
+            set
+            {
+                this.point.IsSupport = value;
+                OnPropertyChanged("ObjectStatus");
+            }
+        }
+
+        public bool IsFix
+        {
+            get => this.point.IsFix;
+            set
+            {
+                this.point.IsFix = value;
+                OnPropertyChanged("ObjectStatus");
+            }
+        }
+
+        public bool IsBase
+        {
+            get => this.point.IsBase;
+            set
+            {
+                this.point.IsBase = value;
+                OnPropertyChanged("ObjectStatus");
+            }
+        }
+
+        bool ITouchObject.ContainsPoint(Point InnerPoint) => 
             (InnerPoint.X > TranslationX 
             && InnerPoint.X < TranslationX + Width
             && InnerPoint.Y > TranslationY 
             && InnerPoint.Y < TranslationY + Height);
+
+        public ObjectStatus ObjectStatus
+        {
+            get
+            {
+                if (this.point != null)
+                {
+                    if (this.IsSelect == true) return ObjectStatus.Select;
+                    else if (this.IsBase == true) return ObjectStatus.Base;
+                    else if (this.IsFix == true) return ObjectStatus.Fix;
+                    else if (this.IsSupport == true) return ObjectStatus.Support;
+                }
+                return ObjectStatus.Regular;
+            }
+        }
 
         public SheetMenu SheetMenu
         {
@@ -65,31 +120,24 @@ namespace SureMeasure.ShapeObj.VisualObjects
             });
         }
 
-        private void PanGestureRecognizer_PanUpdated(object sender, PanUpdatedEventArgs e)
-        { 
-            if (e.StatusType == GestureStatus.Started)
+        protected override void OnBindingContextChanged()
+        {
+            base.OnBindingContextChanged();
+            if (this.BindingContext is CadPoint cadPoint)
             {
-                CanvasView.RunningGestureObject.Add(this);
-                Console.WriteLine($"Start PanGesture Dot {sender} TouchID {e.GestureId}");
+                cadPoint.PropertyChanged += CadPoint_PropertyChanged;
             }
-            if (e.StatusType == GestureStatus.Running)
-            {
-                Console.WriteLine($"PanGesture Dot DeltaX {e.TotalX} DeltaY {e.TotalY}");
-                this.point.X += e.TotalX;
-                this.point.Y += e.TotalY;
-            }
-            if (e.StatusType == GestureStatus.Completed)
-            {
-                CanvasView.RunningGestureObject.Remove(this);
-                Console.WriteLine($"Completed PanGesture Dot {sender} TouchID {e.GestureId}");
-            }
+        }
 
+        private void CadPoint_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            OnPropertyChanged("ObjectStatus");
         }
 
         #region Command
         private ICommand Fix => new Command(() =>
         {
-            point.IsFix = !point.IsFix;
+            this.IsFix = !this.IsFix;
         });
         private ICommand Remove => new Command(() =>
         {
@@ -97,12 +145,12 @@ namespace SureMeasure.ShapeObj.VisualObjects
         });
         private ICommand LastPoint => new Command(() =>
         {
-            point.IsSelect = true;
+            this.IsSelect = true;
         });
 
         private ICommand BasePoint => new Command(() =>
         {
-            point.IsBase = true;
+            this.IsBase = true;
         });
 
         private ICommand Split => new Command(() =>
@@ -111,64 +159,10 @@ namespace SureMeasure.ShapeObj.VisualObjects
         });
         #endregion
 
-        private void DropGesture_Drop(object sender, DropEventArgs e)
-        { 
-            object Obj = this;
-            while((Obj is CanvasView) == false)
-            {
-                if (Obj is Element element)
-                {
-                    Obj = element.Parent;
-                }
-            }
-
-            if (Obj is CanvasView canvasView)
-            {
-                Tuple<object, object> tuple = new Tuple<object, object>(this.point, e.Data.Properties["Object"]);
-                canvasView.DropComplit.Execute(tuple);
-            }
-        }
-
-        private void DragGesture_DragStarting(object sender, DragStartingEventArgs e)
-        {
-            e.Data.Properties.Add("Object", this.point);
-        }
-
-        private void TapGestureRecognizer_Tapped(object sender, EventArgs e)
-        {
-            TapManager();
-        }
-
-        private int taps = 0;
-        private bool runtimer = false;
-
-        private void TapManager()
-        {
-            taps += 1;
-            if (this.runtimer == false)
-            {
-                this.runtimer = true;
-                Device.StartTimer(TimeSpan.FromSeconds(0.5), () =>
-                {
-                    if (taps < 2)
-                    {
-                        point.IsSelect = !point.IsSelect;
-                    }
-                    else
-                    {
-                        this.SheetMenu.ShowMenu(this);
-                    }
-
-                    taps = 0;
-                    return false; // return true to repeat counting, false to stop timer
-                });
-                this.runtimer = false;
-            }
-        }
 
         public void TapAction()
         {
-            point.IsSelect = !point.IsSelect;
+            this.IsSelect = !this.IsSelect;
         }
 
     }

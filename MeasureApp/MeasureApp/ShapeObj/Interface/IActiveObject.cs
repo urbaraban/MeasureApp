@@ -5,14 +5,25 @@ namespace SureMeasure.ShapeObj.Interface
 {
     public interface IActiveObject
     {
-        SheetMenu SheetMenu { get; set; }
+        bool IsSelect { get; set; }
 
-        double X { get; set; }
+        bool IsFix { get; set; }
 
-        double Y { get; set; }
+        bool IsBase { get; set; }
 
-        bool ContainsPoint(Point InnerPoint);
+        bool IsSupport { get; set; }
 
-        void TapAction();
+
+
+        public ObjectStatus ObjectStatus { get; }
+    }
+
+    public enum ObjectStatus
+    {
+        Regular,
+        Base,
+        Select,
+        Fix,
+        Support
     }
 }

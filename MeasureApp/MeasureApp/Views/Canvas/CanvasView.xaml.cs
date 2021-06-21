@@ -16,7 +16,7 @@ using Xamarin.Forms.Xaml;
 namespace SureMeasure.Views.Canvas
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class CanvasView : ContentView, IActiveObject
+    public partial class CanvasView : ContentView, IMoveObject
     {
         public static Point ZeroPoint = new Point(5000, 5000);
         public static List<object> RunningGestureObject = new List<object>();
@@ -69,7 +69,6 @@ namespace SureMeasure.Views.Canvas
             });
         }
 
-        bool IActiveObject.ContainsPoint(Point InnerPoint) => true;
 
         /// <summary>
         /// Add object on Canvas. 
@@ -77,11 +76,6 @@ namespace SureMeasure.Views.Canvas
         /// <param name="Object"></param>
         private async Task<object> Add(object Object)
         {
-            if (Object is ICanvasObject canvasObject)
-            {
-                canvasObject.Removed += CanvasObject_Removed;
-            }
-
             MainThread.BeginInvokeOnMainThread(() =>
             {
                 if (Object is LineView || Object is AngleView)
@@ -179,11 +173,6 @@ namespace SureMeasure.Views.Canvas
         /// <param name="cadObject">select object</param>
         public void Remove(object sender)
         {
-            if (sender is ICanvasObject canvasObject)
-            {
-                canvasObject.Removed -= CanvasObject_Removed;
-            }
-
             MainThread.BeginInvokeOnMainThread(() =>
             {
                 if (sender is ContentView visualLine)
@@ -243,10 +232,10 @@ namespace SureMeasure.Views.Canvas
                     {
                         if (visualElement is DotView dotView)
                         {
-                            minX = Math.Min(minX, dotView.point.X + CanvasView.ZeroPoint.X);
-                            maxX = Math.Max(maxX, dotView.point.X + CanvasView.ZeroPoint.X);
-                            minY = Math.Min(minY, dotView.point.Y + CanvasView.ZeroPoint.Y);
-                            maxY = Math.Max(maxY, dotView.point.Y + CanvasView.ZeroPoint.Y);
+                            minX = Math.Min(minX, dotView.X + CanvasView.ZeroPoint.X);
+                            maxX = Math.Max(maxX, dotView.X + CanvasView.ZeroPoint.X);
+                            minY = Math.Min(minY, dotView.Y + CanvasView.ZeroPoint.Y);
+                            maxY = Math.Max(maxY, dotView.Y + CanvasView.ZeroPoint.Y);
                         }
                     }
                     double scale = Math.Min(this.MainLayout.Width / (maxX - minX), this.MainLayout.Height / (maxY - minY));
@@ -314,27 +303,27 @@ namespace SureMeasure.Views.Canvas
         }
         protected SheetMenu _sheetMenu;
 
-        double IActiveObject.X
+        double IMoveObject.X
         {
             get => this.GroupLayout.TranslationX;
             set => this.GroupLayout.TranslationX = value;
         }
-        double IActiveObject.Y
+        double IMoveObject.Y
         {
             get => this.GroupLayout.TranslationY;
             set => this.GroupLayout.TranslationY = value;
         }
 
         private TouchTrackingPoint startPoint;
-        private IActiveObject SelectActiveObject
+        private IMoveObject SelectMoveObject
         {
-            get => selectAO == null ? this : selectAO;
+            get => selectMO == null ? this : selectMO;
             set
             {
-                selectAO = value;
+                selectMO = value;
             }
         }
-        private IActiveObject selectAO;
+        private IMoveObject selectMO;
         private Dictionary<long, TouchTrackingPoint> touchDictionary = new Dictionary<long, TouchTrackingPoint>();
         private double pinchLenth;
         private Point AnchorPoint;
@@ -360,9 +349,9 @@ namespace SureMeasure.Views.Canvas
                             // do something every 2 seconds
                             Device.BeginInvokeOnMainThread(() =>
                             {
-                                if (this.SelectActiveObject == this && touchDictionary.Count == 1)
+                                if (this.SelectMoveObject == this && touchDictionary.Count == 1)
                                 {
-                                    this.DragObjects = GetActivObjectFromPoint(startPoint);
+                                    this.DragObjects = GetActiveObjectFromPoint(startPoint);
                                 }
                             });
                             return false; // runs again, or false to stop
@@ -379,14 +368,14 @@ namespace SureMeasure.Views.Canvas
                 case TouchActionType.Moved:
                     if (touchDictionary.Count == 1)
                     {
-                        if (this.DragObjects == null && SelectActiveObject == this)
+                        if (this.DragObjects == null && SelectMoveObject == this)
                         {
-                            SelectActiveObject = GetActivObjectFromPoint(startPoint);
+                            SelectMoveObject = GetMoveObjectFromPoint(startPoint);
                         }
                         if (this.DragObjects == null)
                         {
-                            SelectActiveObject.X += (args.Location.X - startPoint.X) * this.GroupLayout.Scale;
-                            SelectActiveObject.Y += (args.Location.Y - startPoint.Y) * this.GroupLayout.Scale;
+                            SelectMoveObject.X += (args.Location.X - startPoint.X) * (SelectMoveObject == this ? 1 : this.GroupLayout.Scale);
+                            SelectMoveObject.Y += (args.Location.Y - startPoint.Y) * (SelectMoveObject == this ? 1 : this.GroupLayout.Scale);
                             startPoint = args.Location;
                         }
                     }
@@ -403,18 +392,18 @@ namespace SureMeasure.Views.Canvas
                     {
                         if (DragObjects == null)
                         {
-                            if (SelectActiveObject == this)
+                            if (SelectMoveObject == this)
                             {
-                                TapManager(GetActivObjectFromPoint(args.Location));
+                                TapManager((ITouchObject)GetActiveObjectFromPoint(args.Location));
                             }
                             else
                             {
-                                SelectActiveObject = null;
+                                SelectMoveObject = null;
                             }
                         }
                         else
                         {
-                            IActiveObject activeObject = GetActivObjectFromPoint(args.Location, DragObjects);
+                            IActiveObject activeObject = GetActiveObjectFromPoint(args.Location, DragObjects);
                             if (activeObject != null)
                             {
                                 DragDropManager(activeObject, dragobject);
@@ -444,7 +433,7 @@ namespace SureMeasure.Views.Canvas
         private int taps = 0;
         private bool runtimer = false;
 
-        private  void TapManager(IActiveObject activeObject)
+        private  void TapManager(ITouchObject activeObject)
         {
             if (activeObject != null)
             {
@@ -460,7 +449,7 @@ namespace SureMeasure.Views.Canvas
                         }
                         else
                         {
-                            activeObject.SheetMenu.ShowMenu(SelectActiveObject);
+                            activeObject.SheetMenu.ShowMenu(activeObject);
                         }
 
                         taps = 0;
@@ -471,14 +460,30 @@ namespace SureMeasure.Views.Canvas
             }
         }
 
-        private IActiveObject GetActivObjectFromPoint(TouchTrackingPoint innerPoint, IActiveObject IgnoreObject = null)
+        private IMoveObject GetMoveObjectFromPoint(TouchTrackingPoint innerPoint, IMoveObject IgnoreObject = null)
         {
             Point ObjectLayoutPoint = ConvertMainPoint(innerPoint);
             for (int i = this.ObjectLayout.Children.Count - 1; i > -1; i -= 1)
             {
-                if (this.ObjectLayout.Children[i] is IActiveObject activeObject)
+                if (this.ObjectLayout.Children[i] is ITouchObject touchObject && this.ObjectLayout.Children[i] is IMoveObject moveObject)
                 {
-                    if (activeObject.ContainsPoint(ObjectLayoutPoint) == true && activeObject != IgnoreObject)
+                    if (touchObject.ContainsPoint(ObjectLayoutPoint) == true && moveObject != IgnoreObject)
+                    {
+                        return moveObject;
+                    }
+                }
+            }
+            return null;
+        }
+
+        private IActiveObject GetActiveObjectFromPoint(TouchTrackingPoint innerPoint, IActiveObject IgnoreObject = null)
+        {
+            Point ObjectLayoutPoint = ConvertMainPoint(innerPoint);
+            for (int i = this.ObjectLayout.Children.Count - 1; i > -1; i -= 1)
+            {
+                if (this.ObjectLayout.Children[i] is ITouchObject touchObject && this.ObjectLayout.Children[i] is IActiveObject activeObject)
+                {
+                    if (touchObject.ContainsPoint(ObjectLayoutPoint) == true && activeObject != IgnoreObject)
                     {
                         return activeObject;
                     }

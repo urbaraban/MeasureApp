@@ -4,6 +4,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
              xmlns:constraints="clr-namespace:DrawEngine.Constraints;assembly=2DrawContourEngine" 
              xmlns:visualobjects="clr-namespace:SureMeasure.ShapeObj.VisualObjects"
+             xmlns:canvas="clr-namespace:SureMeasure.Views.Canvas"
              x:Class="SureMeasure.ShapeObj.VisualObjects.LineView"
              x:DataType="constraints:ConstraintLenth"
              AnchorX="0"
@@ -36,9 +37,10 @@
                 VerticalOptions="Center"
                 Grid.ColumnSpan="3" 
                 Grid.Column="0"
-                StrokeThickness="{Binding Source={RelativeSource AncestorType={x:Type AbsoluteLayout}, AncestorLevel=2}, Path=Scale, Converter={StaticResource ThinkessConverter}}"
+                StrokeThickness="{Binding Source={RelativeSource AncestorType={x:Type canvas:CanvasView}, AncestorLevel=0}, Path=CommonScale, Converter={StaticResource ThinkessConverter}}"
                 X1="0" Y1="0" X2="{Binding Value}" Y2="0" 
-                  Stroke="{Binding ObjectStatus, Converter={StaticResource StatusColorConverter}}"
+                  Stroke="{Binding Source={RelativeSource AncestorLevel=1, AncestorType={x:Type visualobjects:LineView}},
+                    Path=ObjectStatus, Converter={StaticResource StatusColorConverter}}"
                   StrokeDashArray="{Binding IsSupport, Converter={StaticResource SupportDashConverter}}"/>
 
             <Frame Grid.Column="1" Grid.ColumnSpan="1" BackgroundColor="Green" 

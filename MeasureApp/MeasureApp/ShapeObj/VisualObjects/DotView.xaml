@@ -33,8 +33,9 @@
             <Ellipse   
                 VerticalOptions="Center" HorizontalOptions="Center"
                  Fill="White"
-                Stroke="{Binding ObjectStatus, Converter={StaticResource StatusColorConverter}}"
-                  StrokeThickness="4"
+                 Stroke="{Binding Source={RelativeSource AncestorLevel=1, AncestorType={x:Type visualobjects:DotView}},
+                    Path=ObjectStatus, Converter={StaticResource StatusColorConverter}}"
+                 StrokeThickness="4"
                 HeightRequest="30" WidthRequest="30"/>
             <Label HorizontalOptions="Center" VerticalOptions="Center" Text="{Binding ID}" ScaleY="-1"/>
         </Grid>

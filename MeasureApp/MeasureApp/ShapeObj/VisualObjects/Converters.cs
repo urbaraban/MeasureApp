@@ -1,4 +1,5 @@
 ﻿using DrawEngine.CadObjects;
+using SureMeasure.ShapeObj.Interface;
 using SureMeasure.Views.Canvas;
 using System;
 using System.Globalization;
@@ -57,9 +58,10 @@ namespace SureMeasure.ShapeObj.VisualObjects
             if (value is ObjectStatus objectStatus)
             {
                 if (objectStatus == ObjectStatus.Select) return Brush.Orange;
-                if (objectStatus == ObjectStatus.Base) return Brush.Red;
-                if (objectStatus == ObjectStatus.Fix) return Brush.Gray;
-                if (objectStatus == ObjectStatus.Regular) return Brush.Blue;
+                else if (objectStatus == ObjectStatus.Base) return Brush.Red;
+                else if(objectStatus == ObjectStatus.Fix) return Brush.Gray;
+                else if(objectStatus == ObjectStatus.Support) return Brush.LightGray;
+                else if(objectStatus == ObjectStatus.Regular) return Brush.Blue;
             }
             return null;
         }

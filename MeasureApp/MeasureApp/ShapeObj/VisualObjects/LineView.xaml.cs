@@ -1,9 +1,6 @@
-﻿using DrawEngine.CadObjects;
-using DrawEngine.Constraints;
+﻿using DrawEngine.Constraints;
 using SureMeasure.ShapeObj.Interface;
-using SureMeasure.Views.Canvas;
 using SureMeasure.Views.OrderPage;
-using System;
 using System.Windows.Input;
 using Xamarin.Forms;
 using Xamarin.Forms.Shapes;
@@ -12,8 +9,63 @@ using Xamarin.Forms.Xaml;
 namespace SureMeasure.ShapeObj.VisualObjects
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class LineView : ContentView, IActiveObject
+    public partial class LineView : ContentView, IActiveObject, IMoveObject, ITouchObject
     {
+        public bool IsSelect
+        {
+            get => this._lenthConstrait.IsSelect;
+            set
+            {
+                this._lenthConstrait.IsSelect = value;
+                OnPropertyChanged("ObjectStatus");
+            }
+        }
+
+        public bool IsFix
+        {
+            get => this._lenthConstrait.IsFix;
+            set
+            {
+                this._lenthConstrait.IsFix = value;
+                OnPropertyChanged("ObjectStatus");
+            }
+        }
+
+        public bool IsBase
+        {
+            get => this._lenthConstrait.IsBase;
+            set
+            {
+                this._lenthConstrait.IsBase = value;
+                OnPropertyChanged("ObjectStatus");
+            }
+        }
+
+        public bool IsSupport
+        {
+            get => this._lenthConstrait.IsSupport;
+            set
+            {
+                this._lenthConstrait.IsSupport = value;
+                OnPropertyChanged("ObjectStatus");
+            }
+        }
+
+        public ObjectStatus ObjectStatus
+        {
+            get
+            {
+                if (this._lenthConstrait != null)
+                {
+                    if (this.IsSelect == true) return ObjectStatus.Select;
+                    else if (this.IsBase == true) return ObjectStatus.Base;
+                    else if (this.IsFix == true) return ObjectStatus.Fix;
+                    else if (this.IsSupport == true) return ObjectStatus.Support;
+                }
+                return ObjectStatus.Regular;
+            }
+        }
+
         private ConstraintLenth _lenthConstrait => (ConstraintLenth)this.BindingContext;
 
         public virtual SheetMenu SheetMenu { get => this._sheetMenu; set => this._sheetMenu = value; }
@@ -37,8 +89,21 @@ namespace SureMeasure.ShapeObj.VisualObjects
             });
         }
 
+        protected override void OnBindingContextChanged()
+        {
+            base.OnBindingContextChanged();
+            if (this.BindingContext is ConstraintLenth constraintLenth)
+            {
+                constraintLenth.PropertyChanged += ConstraintLenth_PropertyChanged; ;
+            }
+        }
 
-        bool IActiveObject.ContainsPoint(Point InnerPoint)
+        private void ConstraintLenth_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            OnPropertyChanged("ObjectStatus");
+        }
+
+        bool ITouchObject.ContainsPoint(Point InnerPoint)
         {
             RotateTransform rotateTransform = new RotateTransform
             {
@@ -49,13 +114,13 @@ namespace SureMeasure.ShapeObj.VisualObjects
             Point transformPoint = rotateTransform.Value.Transform(InnerPoint);
             return (transformPoint.X > TranslationX
             && transformPoint.X < TranslationX + Width
-            && transformPoint.Y > TranslationY
+            && transformPoint.Y > TranslationY - Height / 4
             && transformPoint.Y < TranslationY + Height);
         }
 
         public void TapAction()
         {
-            this._lenthConstrait.IsSelect = !this._lenthConstrait.IsSelect;
+            this.IsSelect = !this.IsSelect;
         }
 
         #region Command
@@ -77,7 +142,7 @@ namespace SureMeasure.ShapeObj.VisualObjects
         });
         private ICommand SupportLine => new Command(() =>
         {
-            this._lenthConstrait.IsSupport = !this._lenthConstrait.IsSupport;
+            this.IsSupport = !this.IsSupport;
         });
         private ICommand Verical => new Command(() =>
         {
@@ -104,8 +169,8 @@ namespace SureMeasure.ShapeObj.VisualObjects
         {
             this._lenthConstrait.MakeSplit();
         });
-
-        double IActiveObject.X 
+        #endregion
+        double IMoveObject.X 
         { 
             get => this._lenthConstrait.Point1.X;
             set
@@ -113,7 +178,7 @@ namespace SureMeasure.ShapeObj.VisualObjects
                 this._lenthConstrait.Point1.X = value;
             }
         }
-        double IActiveObject.Y 
+        double IMoveObject.Y 
         {
             get => this._lenthConstrait.Point1.Y;
             set
@@ -121,7 +186,7 @@ namespace SureMeasure.ShapeObj.VisualObjects
                 this._lenthConstrait.Point1.Y = value;
             }
         }
-        #endregion
+
     }
 
 }
