@@ -9,7 +9,7 @@ using Xamarin.Forms.Xaml;
 namespace SureMeasure.ShapeObj.VisualObjects
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class LineView : ContentView, IActiveObject, IMoveObject, ITouchObject
+    public partial class LineView : ContentView, IStatusObject, IMoveObject, ITouchObject
     {
         public bool IsSelect
         {

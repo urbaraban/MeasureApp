@@ -3,7 +3,7 @@ using Xamarin.Forms;
 
 namespace SureMeasure.ShapeObj.Interface
 {
-    public interface IActiveObject
+    public interface IStatusObject
     {
         bool IsSelect { get; set; }
 
@@ -12,8 +12,6 @@ namespace SureMeasure.ShapeObj.Interface
         bool IsBase { get; set; }
 
         bool IsSupport { get; set; }
-
-
 
         public ObjectStatus ObjectStatus { get; }
     }

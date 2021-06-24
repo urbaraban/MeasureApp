@@ -16,12 +16,14 @@ using Xamarin.Forms.Xaml;
 namespace SureMeasure.Views.Canvas
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class CanvasView : ContentView, IMoveObject
+    public partial class CanvasView : ContentView, IMoveObject, ITouchObject
     {
         public static Point ZeroPoint = new Point(5000, 5000);
         public static List<object> RunningGestureObject = new List<object>();
 
-        private IActiveObject DragObjects
+        bool ITouchObject.ContainsPoint(Point InnerPoint) => true;
+
+        private IStatusObject DragObjects
         {
             get => dragobject;
             set
@@ -30,7 +32,7 @@ namespace SureMeasure.Views.Canvas
                 OnPropertyChanged("CommonScale");
             }
         }
-        private IActiveObject dragobject;
+        private IStatusObject dragobject;
 
         private Contour Contour
         {
@@ -121,7 +123,7 @@ namespace SureMeasure.Views.Canvas
             return null;
         }
 
-        private void DragDropManager(IActiveObject  activeObject1, IActiveObject activeObject2)
+        private void DragDropManager(ITouchObject activeObject1, IStatusObject activeObject2)
         {
             if (activeObject1 != activeObject2)
             {
@@ -143,6 +145,25 @@ namespace SureMeasure.Views.Canvas
                     });
 
                     sheetMenu.ShowMenu(this);
+                }
+                else if (activeObject1 is CanvasView canvasView && activeObject2 is DotView dotView)
+                {
+                    Point point = ConvertMainPoint(TouchPoint);
+                    CadPoint cadPoint = new CadPoint(point.X - CanvasView.ZeroPoint.X, point.Y - CanvasView.ZeroPoint.Y);
+                    this.Contour.Add(new ConstraintLenth(dotView.point, cadPoint, -1));
+                    this.Contour.Add(cadPoint);
+
+
+                    /*ICommand ConnectPoint = new Command(async () =>
+                    {
+                       
+                    });
+
+                    SheetMenu sheetMenu = new SheetMenu(new List<SheetMenuItem>() {
+                        new SheetMenuItem(ConnectPoint, "{CONNECT_POINT}"),
+                    });
+
+                    sheetMenu.ShowMenu(this);*/
                 }
             }
         }
@@ -173,24 +194,22 @@ namespace SureMeasure.Views.Canvas
         /// <param name="cadObject">select object</param>
         public void Remove(object sender)
         {
+            View view = FindViewByCadObject(sender);
+
             MainThread.BeginInvokeOnMainThread(() =>
             {
-                if (sender is ContentView visualLine)
-                {
-                    this.ObjectLayout.Children.Remove(visualLine);
-                }
-                if (sender is AbsoluteLayout layout)
-                {
-                    this.GroupLayout.Children.Remove(layout);
-                }
+                this.ObjectLayout.Children.Remove(view);
             });
         }
 
-        private void CanvasObject_Removed(object sender, bool e)
+        private View FindViewByCadObject(object cadObject)
         {
-            Remove(sender);
+            foreach (View view in this.ObjectLayout.Children)
+            {
+                if (view.BindingContext == cadObject) return view;
+            }
+            return null;
         }
-
 
         private void CanvasView_BindingContextChanged(object sender, EventArgs e)
         {
@@ -216,7 +235,6 @@ namespace SureMeasure.Views.Canvas
 
         public async Task VisualClear()
         {
-            // this.AnchorLayout.Children.Clear();
             this.ObjectLayout.Children.Clear();
         }
 
@@ -314,7 +332,7 @@ namespace SureMeasure.Views.Canvas
             set => this.GroupLayout.TranslationY = value;
         }
 
-        private TouchTrackingPoint startPoint;
+        private TouchTrackingPoint TouchPoint;
         private IMoveObject SelectMoveObject
         {
             get => selectMO == null ? this : selectMO;
@@ -326,8 +344,8 @@ namespace SureMeasure.Views.Canvas
         private IMoveObject selectMO;
         private Dictionary<long, TouchTrackingPoint> touchDictionary = new Dictionary<long, TouchTrackingPoint>();
         private double pinchLenth;
-        private Point AnchorPoint;
         private double startScale;
+        private bool wasmove = false;
 
         private void TouchEffect_TouchAction(object sender, TouchActionEventArgs args)
         {
@@ -343,7 +361,7 @@ namespace SureMeasure.Views.Canvas
 
                     if (touchDictionary.Count == 1)
                     {
-                        startPoint = args.Location;
+                        TouchPoint = args.Location;
                         Device.StartTimer(new TimeSpan(0, 0, 1), () =>
                         {
                             // do something every 2 seconds
@@ -351,7 +369,7 @@ namespace SureMeasure.Views.Canvas
                             {
                                 if (this.SelectMoveObject == this && touchDictionary.Count == 1)
                                 {
-                                    this.DragObjects = GetActiveObjectFromPoint(startPoint);
+                                    this.DragObjects = (IStatusObject)GetObjectFromPoint(TouchPoint, typeof(IStatusObject));
                                 }
                             });
                             return false; // runs again, or false to stop
@@ -361,7 +379,7 @@ namespace SureMeasure.Views.Canvas
                     {
                         TouchTrackingPoint point2 = touchDictionary[(args.Id + 1) % touchDictionary.Count];
                         pinchLenth = PtPLenth(args.Location, point2);
-                        AnchorPoint = ConvertMainPoint(new TouchTrackingPoint((args.Location.X + point2.X) / 2, (args.Location.Y + point2.Y) / 2));
+                        TouchPoint = new TouchTrackingPoint((args.Location.X + point2.X) / 2, (args.Location.Y + point2.Y) / 2);
                         startScale = this.GroupLayout.Scale;
                     }
                     break;
@@ -370,20 +388,21 @@ namespace SureMeasure.Views.Canvas
                     {
                         if (this.DragObjects == null && SelectMoveObject == this)
                         {
-                            SelectMoveObject = GetMoveObjectFromPoint(startPoint);
+                            SelectMoveObject = (IMoveObject)GetObjectFromPoint(TouchPoint, typeof(IMoveObject));
                         }
                         if (this.DragObjects == null)
                         {
-                            SelectMoveObject.X += (args.Location.X - startPoint.X) * (SelectMoveObject == this ? 1 : this.GroupLayout.Scale);
-                            SelectMoveObject.Y += (args.Location.Y - startPoint.Y) * (SelectMoveObject == this ? 1 : this.GroupLayout.Scale);
-                            startPoint = args.Location;
+                            wasmove = true;
+                            SelectMoveObject.X += (args.Location.X - TouchPoint.X) * (SelectMoveObject == this ? 1 : this.GroupLayout.Scale);
+                            SelectMoveObject.Y += (args.Location.Y - TouchPoint.Y) * (SelectMoveObject == this ? 1 : this.GroupLayout.Scale);
+                            TouchPoint = args.Location;
                         }
                     }
                     else if (touchDictionary.Count >= 2)
                     {
                        // Console.WriteLine(PtPLenth(args.Location, touchDictionary[(args.Id + 1) % touchDictionary.Count]) / pinchLenth);
                        this.GroupLayout.Scale = startScale * PtPLenth(args.Location, touchDictionary[(args.Id + 1) % touchDictionary.Count]) / pinchLenth;
-                        TranslateToPoint(AnchorPoint);
+                       // TranslateToPoint(ConvertMainPoint(TouchPoint));
                     }
                     break;
                 case TouchActionType.Cancelled:
@@ -394,23 +413,33 @@ namespace SureMeasure.Views.Canvas
                         {
                             if (SelectMoveObject == this)
                             {
-                                TapManager((ITouchObject)GetActiveObjectFromPoint(args.Location));
+                                TapManager((ITouchObject)GetObjectFromPoint(args.Location, typeof(ITouchObject)));
                             }
                             else
                             {
                                 SelectMoveObject = null;
                             }
+
+                            if (this.Contour.SelectedDrawMethod == DrawMethod.Manual && wasmove == false)
+                            {
+                                Point point = ConvertMainPoint(TouchPoint);
+                                this.Contour.BuildLine(new CadPoint(point.X - CanvasView.ZeroPoint.X, point.Y - CanvasView.ZeroPoint.Y));
+                            }
                         }
                         else
                         {
-                            IActiveObject activeObject = GetActiveObjectFromPoint(args.Location, DragObjects);
-                            if (activeObject != null)
+                            TouchPoint = args.Location;
+                            ITouchObject statusObject = (ITouchObject)GetObjectFromPoint(TouchPoint, typeof(ITouchObject), DragObjects);
+                            if (statusObject != null)
                             {
-                                DragDropManager(activeObject, dragobject);
+                                DragDropManager(statusObject, dragobject);
+                            }
+                            else
+                            {
+                                DragDropManager(this, dragobject);
                             }
                             DragObjects = null;
                         }
-                        
                     }
                     else
                     {
@@ -421,6 +450,7 @@ namespace SureMeasure.Views.Canvas
                     {
                         touchDictionary.Remove(args.Id);
                     }
+                    wasmove = false;
                     break;
             }
 
@@ -460,32 +490,22 @@ namespace SureMeasure.Views.Canvas
             }
         }
 
-        private IMoveObject GetMoveObjectFromPoint(TouchTrackingPoint innerPoint, IMoveObject IgnoreObject = null)
-        {
-            Point ObjectLayoutPoint = ConvertMainPoint(innerPoint);
-            for (int i = this.ObjectLayout.Children.Count - 1; i > -1; i -= 1)
-            {
-                if (this.ObjectLayout.Children[i] is ITouchObject touchObject && this.ObjectLayout.Children[i] is IMoveObject moveObject)
-                {
-                    if (touchObject.ContainsPoint(ObjectLayoutPoint) == true && moveObject != IgnoreObject)
-                    {
-                        return moveObject;
-                    }
-                }
-            }
-            return null;
-        }
 
-        private IActiveObject GetActiveObjectFromPoint(TouchTrackingPoint innerPoint, IActiveObject IgnoreObject = null)
+        private object GetObjectFromPoint(TouchTrackingPoint innerPoint, Type Filter, object ignoreObject = null)
         {
             Point ObjectLayoutPoint = ConvertMainPoint(innerPoint);
+
             for (int i = this.ObjectLayout.Children.Count - 1; i > -1; i -= 1)
             {
-                if (this.ObjectLayout.Children[i] is ITouchObject touchObject && this.ObjectLayout.Children[i] is IActiveObject activeObject)
+                if (this.ObjectLayout.Children[i] != ignoreObject 
+                    && this.ObjectLayout.Children[i].GetType().GetInterface(Filter.Name) != null)
                 {
-                    if (touchObject.ContainsPoint(ObjectLayoutPoint) == true && activeObject != IgnoreObject)
+                    if (this.ObjectLayout.Children[i] is ITouchObject touchObject)
                     {
-                        return activeObject;
+                        if (touchObject.ContainsPoint(ObjectLayoutPoint) == true)
+                        {
+                            return touchObject;
+                        }
                     }
                 }
             }

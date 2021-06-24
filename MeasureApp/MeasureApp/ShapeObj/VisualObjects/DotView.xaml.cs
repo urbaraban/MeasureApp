@@ -1,7 +1,5 @@
 ﻿using DrawEngine.CadObjects;
 using SureMeasure.ShapeObj.Interface;
-using SureMeasure.Views.Canvas;
-using System;
 using System.Collections.Generic;
 using System.Windows.Input;
 using Xamarin.Forms;
@@ -10,7 +8,7 @@ using Xamarin.Forms.Xaml;
 namespace SureMeasure.ShapeObj.VisualObjects
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class DotView : ContentView, ITouchObject, IActiveObject, IMoveObject
+    public partial class DotView : ContentView, ITouchObject, IStatusObject, IMoveObject
     {
         public CadPoint point => (CadPoint)this.BindingContext;
 

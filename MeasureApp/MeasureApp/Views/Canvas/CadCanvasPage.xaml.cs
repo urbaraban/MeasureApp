@@ -3,7 +3,6 @@ using DrawEngine.Constraints;
 using Plugin.Segmented.Control;
 using SureMeasure.Orders;
 using SureMeasure.Tools;
-using SureMeasure.Views.Canvas;
 using SureMeasure.Views.OrderPage.Canvas;
 using System;
 using System.Diagnostics;
