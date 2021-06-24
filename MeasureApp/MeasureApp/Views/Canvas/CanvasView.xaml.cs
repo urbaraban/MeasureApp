@@ -362,16 +362,13 @@ namespace SureMeasure.Views.Canvas
                     if (touchDictionary.Count == 1)
                     {
                         TouchPoint = args.Location;
+                        //Get drag object from press
                         Device.StartTimer(new TimeSpan(0, 0, 1), () =>
                         {
-                            // do something every 2 seconds
-                            Device.BeginInvokeOnMainThread(() =>
+                            if (this.SelectMoveObject == this && touchDictionary.Count == 1)
                             {
-                                if (this.SelectMoveObject == this && touchDictionary.Count == 1)
-                                {
-                                    this.DragObjects = (IStatusObject)GetObjectFromPoint(TouchPoint, typeof(IStatusObject));
-                                }
-                            });
+                                this.DragObjects = (IStatusObject)GetObjectFromPoint(TouchPoint, typeof(IStatusObject));
+                            }
                             return false; // runs again, or false to stop
                         });
                     }
@@ -382,6 +379,7 @@ namespace SureMeasure.Views.Canvas
                         TouchPoint = new TouchTrackingPoint((args.Location.X + point2.X) / 2, (args.Location.Y + point2.Y) / 2);
                         startScale = this.GroupLayout.Scale;
                     }
+
                     break;
                 case TouchActionType.Moved:
                     if (touchDictionary.Count == 1)
@@ -400,9 +398,13 @@ namespace SureMeasure.Views.Canvas
                     }
                     else if (touchDictionary.Count >= 2)
                     {
-                       // Console.WriteLine(PtPLenth(args.Location, touchDictionary[(args.Id + 1) % touchDictionary.Count]) / pinchLenth);
-                       this.GroupLayout.Scale = startScale * PtPLenth(args.Location, touchDictionary[(args.Id + 1) % touchDictionary.Count]) / pinchLenth;
-                       // TranslateToPoint(ConvertMainPoint(TouchPoint));
+                        TouchTrackingPoint point2 = touchDictionary[(args.Id + 1) % touchDictionary.Count];
+                        TouchPoint = new TouchTrackingPoint((args.Location.X + point2.X) / 2, (args.Location.Y + point2.Y) / 2);
+
+                        Point Anchorpoint = ConvertMainPoint(TouchPoint);
+
+                        this.GroupLayout.Scale = startScale * (PtPLenth(args.Location, touchDictionary[(args.Id + 1) % touchDictionary.Count]) / pinchLenth);
+                        TranslateToPoint(Anchorpoint);
                     }
                     break;
                 case TouchActionType.Cancelled:
@@ -411,6 +413,19 @@ namespace SureMeasure.Views.Canvas
                     {
                         if (DragObjects == null)
                         {
+                            if (this.Contour.SelectedDrawMethod == DrawMethod.Manual && wasmove == false)
+                            {
+                                if ((ITouchObject)GetObjectFromPoint(args.Location, typeof(ITouchObject)) is DotView dotView)
+                                {
+                                    this.Contour.BuildLine(dotView.point);
+                                }
+                                else
+                                {
+                                    Point point = ConvertMainPoint(args.Location);
+                                    this.Contour.BuildLine(new CadPoint(point.X - CanvasView.ZeroPoint.X, point.Y - CanvasView.ZeroPoint.Y));
+                                }
+                            }
+
                             if (SelectMoveObject == this)
                             {
                                 TapManager((ITouchObject)GetObjectFromPoint(args.Location, typeof(ITouchObject)));
@@ -418,12 +433,6 @@ namespace SureMeasure.Views.Canvas
                             else
                             {
                                 SelectMoveObject = null;
-                            }
-
-                            if (this.Contour.SelectedDrawMethod == DrawMethod.Manual && wasmove == false)
-                            {
-                                Point point = ConvertMainPoint(TouchPoint);
-                                this.Contour.BuildLine(new CadPoint(point.X - CanvasView.ZeroPoint.X, point.Y - CanvasView.ZeroPoint.Y));
                             }
                         }
                         else
