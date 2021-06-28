@@ -80,9 +80,7 @@ namespace SureMeasure.ShapeObj.VisualObjects
                 new SheetMenuItem(CallValueDialog, "{CALL_VALUE_DIALOG}"),
                 new SheetMenuItem(GetMeasure, "{MEASURE}"),
                 new SheetMenuItem(SupportLine, "{SUPPORT_LINE}"),
-                new SheetMenuItem(Verical, "{VERTICAL}"),
-                new SheetMenuItem(Horizontal, "{HORIZONTAL}"),
-                new SheetMenuItem(Free_Orientation, "{FREE_ORIENTATION}"),
+                new SheetMenuItem(Orientation, "{ORIENTATIONAL}"),
                 new SheetMenuItem(Fix, "{FIX}"),
                 new SheetMenuItem(Remove, "{REMOVE}"),
                 new SheetMenuItem(Split, "{SPLIT}")
@@ -144,18 +142,38 @@ namespace SureMeasure.ShapeObj.VisualObjects
         {
             this.IsSupport = !this.IsSupport;
         });
-        private ICommand Verical => new Command(() =>
+
+        private ICommand Orientation => new Command(() =>
         {
-            this._lenthConstrait.Orientation = Orientaton.Vertical;
+            ICommand Verical = new Command(() =>
+            {
+                this._lenthConstrait.Orientation = Orientaton.Vertical;
+            });
+            ICommand Horizontal = new Command(() =>
+            {
+                this._lenthConstrait.Orientation = Orientaton.Horizontal;
+            });
+            ICommand Free_Orientation = new Command(() =>
+            {
+                this._lenthConstrait.Orientation = Orientaton.Free;
+            });
+
+            ICommand Fix_Orientation = new Command(() =>
+            {
+                this._lenthConstrait.Orientation = Orientaton.Fix;
+            });
+
+            SheetMenu menu = new SheetMenu(new System.Collections.Generic.List<SheetMenuItem>()
+            {
+                new SheetMenuItem(Verical, "{VERTICAL}"),
+                new SheetMenuItem(Horizontal, "{HORIZONTAL}"),
+                new SheetMenuItem(Free_Orientation, "{FREE_ORIENTATION}"),
+                new SheetMenuItem(Fix_Orientation, "{FIX_ORIENTATION}"),
+            });
+            menu.ShowMenu(this);
         });
-        private ICommand Horizontal => new Command(() =>
-        {
-            this._lenthConstrait.Orientation = Orientaton.Horizontal;
-        });
-        private ICommand Free_Orientation => new Command(() =>
-        {
-            this._lenthConstrait.Orientation = Orientaton.OFF;
-        });
+
+
         private ICommand Fix => new Command(() =>
         {
             this._lenthConstrait.Fix(true);

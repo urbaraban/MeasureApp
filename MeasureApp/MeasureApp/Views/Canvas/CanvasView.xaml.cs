@@ -426,7 +426,7 @@ namespace SureMeasure.Views.Canvas
                                 }
                             }
 
-                            if (SelectMoveObject == this)
+                            else if (SelectMoveObject == this)
                             {
                                 TapManager((ITouchObject)GetObjectFromPoint(args.Location, typeof(ITouchObject)));
                             }
