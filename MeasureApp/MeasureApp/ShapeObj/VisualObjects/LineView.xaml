@@ -34,7 +34,7 @@
             </Grid.ColumnDefinitions>
             <Line
                 HorizontalOptions="CenterAndExpand"
-                VerticalOptions="Center"
+                VerticalOptions="CenterAndExpand"
                 Grid.ColumnSpan="3" 
                 Grid.Column="0"
                 StrokeThickness="{Binding Source={RelativeSource AncestorType={x:Type canvas:CanvasView}, AncestorLevel=0}, Path=CommonScale, Converter={StaticResource ThinkessConverter}}"
@@ -43,7 +43,7 @@
                     Path=ObjectStatus, Converter={StaticResource StatusColorConverter}}"
                   StrokeDashArray="{Binding IsSupport, Converter={StaticResource SupportDashConverter}}"/>
 
-            <Frame Grid.Column="1" Grid.ColumnSpan="1" BackgroundColor="Green" 
+            <Frame x:Name="LabelFrame" Grid.Column="1" Grid.ColumnSpan="1" BackgroundColor="Green" 
                    VerticalOptions="Start" HorizontalOptions="Center" 
                    CornerRadius="5" Padding="2"
                    Scale="{Binding Source={RelativeSource AncestorType={x:Type AbsoluteLayout}, AncestorLevel=2}, Path=Scale, Converter={StaticResource ScaleConverter}}">

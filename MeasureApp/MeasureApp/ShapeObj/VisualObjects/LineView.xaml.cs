@@ -112,8 +112,8 @@ namespace SureMeasure.ShapeObj.VisualObjects
             Point transformPoint = rotateTransform.Value.Transform(InnerPoint);
             return (transformPoint.X > TranslationX
             && transformPoint.X < TranslationX + Width
-            && transformPoint.Y > TranslationY - Height / 4
-            && transformPoint.Y < TranslationY + Height);
+            && transformPoint.Y > TranslationY - Height * LabelFrame.Scale
+            && transformPoint.Y < TranslationY + Height * LabelFrame.Scale);
         }
 
         public void TapAction()

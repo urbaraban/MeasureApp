@@ -54,6 +54,7 @@ namespace SureMeasure.Views.Canvas
             get => (this.GroupLayout.Scale != double.PositiveInfinity ? this.GroupLayout.Scale : 1) / (draggingstatus ? 1.5 : 1);
             set
             {
+                SetAnchorToPoint(new TouchTrackingPoint((float)this.MainLayout.Width / 2, (float)this.MainLayout.Height / 2));
                 this.GroupLayout.Scale = value;
                 OnPropertyChanged("CommonScale");
             }
@@ -168,6 +169,12 @@ namespace SureMeasure.Views.Canvas
             }
         }
 
+        public void Zoom(double v)
+        {
+            //Point point = ConvertMainPoint(new TouchTrackingPoint((float)this.MainLayout.Width / 2, (float)this.MainLayout.Height / 2));
+            this.CommonScale += v;
+            //TranslateToPoint(point);
+        }
 
         private async void _contour_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
@@ -256,25 +263,21 @@ namespace SureMeasure.Views.Canvas
                             maxY = Math.Max(maxY, dotView.Y + CanvasView.ZeroPoint.Y);
                         }
                     }
+
+
                     double scale = Math.Min(this.MainLayout.Width / (maxX - minX), this.MainLayout.Height / (maxY - minY));
                     this.CommonScale = scale * 0.6;
-
                     TranslateToPoint(new Point((minX + maxX) / 2, (minY + maxY) / 2));
+                    //TranslateToPoint(new TouchTrackingPoint((float)this.MainLayout.Width / 2, (float)this.MainLayout.Height / 2));
                 }
                 catch
                 {
                     Console.WriteLine("Fit Error");
                 }
             }
+
         }
 
-        private void TranslateToPoint(Point point)
-        {
-            this.GroupLayout.TranslationX = -((this.GroupLayout.Width * (1 - this.GroupLayout.Scale)) / 2) -
-                (point.X * this.GroupLayout.Scale - this.MainLayout.Width / 2);
-            this.GroupLayout.TranslationY = -((this.GroupLayout.Height * (1 - this.GroupLayout.Scale)) / 2) -
-                (point.Y * this.GroupLayout.Scale - this.MainLayout.Height / 2);     
-         }
 
         public ICommand DraggingStartObject => new Command(() =>
         {
@@ -347,23 +350,27 @@ namespace SureMeasure.Views.Canvas
         private double startScale;
         private bool wasmove = false;
 
-        private void TouchEffect_TouchAction(object sender, TouchActionEventArgs args)
+        private async void TouchEffect_TouchAction(object sender, TouchActionEventArgs args)
         {
-           // Console.WriteLine(args.Id);
+            Console.WriteLine(args.Id);
             switch (args.Type)
             {
                 case TouchActionType.Pressed:
 
                     if (touchDictionary.ContainsKey(args.Id) == false)
                     {
-                        touchDictionary.Add(args.Id, args.Location);
+                        try
+                        {
+                            touchDictionary.Add(args.Id, args.Location);
+                        }
+                        catch { Console.WriteLine("TouchIdError"); }
                     }
 
                     if (touchDictionary.Count == 1)
                     {
                         TouchPoint = args.Location;
                         //Get drag object from press
-                        Device.StartTimer(new TimeSpan(0, 0, 1), () =>
+                        Device.StartTimer(TimeSpan.FromMilliseconds(1500), () =>
                         {
                             if (this.SelectMoveObject == this && touchDictionary.Count == 1)
                             {
@@ -382,6 +389,7 @@ namespace SureMeasure.Views.Canvas
 
                     break;
                 case TouchActionType.Moved:
+                    touchDictionary[args.Id] = args.Location;
                     if (touchDictionary.Count == 1)
                     {
                         if (this.DragObjects == null && SelectMoveObject == this)
@@ -391,20 +399,33 @@ namespace SureMeasure.Views.Canvas
                         if (this.DragObjects == null)
                         {
                             wasmove = true;
-                            SelectMoveObject.X += (args.Location.X - TouchPoint.X) * (SelectMoveObject == this ? 1 : this.GroupLayout.Scale);
-                            SelectMoveObject.Y += (args.Location.Y - TouchPoint.Y) * (SelectMoveObject == this ? 1 : this.GroupLayout.Scale);
+                            SelectMoveObject.X += (args.Location.X - TouchPoint.X) / (SelectMoveObject == this ? 1 : this.GroupLayout.Scale);
+                            SelectMoveObject.Y += (args.Location.Y - TouchPoint.Y) / (SelectMoveObject == this ? 1 : this.GroupLayout.Scale);
                             TouchPoint = args.Location;
                         }
                     }
                     else if (touchDictionary.Count >= 2)
                     {
                         TouchTrackingPoint point2 = touchDictionary[(args.Id + 1) % touchDictionary.Count];
-                        TouchPoint = new TouchTrackingPoint((args.Location.X + point2.X) / 2, (args.Location.Y + point2.Y) / 2);
+                        TouchTrackingPoint centerpoint = new TouchTrackingPoint((args.Location.X + point2.X) / 2, (args.Location.Y + point2.Y) / 2);
+                        
 
-                        Point Anchorpoint = ConvertMainPoint(TouchPoint);
+                        this.GroupLayout.TranslationX += (centerpoint.X - TouchPoint.X);
+                        this.GroupLayout.TranslationY += (centerpoint.Y - TouchPoint.Y);
 
-                        this.GroupLayout.Scale = startScale * (PtPLenth(args.Location, touchDictionary[(args.Id + 1) % touchDictionary.Count]) / pinchLenth);
-                        TranslateToPoint(Anchorpoint);
+                        TouchPoint = centerpoint;
+
+                        Point point = ConvertMainPoint(TouchPoint);
+                        Console.WriteLine($"{TouchPoint.X} {TouchPoint.Y}");
+                       // this.GroupLayout.AnchorX = 5000 / this.GroupLayout.Width;
+                       // this.GroupLayout.AnchorY = 5000 / this.GroupLayout.Height;
+
+
+                        this.CommonScale = startScale * (PtPLenth(args.Location, touchDictionary[(args.Id + 1) % touchDictionary.Count]) / pinchLenth);
+                        //TranslateToPoint(centerpoint);
+
+                        //this.GroupLayout.AnchorX = 0.5;
+                        //this.GroupLayout.AnchorY = 0.5;
                     }
                     break;
                 case TouchActionType.Cancelled:
@@ -417,12 +438,12 @@ namespace SureMeasure.Views.Canvas
                             {
                                 if ((ITouchObject)GetObjectFromPoint(args.Location, typeof(ITouchObject)) is DotView dotView)
                                 {
-                                    this.Contour.BuildLine(dotView.point);
+                                    await this.Contour.BuildLine(dotView.point);
                                 }
                                 else
                                 {
                                     Point point = ConvertMainPoint(args.Location);
-                                    this.Contour.BuildLine(new CadPoint(point.X - CanvasView.ZeroPoint.X, point.Y - CanvasView.ZeroPoint.Y));
+                                    await this.Contour.BuildLine(new CadPoint(point.X - CanvasView.ZeroPoint.X, point.Y - CanvasView.ZeroPoint.Y));
                                 }
                             }
 
@@ -443,21 +464,22 @@ namespace SureMeasure.Views.Canvas
                             {
                                 DragDropManager(statusObject, dragobject);
                             }
-                            else
+                            else if (this.Contour.SelectedDrawMethod == DrawMethod.Manual)
                             {
                                 DragDropManager(this, dragobject);
                             }
                             DragObjects = null;
                         }
                     }
-                    else
-                    {
-                        this.GroupLayout.AnchorX = 0.5;
-                        this.GroupLayout.AnchorY = 0.5;
-                    }
+
                     if (touchDictionary.ContainsKey(args.Id))
                     {
-                        touchDictionary.Remove(args.Id);
+                        Console.WriteLine($"Remove {args.Id}");
+                        try
+                        {
+                            touchDictionary.Remove(args.Id);
+                        }
+                        catch { Console.WriteLine("TouchIdError"); }
                     }
                     wasmove = false;
                     break;
@@ -467,6 +489,24 @@ namespace SureMeasure.Views.Canvas
             {
                 return Math.Sqrt(Math.Pow(cadPoint2.X - cadPoint1.X, 2) + Math.Pow(cadPoint2.Y - cadPoint1.Y, 2));
             }
+        }
+
+
+        private void TranslateToPoint(Point point)
+        {
+            this.GroupLayout.TranslationX = -((this.GroupLayout.Width * (1 - this.GroupLayout.Scale)) * this.GroupLayout.AnchorX) -
+                (point.X * this.GroupLayout.Scale - this.MainLayout.Width / 2);
+            this.GroupLayout.TranslationY = -((this.GroupLayout.Height * (1 - this.GroupLayout.Scale)) * this.GroupLayout.AnchorY) -
+                (point.Y * this.GroupLayout.Scale - this.MainLayout.Height / 2);
+            //SetAnchorToPoint(new TouchTrackingPoint((float)this.MainLayout.Width/2, (float)this.MainLayout.Height/2));
+        }
+
+        private void TranslateToPoint(TouchTrackingPoint trackingPoint) => TranslateToPoint(ConvertMainPoint(trackingPoint));
+
+        private void SetAnchorToPoint(TouchTrackingPoint point)
+        {
+            this.GroupLayout.AnchorX = (-this.GroupLayout.TranslationX + point.X) / this.GroupLayout.Width;
+            this.GroupLayout.AnchorY = (-this.GroupLayout.TranslationY + point.Y) / this.GroupLayout.Height;
         }
 
         private int taps = 0;
@@ -524,9 +564,9 @@ namespace SureMeasure.Views.Canvas
         private Point ConvertMainPoint(TouchTrackingPoint innerPoint)
         {
             double FromCenterPosX = ((innerPoint.X - this.GroupLayout.TranslationX) -
-            (this.GroupLayout.Width * (1 - this.GroupLayout.Scale) / 2)) / this.GroupLayout.Scale;
+            (this.GroupLayout.Width * (1 - this.GroupLayout.Scale) * this.GroupLayout.AnchorX)) / this.GroupLayout.Scale;
             double FromCenterPosY = ((innerPoint.Y - this.GroupLayout.TranslationY) -
-                (this.GroupLayout.Height * (1 - this.GroupLayout.Scale) / 2)) / this.GroupLayout.Scale;
+                (this.GroupLayout.Height * (1 - this.GroupLayout.Scale) * this.GroupLayout.AnchorY)) / this.GroupLayout.Scale;
 
             return new Point((float)FromCenterPosX, (float)FromCenterPosY);
         }

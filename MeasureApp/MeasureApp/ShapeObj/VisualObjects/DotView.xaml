@@ -9,7 +9,7 @@
              x:DataType="cadobjects:CadPoint"
              TranslationX="{Binding X, Mode=TwoWay, Converter={StaticResource PositionConverter}}"
              TranslationY="{Binding Y, Mode=TwoWay, Converter={StaticResource PositionConverter}}"
-             Scale="{Binding Source={RelativeSource AncestorType={x:Type canvas:CanvasView}, AncestorLevel=0}, Path=CommonScale, Converter={StaticResource ScaleConverter}}">
+             Scale="{Binding Source={RelativeSource AncestorType={x:Type canvas:CanvasView}, AncestorLevel=1}, Path=CommonScale, Converter={StaticResource ScaleConverter}}">
    <!-- <ContentView.GestureRecognizers>
         
         <DragGestureRecognizer DragStartingCommand="{Binding Source={RelativeSource AncestorType={x:Type canvas:CanvasView}, AncestorLevel=0}, Path=DraggingStartObject}"

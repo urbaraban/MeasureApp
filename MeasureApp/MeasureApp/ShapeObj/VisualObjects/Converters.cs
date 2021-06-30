@@ -119,7 +119,7 @@ namespace SureMeasure.ShapeObj.VisualObjects
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return 5 * (1 / (double)value);
+            return 15 * (1 / (double)value);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

@@ -145,6 +145,14 @@ namespace SureMeasure.Views.OrderPage
             await MainCanvas.FitChild();
         });
 
+        public ICommand ZoomIn => new Command(async () => {
+            MainCanvas.Zoom(0.2);
+        });
+
+        public ICommand ZoomOut => new Command(async () => {
+            MainCanvas.Zoom(-0.2);
+        });
+
         public ICommand GetDevice => new Command(() => {
             if (AppShell.BLEDevice != null)
             {

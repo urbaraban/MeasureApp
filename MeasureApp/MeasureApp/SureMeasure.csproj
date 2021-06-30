@@ -30,7 +30,7 @@
     <PackageReference Include="InTheHand.BluetoothLE" Version="4.0.19" />
     <PackageReference Include="IxMilia.Dxf" Version="0.8.0" />
     <PackageReference Include="Plugin.SegmentedControl.Netstandard" Version="5.4.5" />
-    <PackageReference Include="Rg.Plugins.Popup" Version="2.0.0.11" />
+    <PackageReference Include="Rg.Plugins.Popup" Version="2.0.0.12" />
     <PackageReference Include="sqlite-net-pcl" Version="1.7.335" />
     <PackageReference Include="TouchTracking.Forms" Version="1.1.0" />
     <PackageReference Include="Xamarin.Essentials" Version="1.6.1" />
