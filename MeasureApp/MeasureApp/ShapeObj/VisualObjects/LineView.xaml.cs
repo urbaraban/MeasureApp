@@ -83,7 +83,8 @@ namespace SureMeasure.ShapeObj.VisualObjects
                 new SheetMenuItem(Orientation, "{ORIENTATIONAL}"),
                 new SheetMenuItem(Fix, "{FIX}"),
                 new SheetMenuItem(Remove, "{REMOVE}"),
-                new SheetMenuItem(Split, "{SPLIT}")
+                new SheetMenuItem(Split, "{SPLIT}"),
+                new SheetMenuItem(Free, "{Free}")
             });
         }
 
@@ -112,8 +113,8 @@ namespace SureMeasure.ShapeObj.VisualObjects
             Point transformPoint = rotateTransform.Value.Transform(InnerPoint);
             return (transformPoint.X > TranslationX
             && transformPoint.X < TranslationX + Width
-            && transformPoint.Y > TranslationY - Height * LabelFrame.Scale
-            && transformPoint.Y < TranslationY + Height * LabelFrame.Scale);
+            && transformPoint.Y > TranslationY - Height
+            && transformPoint.Y < TranslationY + Height);
         }
 
         public void TapAction()
@@ -121,15 +122,27 @@ namespace SureMeasure.ShapeObj.VisualObjects
             this.IsSelect = !this.IsSelect;
         }
 
+        public override string ToString()
+        {
+            return $"LINE  {this._lenthConstrait.ID}";
+        }
+
         #region Command
         private ICommand CallValueDialog => new Command(async () =>
         {
-            string callresult = await AppShell.Instance.DisplayPromtDialog(_lenthConstrait.Variable.Name, _lenthConstrait.Value.ToString());
+            string callresult = await AppShell.Instance.DisplayPromtDialog(_lenthConstrait.Variable.Name, _lenthConstrait.Lenth.ToString());
             if (callresult != null)
             {
                 this._lenthConstrait.Value = double.Parse(callresult);
             }
         });
+
+        private ICommand Free => new Command(async () =>
+        {
+            this._lenthConstrait.Value = -1;
+            this._lenthConstrait.Fix(false);
+        });
+
         private ICommand GetMeasure => new Command(() =>
         {
             CadCanvasPage.MeasureVariable = this._lenthConstrait.Variable;
@@ -170,13 +183,27 @@ namespace SureMeasure.ShapeObj.VisualObjects
                 new SheetMenuItem(Free_Orientation, "{FREE_ORIENTATION}"),
                 new SheetMenuItem(Fix_Orientation, "{FIX_ORIENTATION}"),
             });
-            menu.ShowMenu(this);
+            menu.ShowMenu(this, _lenthConstrait.ToString());
         });
 
 
         private ICommand Fix => new Command(() =>
         {
-            this._lenthConstrait.Fix(true);
+            ICommand Position = new Command(() =>
+            {
+                this._lenthConstrait.Fix(!this._lenthConstrait.IsFix);
+            });
+            ICommand Lenth = new Command(() =>
+            {
+                this._lenthConstrait.Value = this._lenthConstrait.Lenth;
+            });
+
+            SheetMenu menu = new SheetMenu(new System.Collections.Generic.List<SheetMenuItem>()
+            {
+                new SheetMenuItem(Position, "{POSITION}"),
+                new SheetMenuItem(Lenth, "{LENTH}")
+            });
+            menu.ShowMenu(this, "{FIXEDTYPE}");
         });
         private ICommand Remove => new Command(() =>
         {

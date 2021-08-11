@@ -48,7 +48,7 @@
                    VerticalOptions="Center" HorizontalOptions="Center" 
                    CornerRadius="5" Padding="2"
                    Rotation="{Binding Value, Converter= {StaticResource LabelAngleConverter}}"
-                   Scale="{Binding Source={RelativeSource AncestorType={x:Type AbsoluteLayout}, AncestorLevel=2}, Path=Scale, Converter={StaticResource ScaleConverter}}">
+                   Scale="{Binding Source={RelativeSource AncestorType={x:Type AbsoluteLayout}, AncestorLevel=2}, Path=CommonScale, Converter={StaticResource ScaleConverter}}">
                 <Label VerticalOptions="Center" HorizontalOptions="Center" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" Text="{Binding Value, Converter={StaticResource RoundAngleConverter}}" ScaleY="-1"/>
             </Frame>
         </Grid>

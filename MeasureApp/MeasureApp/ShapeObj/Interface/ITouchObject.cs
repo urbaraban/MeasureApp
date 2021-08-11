@@ -4,6 +4,8 @@ namespace SureMeasure.ShapeObj.Interface
 {
     interface ITouchObject
     {
+        string ToString();
+
         SheetMenu SheetMenu { get; set; }
 
         void TapAction();

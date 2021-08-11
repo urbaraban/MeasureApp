@@ -26,9 +26,9 @@ namespace SureMeasure.ShapeObj
             return temp.ToArray();
         }
 
-        public async void ShowMenu(object sender)
+        public async void ShowMenu(object sender, string Head)
         {
-            string result = await AppShell.Instance.SheetMenuDialog(this);
+            string result = await AppShell.Instance.SheetMenuDialog(this, Head);
 
             foreach (SheetMenuItem sheetMenuItem in menuItems)
             {

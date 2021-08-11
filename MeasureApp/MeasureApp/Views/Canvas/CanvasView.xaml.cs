@@ -145,7 +145,7 @@ namespace SureMeasure.Views.Canvas
                         new SheetMenuItem(MergePoint, "{MERGE_POINT}")
                     });
 
-                    sheetMenu.ShowMenu(this);
+                    sheetMenu.ShowMenu(this, "{DRAGOPERATION}");
                 }
                 else if (activeObject1 is CanvasView canvasView && activeObject2 is DotView dotView)
                 {
@@ -309,7 +309,7 @@ namespace SureMeasure.Views.Canvas
                         new SheetMenuItem(MergePoint, "{MERGE_POINT}")
                     });
 
-                    sheetMenu.ShowMenu(this);
+                    sheetMenu.ShowMenu(this, "{DRAGDROPOPERATION}");
                 }
             }
         });
@@ -352,137 +352,126 @@ namespace SureMeasure.Views.Canvas
 
         private async void TouchEffect_TouchAction(object sender, TouchActionEventArgs args)
         {
-            Console.WriteLine(args.Id);
-            switch (args.Type)
+            try
             {
-                case TouchActionType.Pressed:
+                switch (args.Type)
+                {
+                    case TouchActionType.Pressed:
 
-                    if (touchDictionary.ContainsKey(args.Id) == false)
-                    {
-                        try
+                        if (touchDictionary.ContainsKey(args.Id) == false)
                         {
                             touchDictionary.Add(args.Id, args.Location);
                         }
-                        catch { Console.WriteLine("TouchIdError"); }
-                    }
 
-                    if (touchDictionary.Count == 1)
-                    {
-                        TouchPoint = args.Location;
-                        //Get drag object from press
-                        Device.StartTimer(TimeSpan.FromMilliseconds(1500), () =>
+                        if (touchDictionary.Count == 1)
                         {
-                            if (this.SelectMoveObject == this && touchDictionary.Count == 1)
-                            {
-                                this.DragObjects = (IStatusObject)GetObjectFromPoint(TouchPoint, typeof(IStatusObject));
-                            }
-                            return false; // runs again, or false to stop
-                        });
-                    }
-                    else if (touchDictionary.Count > 1)
-                    {
-                        TouchTrackingPoint point2 = touchDictionary[(args.Id + 1) % touchDictionary.Count];
-                        pinchLenth = PtPLenth(args.Location, point2);
-                        TouchPoint = new TouchTrackingPoint((args.Location.X + point2.X) / 2, (args.Location.Y + point2.Y) / 2);
-                        startScale = this.GroupLayout.Scale;
-                    }
-
-                    break;
-                case TouchActionType.Moved:
-                    touchDictionary[args.Id] = args.Location;
-                    if (touchDictionary.Count == 1)
-                    {
-                        if (this.DragObjects == null && SelectMoveObject == this)
-                        {
-                            SelectMoveObject = (IMoveObject)GetObjectFromPoint(TouchPoint, typeof(IMoveObject));
-                        }
-                        if (this.DragObjects == null)
-                        {
-                            wasmove = true;
-                            SelectMoveObject.X += (args.Location.X - TouchPoint.X) / (SelectMoveObject == this ? 1 : this.GroupLayout.Scale);
-                            SelectMoveObject.Y += (args.Location.Y - TouchPoint.Y) / (SelectMoveObject == this ? 1 : this.GroupLayout.Scale);
                             TouchPoint = args.Location;
-                        }
-                    }
-                    else if (touchDictionary.Count >= 2)
-                    {
-                        TouchTrackingPoint point2 = touchDictionary[(args.Id + 1) % touchDictionary.Count];
-                        TouchTrackingPoint centerpoint = new TouchTrackingPoint((args.Location.X + point2.X) / 2, (args.Location.Y + point2.Y) / 2);
-                        
-
-                        this.GroupLayout.TranslationX += (centerpoint.X - TouchPoint.X);
-                        this.GroupLayout.TranslationY += (centerpoint.Y - TouchPoint.Y);
-
-                        TouchPoint = centerpoint;
-
-                        Point point = ConvertMainPoint(TouchPoint);
-                        Console.WriteLine($"{TouchPoint.X} {TouchPoint.Y}");
-                       // this.GroupLayout.AnchorX = 5000 / this.GroupLayout.Width;
-                       // this.GroupLayout.AnchorY = 5000 / this.GroupLayout.Height;
-
-
-                        this.CommonScale = startScale * (PtPLenth(args.Location, touchDictionary[(args.Id + 1) % touchDictionary.Count]) / pinchLenth);
-                        //TranslateToPoint(centerpoint);
-
-                        //this.GroupLayout.AnchorX = 0.5;
-                        //this.GroupLayout.AnchorY = 0.5;
-                    }
-                    break;
-                case TouchActionType.Cancelled:
-                case TouchActionType.Released:
-                    if (touchDictionary.Count == 1)
-                    {
-                        if (DragObjects == null)
-                        {
-                            if (this.Contour.SelectedDrawMethod == DrawMethod.Manual && wasmove == false)
+                            //Get drag object from press
+                            Device.StartTimer(TimeSpan.FromMilliseconds(1500), () =>
                             {
-                                if ((ITouchObject)GetObjectFromPoint(args.Location, typeof(ITouchObject)) is DotView dotView)
+                                if (this.SelectMoveObject == this && touchDictionary.Count == 1)
                                 {
-                                    await this.Contour.BuildLine(dotView.point);
+                                    this.DragObjects = (IStatusObject)GetObjectFromPoint(TouchPoint, typeof(IStatusObject));
+                                }
+                                return false; // runs again, or false to stop
+                        });
+                        }
+                        else if (touchDictionary.Count > 1)
+                        {
+                            TouchTrackingPoint point2 = touchDictionary[(args.Id + 1) % touchDictionary.Count];
+                            pinchLenth = PtPLenth(args.Location, point2);
+                            TouchPoint = new TouchTrackingPoint((args.Location.X + point2.X) / 2, (args.Location.Y + point2.Y) / 2);
+                            startScale = this.GroupLayout.Scale;
+                        }
+
+                        break;
+                    case TouchActionType.Moved:
+                         touchDictionary[args.Id] = args.Location;
+
+                        if (touchDictionary.Count == 1)
+                        {
+                            if (this.DragObjects == null && SelectMoveObject == this)
+                            {
+                                SelectMoveObject = (IMoveObject)GetObjectFromPoint(TouchPoint, typeof(IMoveObject));
+                            }
+                            if (this.DragObjects == null)
+                            {
+                                wasmove = true;
+                                SelectMoveObject.X += (args.Location.X - TouchPoint.X) / (SelectMoveObject == this ? 1 : this.GroupLayout.Scale);
+                                SelectMoveObject.Y += (args.Location.Y - TouchPoint.Y) / (SelectMoveObject == this ? 1 : this.GroupLayout.Scale);
+                                TouchPoint = args.Location;
+                            }
+                        }
+                        else if (touchDictionary.Count >= 2)
+                        {
+                            TouchTrackingPoint point2 = touchDictionary[(args.Id + 1) % touchDictionary.Count];
+                            TouchTrackingPoint centerpoint = new TouchTrackingPoint((args.Location.X + point2.X) / 2, (args.Location.Y + point2.Y) / 2);
+
+                            this.GroupLayout.TranslationX += (centerpoint.X - TouchPoint.X) / this.GroupLayout.Scale;
+                            this.GroupLayout.TranslationY += (centerpoint.Y - TouchPoint.Y) / this.GroupLayout.Scale;
+                            TouchPoint = centerpoint;
+
+                            Point point = ConvertMainPoint(TouchPoint);
+
+                            this.CommonScale = startScale * (PtPLenth(args.Location, touchDictionary[(args.Id + 1) % touchDictionary.Count]) / pinchLenth);
+                            //TranslateToPoint(centerpoint);
+                        }
+                        break;
+                    case TouchActionType.Cancelled:
+                    case TouchActionType.Released:
+                        if (touchDictionary.Count == 1)
+                        {
+                            if (DragObjects == null)
+                            {
+                                if (this.Contour.SelectedDrawMethod == DrawMethod.Manual && wasmove == false)
+                                {
+                                    if ((ITouchObject)GetObjectFromPoint(args.Location, typeof(ITouchObject)) is DotView dotView)
+                                    {
+                                        await this.Contour.BuildLine(dotView.point);
+                                    }
+                                    else
+                                    {
+                                        Point point = ConvertMainPoint(args.Location);
+                                        await this.Contour.BuildLine(new CadPoint(point.X - CanvasView.ZeroPoint.X, point.Y - CanvasView.ZeroPoint.Y));
+                                    }
+                                }
+
+                                else if (SelectMoveObject == this)
+                                {
+                                    TapManager((ITouchObject)GetObjectFromPoint(args.Location, typeof(ITouchObject)));
                                 }
                                 else
                                 {
-                                    Point point = ConvertMainPoint(args.Location);
-                                    await this.Contour.BuildLine(new CadPoint(point.X - CanvasView.ZeroPoint.X, point.Y - CanvasView.ZeroPoint.Y));
+                                    SelectMoveObject = null;
                                 }
-                            }
-
-                            else if (SelectMoveObject == this)
-                            {
-                                TapManager((ITouchObject)GetObjectFromPoint(args.Location, typeof(ITouchObject)));
                             }
                             else
                             {
-                                SelectMoveObject = null;
+                                TouchPoint = args.Location;
+                                ITouchObject statusObject = (ITouchObject)GetObjectFromPoint(TouchPoint, typeof(ITouchObject), DragObjects);
+                                if (statusObject != null)
+                                {
+                                    DragDropManager(statusObject, dragobject);
+                                }
+                                else if (this.Contour.SelectedDrawMethod == DrawMethod.Manual)
+                                {
+                                    DragDropManager(this, dragobject);
+                                }
+                                DragObjects = null;
                             }
                         }
-                        else
-                        {
-                            TouchPoint = args.Location;
-                            ITouchObject statusObject = (ITouchObject)GetObjectFromPoint(TouchPoint, typeof(ITouchObject), DragObjects);
-                            if (statusObject != null)
-                            {
-                                DragDropManager(statusObject, dragobject);
-                            }
-                            else if (this.Contour.SelectedDrawMethod == DrawMethod.Manual)
-                            {
-                                DragDropManager(this, dragobject);
-                            }
-                            DragObjects = null;
-                        }
-                    }
 
-                    if (touchDictionary.ContainsKey(args.Id))
-                    {
-                        Console.WriteLine($"Remove {args.Id}");
-                        try
+                        if (touchDictionary.ContainsKey(args.Id))
                         {
-                            touchDictionary.Remove(args.Id);
+                           touchDictionary.Remove(args.Id);
                         }
-                        catch { Console.WriteLine("TouchIdError"); }
-                    }
-                    wasmove = false;
-                    break;
+                        wasmove = false;
+                        break;
+                }
+            }
+            catch
+            {
+                Console.WriteLine("TouchIdError");
             }
 
             double PtPLenth(TouchTrackingPoint cadPoint1, TouchTrackingPoint cadPoint2)
@@ -505,16 +494,16 @@ namespace SureMeasure.Views.Canvas
 
         private void SetAnchorToPoint(TouchTrackingPoint point)
         {
-            this.GroupLayout.AnchorX = (-this.GroupLayout.TranslationX + point.X) / this.GroupLayout.Width;
-            this.GroupLayout.AnchorY = (-this.GroupLayout.TranslationY + point.Y) / this.GroupLayout.Height;
+            this.GroupLayout.AnchorX = (-this.GroupLayout.TranslationX + point.X ) / (this.GroupLayout.Width);
+            this.GroupLayout.AnchorY = (-this.GroupLayout.TranslationY + point.Y ) / (this.GroupLayout.Height);
         }
 
         private int taps = 0;
         private bool runtimer = false;
 
-        private  void TapManager(ITouchObject activeObject)
+        private  void TapManager(ITouchObject touchObject)
         {
-            if (activeObject != null)
+            if (touchObject != null)
             {
                 taps += 1;
                 if (this.runtimer == false)
@@ -524,11 +513,11 @@ namespace SureMeasure.Views.Canvas
                     {
                         if (taps < 2)
                         {
-                            activeObject.TapAction();
+                            touchObject.TapAction();
                         }
                         else
                         {
-                            activeObject.SheetMenu.ShowMenu(activeObject);
+                            touchObject.SheetMenu.ShowMenu(touchObject, touchObject.ToString());
                         }
 
                         taps = 0;

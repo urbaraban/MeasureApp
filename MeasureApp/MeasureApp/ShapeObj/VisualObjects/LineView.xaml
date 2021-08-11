@@ -10,7 +10,8 @@
              AnchorX="0"
              AnchorY="0.5"
              Rotation="{Binding VectorAngle}"
-             WidthRequest="{Binding Value}" 
+             HeightRequest="{Binding Source={RelativeSource AncestorType={x:Type canvas:CanvasView}, AncestorLevel=0}, Path=CommonScale, Converter={StaticResource HeightConverter}}"
+             WidthRequest="{Binding Lenth}" 
              TranslationX="{Binding Point1.X, Converter={StaticResource PositionXConverter}}"
              TranslationY="{Binding Point1.Y, Converter={StaticResource PositionYConverter}}">
     <ContentView.Resources>
@@ -21,8 +22,10 @@
             <visualobjects:YPointConverter x:Key="PositionYConverter" />
             <visualobjects:XPointConverter x:Key="PositionXConverter" />
             <visualobjects:LineThinkessConverter x:Key="ThinkessConverter"/>
+            <visualobjects:LineHeightConverter x:Key="HeightConverter"/>
             <visualobjects:ScaleConverter x:Key="ScaleConverter"/>
             <visualobjects:RoundConverter x:Key="RoundConverter"/>
+            <visualobjects:FrameAngleConverter x:Key="FrameAngleConverter"/>
         </ResourceDictionary>
     </ContentView.Resources>
     <ContentView.Content>
@@ -38,7 +41,7 @@
                 Grid.ColumnSpan="3" 
                 Grid.Column="0"
                 StrokeThickness="{Binding Source={RelativeSource AncestorType={x:Type canvas:CanvasView}, AncestorLevel=0}, Path=CommonScale, Converter={StaticResource ThinkessConverter}}"
-                X1="0" Y1="0" X2="{Binding Value}" Y2="0" 
+                X1="0" Y1="0" X2="{Binding Lenth}" Y2="0" 
                   Stroke="{Binding Source={RelativeSource AncestorLevel=1, AncestorType={x:Type visualobjects:LineView}},
                     Path=ObjectStatus, Converter={StaticResource StatusColorConverter}}"
                   StrokeDashArray="{Binding IsSupport, Converter={StaticResource SupportDashConverter}}"/>
@@ -46,8 +49,9 @@
             <Frame x:Name="LabelFrame" Grid.Column="1" Grid.ColumnSpan="1" BackgroundColor="Green" 
                    VerticalOptions="Start" HorizontalOptions="Center" 
                    CornerRadius="5" Padding="2"
+                   Rotation="{Binding VectorAngle, Converter={StaticResource FrameAngleConverter}}"
                    Scale="{Binding Source={RelativeSource AncestorType={x:Type AbsoluteLayout}, AncestorLevel=2}, Path=Scale, Converter={StaticResource ScaleConverter}}">
-                <Label Text="{Binding Value, Converter={StaticResource RoundConverter}}" ScaleY="-1"/>
+                <Label Text="{Binding Lenth, Converter={StaticResource RoundConverter}}" ScaleY="-1"/>
             </Frame>
         </Grid>
         

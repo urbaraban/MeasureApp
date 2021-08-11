@@ -24,6 +24,20 @@ namespace SureMeasure.ShapeObj.VisualObjects
     }
 
 
+    public class FrameAngleConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            double angle = (360 + (double)value) % 360;
+            return angle > 90 && angle < 270 ? 180 : 0;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (double)value;
+        }
+    }
+
     public class ScaleConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -93,7 +107,7 @@ namespace SureMeasure.ShapeObj.VisualObjects
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (double)value + CanvasView.ZeroPoint.Y - 11;
+            return (double)value + CanvasView.ZeroPoint.Y - 15;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -119,7 +133,19 @@ namespace SureMeasure.ShapeObj.VisualObjects
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return 15 * (1 / (double)value);
+            return 7 * (1 / (double)value);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return 1;
+        }
+    }
+    public class LineHeightConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return 30 / (double)value;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

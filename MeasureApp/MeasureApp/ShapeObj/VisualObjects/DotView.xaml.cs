@@ -163,6 +163,11 @@ namespace SureMeasure.ShapeObj.VisualObjects
             this.IsSelect = !this.IsSelect;
         }
 
+        public override string ToString()
+        {
+            return $"DOT {this.point.ID}";
+        }
+
     }
 
 

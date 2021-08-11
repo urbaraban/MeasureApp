@@ -95,9 +95,9 @@ namespace SureMeasure
 
 
         //Call Dialog
-        public async Task<string> SheetMenuDialog(SheetMenu sheetMenu)
+        public async Task<string> SheetMenuDialog(SheetMenu sheetMenu, string Head)
         {
-            string Result = await DisplayActionSheet("Чего делаем?", "Cancel", null, sheetMenu.ToArray());
+            string Result = await DisplayActionSheet(Head, "Cancel", null, sheetMenu.ToArray());
             return Result;
         }
 

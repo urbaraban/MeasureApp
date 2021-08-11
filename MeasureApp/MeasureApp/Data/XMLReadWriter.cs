@@ -124,6 +124,7 @@ namespace SureMeasure.Data
                         new XAttribute("P1", constraintLenth.Point1.ID),
                         new XAttribute("P2", constraintLenth.Point2.ID),
                         new XAttribute("Lenth", constraintLenth.Value),
+                        new XAttribute("Orientation", constraintLenth.Orientation),
                         new XAttribute("Support", constraintLenth.IsSupport),
                         new XAttribute("Select", constraintLenth.IsSelect));
                 }
