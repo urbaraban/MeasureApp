@@ -37,7 +37,7 @@
                     Path=ObjectStatus, Converter={StaticResource StatusColorConverter}}"
                  StrokeThickness="4"
                 HeightRequest="30" WidthRequest="30"/>
-            <Label HorizontalOptions="Center" VerticalOptions="Center" Text="{Binding ID}" ScaleY="-1"/>
+            <Label HorizontalOptions="Center" VerticalOptions="Center" Text="{Binding ID}" TextColor="Gray" ScaleY="-1"/>
         </Grid>
   </ContentView.Content>
 </ContentView>
