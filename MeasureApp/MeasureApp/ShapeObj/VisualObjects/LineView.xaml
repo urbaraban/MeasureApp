@@ -9,7 +9,7 @@
              x:DataType="constraints:ConstraintLenth"
              AnchorX="0"
              AnchorY="0.5"
-             Rotation="{Binding VectorAngle}"
+             Rotation="{Binding Vector, Converter={StaticResource VectorToAngle}}"
              HeightRequest="{Binding Source={RelativeSource AncestorType={x:Type canvas:CanvasView}, AncestorLevel=0}, Path=CommonScale, Converter={StaticResource HeightConverter}}"
              WidthRequest="{Binding Lenth}" 
              TranslationX="{Binding Point1.X, Converter={StaticResource PositionXConverter}}"
@@ -26,6 +26,7 @@
             <visualobjects:ScaleConverter x:Key="ScaleConverter"/>
             <visualobjects:RoundConverter x:Key="RoundConverter"/>
             <visualobjects:FrameAngleConverter x:Key="FrameAngleConverter"/>
+            <visualobjects:VectorToAngle x:Key="VectorToAngle"/>
         </ResourceDictionary>
     </ContentView.Resources>
     <ContentView.Content>
@@ -49,7 +50,7 @@
             <Frame x:Name="LabelFrame" Grid.Column="1" Grid.ColumnSpan="1" BackgroundColor="Green" 
                    VerticalOptions="Start" HorizontalOptions="Center" 
                    CornerRadius="5" Padding="2"
-                   Rotation="{Binding VectorAngle, Converter={StaticResource FrameAngleConverter}}"
+                   Rotation="{Binding Vector, Converter={StaticResource FrameAngleConverter}}"
                    Scale="{Binding Source={RelativeSource AncestorType={x:Type AbsoluteLayout}, AncestorLevel=2}, Path=Scale, Converter={StaticResource ScaleConverter}}">
                 <Label Text="{Binding Lenth, Converter={StaticResource RoundConverter}}" ScaleY="-1"/>
             </Frame>

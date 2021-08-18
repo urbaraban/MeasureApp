@@ -4,6 +4,7 @@ using SureMeasure.Views.Canvas;
 using System;
 using System.Globalization;
 using System.Linq;
+using System.Numerics;
 using Xamarin.Forms;
 using Xamarin.Forms.Shapes;
 
@@ -28,7 +29,8 @@ namespace SureMeasure.ShapeObj.VisualObjects
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            double angle = (360 + (double)value) % 360;
+            System.Numerics.Vector2 vector2 = (System.Numerics.Vector2)value;
+            double angle = Math.Atan2(vector2.Y, vector2.X) * (180 / Math.PI);
             return angle > 90 && angle < 270 ? 180 : 0;
         }
 
@@ -188,7 +190,7 @@ namespace SureMeasure.ShapeObj.VisualObjects
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return $"{Math.Round((double)value, 1)}°";
+            return $"{Math.Round((double)value * 180 / Math.PI, 1)}°";
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -201,7 +203,7 @@ namespace SureMeasure.ShapeObj.VisualObjects
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (double)value / 2 + 90;
+            return ((double)value * 180 / Math.PI) / 2 + 90;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -234,6 +236,33 @@ namespace SureMeasure.ShapeObj.VisualObjects
                 // Can't convert back from false because of ambiguity
                 return null;
             }
+        }
+    }
+
+    public class AngleLabelPosition : IMultiValueConverter
+    {
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            return 0;
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+    }
+
+    public class VectorToAngle : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            System.Numerics.Vector2 vector2 = (System.Numerics.Vector2)value;
+            return Math.Atan2(vector2.Y, vector2.X) * (180 / Math.PI);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -160,20 +160,25 @@ namespace SureMeasure.ShapeObj.VisualObjects
         {
             ICommand Verical = new Command(() =>
             {
-                this._lenthConstrait.Orientation = Orientaton.Vertical;
+                this._lenthConstrait.Orientation = OrientationStat.Vertical;
             });
             ICommand Horizontal = new Command(() =>
             {
-                this._lenthConstrait.Orientation = Orientaton.Horizontal;
+                this._lenthConstrait.Orientation = OrientationStat.Horizontal;
             });
             ICommand Free_Orientation = new Command(() =>
             {
-                this._lenthConstrait.Orientation = Orientaton.Free;
+                this._lenthConstrait.Orientation = OrientationStat.Free;
             });
 
             ICommand Fix_Orientation = new Command(() =>
             {
-                this._lenthConstrait.Orientation = Orientaton.Fix;
+                this._lenthConstrait.Orientation = OrientationStat.Fix;
+            });
+
+            ICommand Dynamic_Orientation = new Command(() =>
+            {
+                this._lenthConstrait.Orientation = OrientationStat.Dynamic;
             });
 
             SheetMenu menu = new SheetMenu(new System.Collections.Generic.List<SheetMenuItem>()
@@ -182,6 +187,7 @@ namespace SureMeasure.ShapeObj.VisualObjects
                 new SheetMenuItem(Horizontal, "{HORIZONTAL}"),
                 new SheetMenuItem(Free_Orientation, "{FREE_ORIENTATION}"),
                 new SheetMenuItem(Fix_Orientation, "{FIX_ORIENTATION}"),
+                new SheetMenuItem(Dynamic_Orientation, "{DYNAMIC_ORIENTATION}"),
             });
             menu.ShowMenu(this, _lenthConstrait.ToString());
         });

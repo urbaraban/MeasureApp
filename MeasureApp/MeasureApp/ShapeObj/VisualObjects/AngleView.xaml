@@ -4,8 +4,8 @@
              x:Class="SureMeasure.ShapeObj.VisualObjects.AngleView"
              x:DataType="constraints:ConstraintAngle"
              TranslationX="{Binding Point2.X, Converter={StaticResource PositionXConverter}}"
-             TranslationY="{Binding Point2.Y, Converter={StaticResource PositionYConverter}}"
-             Rotation="{Binding Lenth1.VectorAngle}">
+             TranslationY="{Binding Point2.Y, Converter={StaticResource PositionYConverter}}">
+             <!--Rotation="{Binding Lenth1.Vector}"-->
     <ContentView.Resources>
         <ResourceDictionary>
             <visualobjects:ValueToPointConverter x:Key="LenthToLine" />
@@ -18,6 +18,7 @@
             <visualobjects:ScaleConverter x:Key="ScaleConverter"/>
             <visualobjects:RoundAngleConverter x:Key="RoundAngleConverter"/>
             <visualobjects:LabelAngleConverter x:Key="LabelAngleConverter"/>
+            <visualobjects:AngleLabelPosition x:Key="AngleLabelPosition"/>
         </ResourceDictionary>
     </ContentView.Resources>
     <ContentView.Content>
@@ -47,9 +48,16 @@
             <Frame BackgroundColor="LightBlue" 
                    VerticalOptions="Center" HorizontalOptions="Center" 
                    CornerRadius="5" Padding="2"
-                   Rotation="{Binding Value, Converter= {StaticResource LabelAngleConverter}}"
+                   Rotation="{Binding Value, Converter={StaticResource LabelAngleConverter}}"
                    Scale="{Binding Source={RelativeSource AncestorType={x:Type AbsoluteLayout}, AncestorLevel=2}, Path=CommonScale, Converter={StaticResource ScaleConverter}}">
-                <Label VerticalOptions="Center" HorizontalOptions="Center" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" Text="{Binding Value, Converter={StaticResource RoundAngleConverter}}" ScaleY="-1"/>
+                <Label VerticalOptions="Center" HorizontalOptions="Center" AnchorX="0.5" AnchorY="0.5" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" Text="{Binding Value, Converter={StaticResource RoundAngleConverter}}" ScaleY="-1">
+                    <Label.TranslationX>
+                        <MultiBinding Converter="{StaticResource AngleLabelPosition}">
+                            <Binding Source="{Binding Value}"/>
+                            <Binding Source="{Binding Lenth1.Vector}"/>
+                        </MultiBinding>
+                    </Label.TranslationX>
+                </Label>
             </Frame>
         </Grid>
   </ContentView.Content>

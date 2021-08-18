@@ -47,10 +47,10 @@ namespace SureMeasure.ShapeObj.VisualObjects
 
         private ICommand CallValueDialog => new Command(async () =>
         {
-            string callresult = await AppShell.Instance.DisplayPromtDialog(constraintAngle.Variable.Name, constraintAngle.Value.ToString());
+            string callresult = await AppShell.Instance.DisplayPromtDialog(constraintAngle.Variable.Name, Math.Round(constraintAngle.Value * 180 / Math.PI, 2).ToString());
             if (callresult != null)
             {
-                this.constraintAngle.Variable.Value = double.Parse(callresult);
+                this.constraintAngle.Variable.Value = double.Parse(callresult) * Math.PI / 180;
             }
         });
         private ICommand SendMeasure => new Command(() =>
