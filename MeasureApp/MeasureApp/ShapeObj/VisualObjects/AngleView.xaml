@@ -4,8 +4,12 @@
              x:Class="SureMeasure.ShapeObj.VisualObjects.AngleView"
              x:DataType="constraints:ConstraintAngle"
              TranslationX="{Binding Point2.X, Converter={StaticResource PositionXConverter}}"
-             TranslationY="{Binding Point2.Y, Converter={StaticResource PositionYConverter}}">
-             <!--Rotation="{Binding Lenth1.Vector}"-->
+             TranslationY="{Binding Point2.Y, Converter={StaticResource PositionYConverter}}"
+             WidthRequest="60"
+             AnchorX="0"
+             AnchorY="0.5"
+             Scale="{Binding Source={RelativeSource AncestorType={x:Type AbsoluteLayout}, AncestorLevel=2}, Path=Scale, Converter={StaticResource ScaleConverter}}"
+             Rotation="{Binding Mediana, Converter={StaticResource AngleRotateVectorConverter}}">
     <ContentView.Resources>
         <ResourceDictionary>
             <visualobjects:ValueToPointConverter x:Key="LenthToLine" />
@@ -17,26 +21,24 @@
             <visualobjects:LineThinkessConverter x:Key="ThinkessConverter"/>
             <visualobjects:ScaleConverter x:Key="ScaleConverter"/>
             <visualobjects:RoundAngleConverter x:Key="RoundAngleConverter"/>
-            <visualobjects:LabelAngleConverter x:Key="LabelAngleConverter"/>
+            <visualobjects:AngleRotateVectorConverter x:Key="AngleRotateVectorConverter"/>
             <visualobjects:AngleLabelPosition x:Key="AngleLabelPosition"/>
         </ResourceDictionary>
     </ContentView.Resources>
     <ContentView.Content>
         <Grid>
-            <!--<Path Stroke="Red" StrokeThickness="4"
+            <Path Stroke="Gray" StrokeThickness="2"
                      VerticalOptions="Start" HorizontalOptions="Start">
                 <Path.Data>
                     <PathGeometry>
                         <PathGeometry.Figures>
                             <PathFigureCollection>
-                                <PathFigure StartPoint="50,0">
+                                <PathFigure StartPoint="10,0">
                                     <PathFigure.Segments>
                                         <PathSegmentCollection>
                                             <ArcSegment Size="50,50"
-                                            RotationAngle="{Binding RadAngle}"
-                                            IsLargeArc="True"
-                                            SweepDirection="CounterClockwise"
-                                            Point="50,50" />
+                                            SweepDirection="Clockwise"
+                                            Point="10,50" />
                                         </PathSegmentCollection>
                                     </PathFigure.Segments>
                                 </PathFigure>
@@ -44,20 +46,20 @@
                         </PathGeometry.Figures>
                     </PathGeometry>
                 </Path.Data>
-            </Path>-->
+            </Path>
             <Frame BackgroundColor="LightBlue" 
-                   VerticalOptions="Center" HorizontalOptions="Center" 
-                   CornerRadius="5" Padding="2"
-                   Rotation="{Binding Value, Converter={StaticResource LabelAngleConverter}}"
+                   VerticalOptions="Center" HorizontalOptions="End" 
+                   CornerRadius="5" 
+                   Padding="2"
+                                          AnchorX="0.5" AnchorY="0.5" 
+                   Rotation="90"
                    Scale="{Binding Source={RelativeSource AncestorType={x:Type AbsoluteLayout}, AncestorLevel=2}, Path=CommonScale, Converter={StaticResource ScaleConverter}}">
-                <Label VerticalOptions="Center" HorizontalOptions="Center" AnchorX="0.5" AnchorY="0.5" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" Text="{Binding Value, Converter={StaticResource RoundAngleConverter}}" ScaleY="-1">
-                    <Label.TranslationX>
-                        <MultiBinding Converter="{StaticResource AngleLabelPosition}">
-                            <Binding Source="{Binding Value}"/>
-                            <Binding Source="{Binding Lenth1.Vector}"/>
-                        </MultiBinding>
-                    </Label.TranslationX>
-                </Label>
+                <Label VerticalOptions="Center" 
+                       HorizontalOptions="Center" 
+                       HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+                       ScaleY="-1"
+                       WidthRequest="50"
+                       Text="{Binding Value, Converter={StaticResource RoundAngleConverter}}" />
             </Frame>
         </Grid>
   </ContentView.Content>

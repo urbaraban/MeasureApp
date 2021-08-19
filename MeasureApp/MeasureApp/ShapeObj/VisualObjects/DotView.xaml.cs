@@ -1,6 +1,9 @@
 ﻿using DrawEngine.CadObjects;
 using SureMeasure.ShapeObj.Interface;
+using SureMeasure.Views.Canvas;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Windows.Input;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -106,8 +109,6 @@ namespace SureMeasure.ShapeObj.VisualObjects
         public DotView()
         {
             InitializeComponent();
-
-
             this.SheetMenu = new SheetMenu(new List<SheetMenuItem>()
             {
                 new SheetMenuItem(Fix, "{FIX}"),
@@ -116,6 +117,7 @@ namespace SureMeasure.ShapeObj.VisualObjects
                 new SheetMenuItem(BasePoint, "{BASEPOINT}"),
                 new SheetMenuItem(Split, "{SPLIT}")
             });
+
         }
 
         protected override void OnBindingContextChanged()
@@ -126,6 +128,7 @@ namespace SureMeasure.ShapeObj.VisualObjects
                 cadPoint.PropertyChanged += CadPoint_PropertyChanged;
             }
         }
+
 
         private void CadPoint_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
@@ -169,6 +172,4 @@ namespace SureMeasure.ShapeObj.VisualObjects
         }
 
     }
-
-
 }

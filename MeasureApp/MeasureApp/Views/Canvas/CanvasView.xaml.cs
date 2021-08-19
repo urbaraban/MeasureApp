@@ -72,6 +72,10 @@ namespace SureMeasure.Views.Canvas
             });
         }
 
+    
+
+
+
 
         /// <summary>
         /// Add object on Canvas. 

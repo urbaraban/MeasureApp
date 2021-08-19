@@ -4,14 +4,13 @@ using SureMeasure.Views.Canvas;
 using System;
 using System.Globalization;
 using System.Linq;
-using System.Numerics;
 using Xamarin.Forms;
 using Xamarin.Forms.Shapes;
 
 namespace SureMeasure.ShapeObj.VisualObjects
 {
 
-    public class CirclePointConverter : IValueConverter
+   public class CentrePointConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
@@ -23,6 +22,7 @@ namespace SureMeasure.ShapeObj.VisualObjects
             return (double)value - CanvasView.ZeroPoint.X + 15;
         }
     }
+
 
 
     public class FrameAngleConverter : IValueConverter
@@ -199,11 +199,13 @@ namespace SureMeasure.ShapeObj.VisualObjects
         }
     }
 
-    public class LabelAngleConverter : IValueConverter
+    public class AngleRotateVectorConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return ((double)value * 180 / Math.PI) / 2 + 90;
+            System.Numerics.Vector2 vector2 = (System.Numerics.Vector2)value;
+            double angle = Math.Atan2(vector2.Y, vector2.X) * (180 / Math.PI);
+            return angle;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

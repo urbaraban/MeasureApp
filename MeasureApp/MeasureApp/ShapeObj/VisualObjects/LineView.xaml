@@ -30,7 +30,7 @@
         </ResourceDictionary>
     </ContentView.Resources>
     <ContentView.Content>
-        <Grid x:Name="MainGrid">
+        <Grid x:Name="MainGrid" Padding="0" Margin="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1"/>
                 <ColumnDefinition Width="auto"/>
@@ -41,6 +41,7 @@
                 VerticalOptions="CenterAndExpand"
                 Grid.ColumnSpan="3" 
                 Grid.Column="0"
+                Margin="0"
                 StrokeThickness="{Binding Source={RelativeSource AncestorType={x:Type canvas:CanvasView}, AncestorLevel=0}, Path=CommonScale, Converter={StaticResource ThinkessConverter}}"
                 X1="0" Y1="0" X2="{Binding Lenth}" Y2="0" 
                   Stroke="{Binding Source={RelativeSource AncestorLevel=1, AncestorType={x:Type visualobjects:LineView}},
@@ -49,10 +50,10 @@
 
             <Frame x:Name="LabelFrame" Grid.Column="1" Grid.ColumnSpan="1" BackgroundColor="Green" 
                    VerticalOptions="Start" HorizontalOptions="Center" 
-                   CornerRadius="5" Padding="2"
+                   CornerRadius="5" Padding="2" Margin="0"
                    Rotation="{Binding Vector, Converter={StaticResource FrameAngleConverter}}"
                    Scale="{Binding Source={RelativeSource AncestorType={x:Type AbsoluteLayout}, AncestorLevel=2}, Path=Scale, Converter={StaticResource ScaleConverter}}">
-                <Label Text="{Binding Lenth, Converter={StaticResource RoundConverter}}" ScaleY="-1"/>
+                <Label HorizontalOptions="Center" VerticalOptions="Center" Text="{Binding Lenth, Converter={StaticResource RoundConverter}}" ScaleY="-1"/>
             </Frame>
         </Grid>
         

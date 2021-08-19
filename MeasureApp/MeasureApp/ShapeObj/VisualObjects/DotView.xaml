@@ -7,23 +7,15 @@
              InputTransparent="False"
              x:Class="SureMeasure.ShapeObj.VisualObjects.DotView"
              x:DataType="cadobjects:CadPoint"
-             TranslationX="{Binding X, Mode=TwoWay, Converter={StaticResource PositionConverter}}"
-             TranslationY="{Binding Y, Mode=TwoWay, Converter={StaticResource PositionConverter}}"
+             AnchorX="0.5" AnchorY="0.5"
+             TranslationX="{Binding X, Mode=TwoWay, Converter={StaticResource CentrePointConverter}}"
+             TranslationY="{Binding Y, Mode=TwoWay, Converter={StaticResource CentrePointConverter}}"
              Scale="{Binding Source={RelativeSource AncestorType={x:Type canvas:CanvasView}, AncestorLevel=1}, Path=CommonScale, Converter={StaticResource ScaleConverter}}">
-   <!-- <ContentView.GestureRecognizers>
-        
-        <DragGestureRecognizer DragStartingCommand="{Binding Source={RelativeSource AncestorType={x:Type canvas:CanvasView}, AncestorLevel=0}, Path=DraggingStartObject}"
-                               DropCompletedCommand="{Binding Source={RelativeSource AncestorType={x:Type canvas:CanvasView}, AncestorLevel=0}, Path=DraggingComplitObject}" DragStarting="DragGesture_DragStarting"/>
-        <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped"/>
-        <PanGestureRecognizer PanUpdated="PanGestureRecognizer_PanUpdated"/>
-        <DropGestureRecognizer Drop="DropGesture_Drop"/>
-
-    </ContentView.GestureRecognizers>-->
 
     <ContentView.Resources>
         <ResourceDictionary>
             <visualobjects:StatusColorConverter x:Key="StatusColorConverter" />
-            <visualobjects:CirclePointConverter        x:Key="PositionConverter" />
+            <visualobjects:CentrePointConverter x:Key="CentrePointConverter" />
             <visualobjects:ScaleConverter x:Key="ScaleConverter"/>
             <visualobjects:AllTrueMultiConverter x:Key="MultiConverter"/>
         </ResourceDictionary>

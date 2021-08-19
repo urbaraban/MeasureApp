@@ -9,6 +9,7 @@ using System.Globalization;
 
 using System.Windows.Input;
 using Xamarin.Forms;
+using Xamarin.Forms.Shapes;
 using Xamarin.Forms.Xaml;
 
 namespace SureMeasure.ShapeObj.VisualObjects
@@ -37,11 +38,20 @@ namespace SureMeasure.ShapeObj.VisualObjects
         }
 
 
-        bool ITouchObject.ContainsPoint(Point InnerPoint) =>
-    (InnerPoint.X > TranslationX
-    && InnerPoint.X < TranslationX + Width
-    && InnerPoint.Y > TranslationY
-    && InnerPoint.Y < TranslationY + Height);
+        bool ITouchObject.ContainsPoint(Point InnerPoint)
+        {
+            RotateTransform rotateTransform = new RotateTransform
+            {
+                CenterX = TranslationX + this.Width * this.AnchorX,
+                CenterY = TranslationY + this.Height * this.AnchorY,
+                Angle = -this.Rotation
+            };
+            Point transformPoint = rotateTransform.Value.Transform(InnerPoint);
+            return (transformPoint.X > TranslationX
+            && transformPoint.X < TranslationX + Width
+            && transformPoint.Y > TranslationY - Height
+            && transformPoint.Y < TranslationY + Height);
+        }
 
         public void TapAction() { }
 
@@ -60,7 +70,7 @@ namespace SureMeasure.ShapeObj.VisualObjects
         });
         private ICommand InvertAngle => new Command(() =>
         {
-            this.constraintAngle.Value = Math.Abs((this.constraintAngle.Value - 360) % 360);
+            this.constraintAngle.Value = Math.Abs((this.constraintAngle.Value - Math.PI * 2) % (Math.PI * 2));
         });
         private ICommand FreeAngle => new Command(() =>
         {
