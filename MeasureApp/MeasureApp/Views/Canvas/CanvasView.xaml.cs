@@ -176,7 +176,7 @@ namespace SureMeasure.Views.Canvas
         public void Zoom(double v)
         {
             //Point point = ConvertMainPoint(new TouchTrackingPoint((float)this.MainLayout.Width / 2, (float)this.MainLayout.Height / 2));
-            this.CommonScale += v;
+            this.CommonScale += this.CommonScale * v;
             //TranslateToPoint(point);
         }
 

@@ -1,12 +1,10 @@
 ﻿using DrawEngine.CadObjects;
 using DrawEngine.Constraints;
+using DrawEngine.Tools;
 using SureMeasure.ShapeObj.Interface;
-using SureMeasure.Views.Canvas;
 using SureMeasure.Views.OrderPage;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-
 using System.Windows.Input;
 using Xamarin.Forms;
 using Xamarin.Forms.Shapes;
@@ -15,8 +13,19 @@ using Xamarin.Forms.Xaml;
 namespace SureMeasure.ShapeObj.VisualObjects
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class AngleView : ContentView, ITouchObject
+    public partial class AngleView : ContentView, ITouchObject, IMoveObject
     {
+        public double WidthBlock
+        {
+            get => widthblock;
+            set
+            {
+                widthblock = value;
+                OnPropertyChanged("WidthBlock");
+            }
+        }
+        private double widthblock = 80;
+
         private AngleConstraint constraintAngle => (AngleConstraint)this.BindingContext;
 
         private List<SheetMenuItem> commands = new List<SheetMenuItem>();
@@ -80,5 +89,32 @@ namespace SureMeasure.ShapeObj.VisualObjects
         {
             this.constraintAngle.TryRemove();
         });
+
+        double IMoveObject.X
+        {
+            get => LineTools.GetPointOnVector(constraintAngle.Intersection, constraintAngle.Mediana, WidthBlock).X;
+            set 
+            {
+                CadPoint cadPoint = LineTools.GetPointOnVector(constraintAngle.Intersection, constraintAngle.Mediana, WidthBlock);
+                MoveWidthBlock(value, cadPoint.Y);
+            }
+        }
+        double IMoveObject.Y
+        {
+            get => LineTools.GetPointOnVector(constraintAngle.Intersection, constraintAngle.Mediana, WidthBlock).Y;
+            set
+            {
+                CadPoint cadPoint = LineTools.GetPointOnVector(constraintAngle.Intersection, constraintAngle.Mediana, WidthBlock);
+                MoveWidthBlock(cadPoint.X, value);
+            }
+        }
+
+        private void MoveWidthBlock(double X, double Y)
+        {
+            CadPoint PointOnVector = LineTools.GetPointOnVector(constraintAngle.Intersection, constraintAngle.Mediana, WidthBlock);
+            CadPoint PPoint = LineTools.GetPerpendecularOnLine(constraintAngle.Intersection, PointOnVector, new CadPoint(X, Y));
+            double lenth = PointTools.Lenth(constraintAngle.Intersection, PPoint);
+            WidthBlock = lenth < 60 ? 60 : lenth;
+        }
     }
 }

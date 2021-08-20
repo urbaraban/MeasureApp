@@ -48,12 +48,17 @@
                     Path=ObjectStatus, Converter={StaticResource StatusColorConverter}}"
                   StrokeDashArray="{Binding IsSupport, Converter={StaticResource SupportDashConverter}}"/>
 
-            <Frame x:Name="LabelFrame" Grid.Column="1" Grid.ColumnSpan="1" BackgroundColor="Green" 
-                   VerticalOptions="Start" HorizontalOptions="Center" 
+            <Frame x:Name="LabelFrame" Grid.Column="1" Grid.ColumnSpan="1"
+                   VerticalOptions="Center" HorizontalOptions="Center" 
                    CornerRadius="5" Padding="2" Margin="0"
                    Rotation="{Binding Vector, Converter={StaticResource FrameAngleConverter}}"
                    Scale="{Binding Source={RelativeSource AncestorType={x:Type AbsoluteLayout}, AncestorLevel=2}, Path=Scale, Converter={StaticResource ScaleConverter}}">
-                <Label HorizontalOptions="Center" VerticalOptions="Center" Text="{Binding Lenth, Converter={StaticResource RoundConverter}}" ScaleY="-1"/>
+                <Label 
+                    HorizontalOptions="Center" 
+                    VerticalOptions="Center" 
+                    Text="{Binding Lenth, Converter={StaticResource RoundConverter}}"
+                    FontSize="Micro"
+                    ScaleY="-1"/>
             </Frame>
         </Grid>
         

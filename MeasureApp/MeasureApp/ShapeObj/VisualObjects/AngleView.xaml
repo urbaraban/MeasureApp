@@ -5,7 +5,7 @@
              x:DataType="constraints:AngleConstraint"
              TranslationX="{Binding Intersection.X, Converter={StaticResource PositionXConverter}}"
              TranslationY="{Binding Intersection.Y, Converter={StaticResource PositionYConverter}}"
-             WidthRequest="80"
+             WidthRequest="{Binding Source={RelativeSource Self}, Path=WidthBlock}"
              AnchorX="0"
              AnchorY="0.5"
              Scale="{Binding Source={RelativeSource AncestorType={x:Type AbsoluteLayout}, AncestorLevel=2}, Path=Scale, Converter={StaticResource ScaleConverter}}"
@@ -28,7 +28,7 @@
     <ContentView.Content>
         <Grid>
             <Path Stroke="Gray" StrokeThickness="2"
-                     VerticalOptions="Start" HorizontalOptions="Start">
+                     VerticalOptions="Start" HorizontalOptions="End">
                 <Path.Data>
                     <PathGeometry>
                         <PathGeometry.Figures>
@@ -59,6 +59,7 @@
                        HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                        ScaleY="-1"
                        WidthRequest="50"
+                       FontSize="Micro"
                        Text="{Binding Value, Converter={StaticResource RoundAngleConverter}}" />
             </Frame>
         </Grid>
