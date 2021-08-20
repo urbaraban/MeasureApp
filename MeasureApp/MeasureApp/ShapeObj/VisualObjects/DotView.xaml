@@ -6,10 +6,10 @@
              xmlns:canvas="clr-namespace:SureMeasure.Views.Canvas"
              InputTransparent="False"
              x:Class="SureMeasure.ShapeObj.VisualObjects.DotView"
-             x:DataType="cadobjects:CadPoint"
+             x:DataType="cadobjects:CadAnchor"
              AnchorX="0.5" AnchorY="0.5"
-             TranslationX="{Binding X, Mode=TwoWay, Converter={StaticResource CentrePointConverter}}"
-             TranslationY="{Binding Y, Mode=TwoWay, Converter={StaticResource CentrePointConverter}}"
+             TranslationX="{Binding Point.X, Mode=TwoWay, Converter={StaticResource CentrePointConverter}}"
+             TranslationY="{Binding Point.Y, Mode=TwoWay, Converter={StaticResource CentrePointConverter}}"
              Scale="{Binding Source={RelativeSource AncestorType={x:Type canvas:CanvasView}, AncestorLevel=1}, Path=CommonScale, Converter={StaticResource ScaleConverter}}">
 
     <ContentView.Resources>

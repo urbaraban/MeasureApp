@@ -2,11 +2,11 @@
 
 namespace SureMeasure.ShapeObj.Interface
 {
-    interface IMoveObject
+    internal interface IMoveObject
     {
-        double X { get; set; }
+        public double X { get; set; }
 
-        double Y { get; set; }
+        public double Y { get; set; }
 
     }
 }

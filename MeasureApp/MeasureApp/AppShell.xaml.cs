@@ -18,6 +18,7 @@ using DrawEngine;
 using DrawEngine.Constraints;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using DrawEngine.CadObjects;
 
 namespace SureMeasure
 {
@@ -217,13 +218,13 @@ namespace SureMeasure
                 dxfFile.Header.DefaultDrawingUnits = DxfUnits.Millimeters;
                 dxfFile.Header.AlternateDimensioningUnits = DxfUnitFormat.Decimal;
                 dxfFile.ViewPorts.Clear();
-                foreach (ConstraintLenth constraintLenth in contour.GetLenths(false))
+                foreach (LenthConstraint constraintLenth in contour.GetLenths(false))
                 {
                     if (constraintLenth.IsSupport == false)
                     {
                         dxfFile.Entities.Add(new DxfLine(
-                            new DxfPoint(constraintLenth.Point1.X, constraintLenth.Point1.Y, 0),
-                            new DxfPoint(constraintLenth.Point2.X, constraintLenth.Point2.Y, 0)));
+                            new DxfPoint(constraintLenth.Anchor1.Point.X, constraintLenth.Anchor1.Point.Y, 0),
+                            new DxfPoint(constraintLenth.Anchor1.Point.X, constraintLenth.Anchor1.Point.Y, 0)));
                     }
                 }
                 string path = Path.ChangeExtension(Path.Combine(FileSystem.CacheDirectory, Path.GetTempFileName()), ".dxf");

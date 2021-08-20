@@ -35,11 +35,14 @@ namespace SureMeasure.Data
 
                     foreach (XElement XPoint in XContour.Element("Objects").Elements("Point"))
                     {
-                        contour.Add(new CadPoint()
+                        contour.Add(new CadAnchor()
                         {
                             ID = XPoint.Attribute("ID").Value,
-                            X = double.Parse(XPoint.Attribute("X").Value, XMLReadWriter.dblfrm),
-                            Y = double.Parse(XPoint.Attribute("Y").Value, XMLReadWriter.dblfrm),
+                            Point = new CadPoint()
+                            {
+                                X = double.Parse(XPoint.Attribute("X").Value, XMLReadWriter.dblfrm),
+                                Y = double.Parse(XPoint.Attribute("Y").Value, XMLReadWriter.dblfrm)
+                            },
                             IsSupport = bool.Parse(XPoint.Attribute("Support").Value),
                             IsFix = bool.Parse(XPoint.Attribute("Fix").Value)
                         });
@@ -47,7 +50,7 @@ namespace SureMeasure.Data
                     //add lenth constraint
                     foreach (XElement XLenth in XContour.Element("Objects").Elements("Lenth"))
                     {
-                        contour.Add(new ConstraintLenth(
+                        contour.Add(new LenthConstraint(
                             contour.GetPointByName(XLenth.Attribute("P1").Value),
                             contour.GetPointByName(XLenth.Attribute("P2").Value),
                             double.Parse(XLenth.Attribute("Lenth").Value, XMLReadWriter.dblfrm),
@@ -56,7 +59,7 @@ namespace SureMeasure.Data
                     //add angle constraint
                     foreach (XElement XAngle in XContour.Element("Objects").Elements("Angle"))
                     {
-                        contour.Add(new ConstraintAngle(
+                        contour.Add(new AngleConstraint(
                             contour.GetLenthByName(XAngle.Attribute("Lenth1").Value),
                             contour.GetLenthByName(XAngle.Attribute("Lenth2").Value),
                             double.Parse(XAngle.Attribute("Angle").Value, XMLReadWriter.dblfrm)
@@ -109,26 +112,26 @@ namespace SureMeasure.Data
 
             static XElement GetObjectElement(ICadObject cadObject)
             {
-                if (cadObject is CadPoint cadPoint)
+                if (cadObject is CadAnchor cadPoint)
                 {
                     return new XElement("Point",
                         new XAttribute("ID", cadPoint.ID),
-                        new XAttribute("X", cadPoint.X),
-                        new XAttribute("Y", cadPoint.Y),
+                        new XAttribute("X", cadPoint.Point.X),
+                        new XAttribute("Y", cadPoint.Point.Y),
                         new XAttribute("Support", cadPoint.IsSupport),
                         new XAttribute("Fix", cadPoint.IsFix));
                 }
-                else if (cadObject is ConstraintLenth constraintLenth)
+                else if (cadObject is LenthConstraint constraintLenth)
                 {
                     return new XElement("Lenth",
-                        new XAttribute("P1", constraintLenth.Point1.ID),
-                        new XAttribute("P2", constraintLenth.Point2.ID),
+                        new XAttribute("P1", constraintLenth.Anchor1.ID),
+                        new XAttribute("P2", constraintLenth.Anchor2.ID),
                         new XAttribute("Lenth", constraintLenth.Value),
                         new XAttribute("Orientation", constraintLenth.Orientation),
                         new XAttribute("Support", constraintLenth.IsSupport),
                         new XAttribute("Select", constraintLenth.IsSelect));
                 }
-                else if (cadObject is ConstraintAngle constraintAngle)
+                else if (cadObject is AngleConstraint constraintAngle)
                 {
                     return new XElement("Angle",
                         new XAttribute("Lenth1", constraintAngle.Lenth1.ID),

@@ -66,7 +66,7 @@ namespace SureMeasure.ShapeObj.VisualObjects
             }
         }
 
-        private ConstraintLenth _lenthConstrait => (ConstraintLenth)this.BindingContext;
+        private LenthConstraint _lenthConstrait => (LenthConstraint)this.BindingContext;
 
         public virtual SheetMenu SheetMenu { get => this._sheetMenu; set => this._sheetMenu = value; }
         private SheetMenu _sheetMenu;
@@ -91,7 +91,7 @@ namespace SureMeasure.ShapeObj.VisualObjects
         protected override void OnBindingContextChanged()
         {
             base.OnBindingContextChanged();
-            if (this.BindingContext is ConstraintLenth constraintLenth)
+            if (this.BindingContext is LenthConstraint constraintLenth)
             {
                 constraintLenth.PropertyChanged += ConstraintLenth_PropertyChanged; ;
             }
@@ -223,18 +223,18 @@ namespace SureMeasure.ShapeObj.VisualObjects
         #endregion
         double IMoveObject.X 
         { 
-            get => this._lenthConstrait.Point1.X;
+            get => this._lenthConstrait.Anchor1.Point.X;
             set
             {
-                this._lenthConstrait.Point1.X = value;
+                this._lenthConstrait.Anchor1.Point.X = value;
             }
         }
         double IMoveObject.Y 
         {
-            get => this._lenthConstrait.Point1.Y;
+            get => this._lenthConstrait.Anchor1.Point.Y;
             set
             {
-                this._lenthConstrait.Point1.Y = value;
+                this._lenthConstrait.Anchor1.Point.Y = value;
             }
         }
 

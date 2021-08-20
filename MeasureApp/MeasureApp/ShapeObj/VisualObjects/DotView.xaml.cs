@@ -13,64 +13,64 @@ namespace SureMeasure.ShapeObj.VisualObjects
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class DotView : ContentView, ITouchObject, IStatusObject, IMoveObject
     {
-        public CadPoint point => (CadPoint)this.BindingContext;
+        public CadAnchor Anchor => (CadAnchor)this.BindingContext;
 
         public double X
         {
-            get => point.X;
+            get => Anchor.X;
             set
             {
-                point.X = value;
+                Anchor.X = value;
                 OnPropertyChanged("X");
             }
         }
 
         public double Y
         {
-            get => point.Y;
+            get => Anchor.Y;
             set
             {
-                point.Y = value;
+                Anchor.Y = value;
                 OnPropertyChanged("Y");
             }
         }
 
         public bool IsSelect
         {
-            get => this.point.IsSelect;
+            get => this.Anchor.IsSelect;
             set
             {
-                this.point.IsSelect = value;
+                this.Anchor.IsSelect = value;
                 OnPropertyChanged("ObjectStatus");
             }
         }
 
         public bool IsSupport
         {
-            get => this.point.IsSupport;
+            get => this.Anchor.IsSupport;
             set
             {
-                this.point.IsSupport = value;
+                this.Anchor.IsSupport = value;
                 OnPropertyChanged("ObjectStatus");
             }
         }
 
         public bool IsFix
         {
-            get => this.point.IsFix;
+            get => this.Anchor.IsFix;
             set
             {
-                this.point.IsFix = value;
+                this.Anchor.IsFix = value;
                 OnPropertyChanged("ObjectStatus");
             }
         }
 
         public bool IsBase
         {
-            get => this.point.IsBase;
+            get => this.Anchor.IsBase;
             set
             {
-                this.point.IsBase = value;
+                this.Anchor.IsBase = value;
                 OnPropertyChanged("ObjectStatus");
             }
         }
@@ -85,7 +85,7 @@ namespace SureMeasure.ShapeObj.VisualObjects
         {
             get
             {
-                if (this.point != null)
+                if (this.Anchor != null)
                 {
                     if (this.IsSelect == true) return ObjectStatus.Select;
                     else if (this.IsBase == true) return ObjectStatus.Base;
@@ -123,7 +123,7 @@ namespace SureMeasure.ShapeObj.VisualObjects
         protected override void OnBindingContextChanged()
         {
             base.OnBindingContextChanged();
-            if (this.BindingContext is CadPoint cadPoint)
+            if (this.BindingContext is CadAnchor cadPoint)
             {
                 cadPoint.PropertyChanged += CadPoint_PropertyChanged;
             }
@@ -142,7 +142,7 @@ namespace SureMeasure.ShapeObj.VisualObjects
         });
         private ICommand Remove => new Command(() =>
         {
-            point.TryRemove();
+            Anchor.TryRemove();
         });
         private ICommand LastPoint => new Command(() =>
         {
@@ -156,7 +156,7 @@ namespace SureMeasure.ShapeObj.VisualObjects
 
         private ICommand Split => new Command(() =>
         {
-            point.MakeSplit();
+            Anchor.MakeSplit();
         });
         #endregion
 
@@ -168,7 +168,7 @@ namespace SureMeasure.ShapeObj.VisualObjects
 
         public override string ToString()
         {
-            return $"DOT {this.point.ID}";
+            return $"DOT {this.Anchor.ID}";
         }
 
     }

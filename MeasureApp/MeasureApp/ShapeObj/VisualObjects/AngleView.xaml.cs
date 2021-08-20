@@ -17,7 +17,7 @@ namespace SureMeasure.ShapeObj.VisualObjects
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class AngleView : ContentView, ITouchObject
     {
-        private ConstraintAngle constraintAngle => (ConstraintAngle)this.BindingContext;
+        private AngleConstraint constraintAngle => (AngleConstraint)this.BindingContext;
 
         private List<SheetMenuItem> commands = new List<SheetMenuItem>();
 

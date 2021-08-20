@@ -104,7 +104,7 @@ namespace SureMeasure.Views.Canvas
 
         private async Task<object> DrawObject(object Object)
         {
-            if (Object is CadPoint cadPoint)
+            if (Object is CadAnchor cadPoint)
             {
                 /*await this.Add(new VisualAnchor(cadPoint)
                 {
@@ -114,12 +114,12 @@ namespace SureMeasure.Views.Canvas
                 { BindingContext = cadPoint });
                 return cadPoint;
             }
-            else if (Object is ConstraintLenth lenthConstrait)
+            else if (Object is LenthConstraint lenthConstrait)
             {
                 await this.Add(new LineView() { BindingContext = lenthConstrait });
                 return lenthConstrait;
             }
-            else if (Object is ConstraintAngle angleConstrait)
+            else if (Object is AngleConstraint angleConstrait)
             {
                 await this.Add(new AngleView() { BindingContext = angleConstrait });
                 return angleConstrait;
@@ -136,11 +136,11 @@ namespace SureMeasure.Views.Canvas
                 {
                     ICommand ConnectPoint = new Command(async () =>
                     {
-                        this.Contour.Add(new ConstraintLenth(cadAnchor1.point, cadAnchor2.point, -1));
+                        this.Contour.Add(new LenthConstraint(cadAnchor1.Anchor, cadAnchor2.Anchor, -1));
                     });
                     ICommand MergePoint = new Command(() =>
                     {
-                        cadAnchor1.point.ChangePoint(cadAnchor2.point);
+                        cadAnchor1.Anchor.ChangePoint(cadAnchor2.Anchor);
                         cadAnchor1.BindingContext = cadAnchor2.BindingContext;
                     });
 
@@ -154,8 +154,8 @@ namespace SureMeasure.Views.Canvas
                 else if (activeObject1 is CanvasView canvasView && activeObject2 is DotView dotView)
                 {
                     Point point = ConvertMainPoint(TouchPoint);
-                    CadPoint cadPoint = new CadPoint(point.X - CanvasView.ZeroPoint.X, point.Y - CanvasView.ZeroPoint.Y);
-                    this.Contour.Add(new ConstraintLenth(dotView.point, cadPoint, -1));
+                    CadAnchor cadPoint = new CadAnchor(point.X - CanvasView.ZeroPoint.X, point.Y - CanvasView.ZeroPoint.Y);
+                    this.Contour.Add(new LenthConstraint(dotView.Anchor, cadPoint, -1));
                     this.Contour.Add(cadPoint);
 
 
@@ -297,11 +297,11 @@ namespace SureMeasure.Views.Canvas
         {
             if (sender is Tuple<object, object> tuple)
             {
-                if (tuple.Item1 is CadPoint point1 && tuple.Item2 is CadPoint point2)
+                if (tuple.Item1 is CadAnchor point1 && tuple.Item2 is CadAnchor point2)
                 {
                     ICommand ConnectPoint = new Command(() =>
                     {
-                        this.Contour.Add(new ConstraintLenth(point1, point2, -1));
+                        this.Contour.Add(new LenthConstraint(point1, point2, -1));
                     });
                     ICommand MergePoint = new Command(() =>
                     {
@@ -431,12 +431,12 @@ namespace SureMeasure.Views.Canvas
                                 {
                                     if ((ITouchObject)GetObjectFromPoint(args.Location, typeof(ITouchObject)) is DotView dotView)
                                     {
-                                        await this.Contour.BuildLine(dotView.point);
+                                        await this.Contour.BuildLine(dotView.Anchor);
                                     }
                                     else
                                     {
                                         Point point = ConvertMainPoint(args.Location);
-                                        await this.Contour.BuildLine(new CadPoint(point.X - CanvasView.ZeroPoint.X, point.Y - CanvasView.ZeroPoint.Y));
+                                        await this.Contour.BuildLine(new CadAnchor(point.X - CanvasView.ZeroPoint.X, point.Y - CanvasView.ZeroPoint.Y));
                                     }
                                 }
 

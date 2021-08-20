@@ -160,9 +160,9 @@ namespace SureMeasure.ShapeObj.VisualObjects
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is CadPoint cadPoint)
+            if (value is CadAnchor cadPoint)
             {
-                return new Point(cadPoint.X + CanvasView.ZeroPoint.X, cadPoint.Y + CanvasView.ZeroPoint.Y);
+                return new Point(cadPoint.Point.X + CanvasView.ZeroPoint.X, cadPoint.Point.Y + CanvasView.ZeroPoint.Y);
             }
             return new Point();
         }

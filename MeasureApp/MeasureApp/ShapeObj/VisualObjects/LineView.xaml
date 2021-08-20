@@ -6,14 +6,14 @@
              xmlns:visualobjects="clr-namespace:SureMeasure.ShapeObj.VisualObjects"
              xmlns:canvas="clr-namespace:SureMeasure.Views.Canvas"
              x:Class="SureMeasure.ShapeObj.VisualObjects.LineView"
-             x:DataType="constraints:ConstraintLenth"
+             x:DataType="constraints:LenthConstraint"
              AnchorX="0"
              AnchorY="0.5"
              Rotation="{Binding Vector, Converter={StaticResource VectorToAngle}}"
              HeightRequest="{Binding Source={RelativeSource AncestorType={x:Type canvas:CanvasView}, AncestorLevel=0}, Path=CommonScale, Converter={StaticResource HeightConverter}}"
              WidthRequest="{Binding Lenth}" 
-             TranslationX="{Binding Point1.X, Converter={StaticResource PositionXConverter}}"
-             TranslationY="{Binding Point1.Y, Converter={StaticResource PositionYConverter}}">
+             TranslationX="{Binding Anchor1.Point.X, Converter={StaticResource PositionXConverter}}"
+             TranslationY="{Binding Anchor1.Point.Y, Converter={StaticResource PositionYConverter}}">
     <ContentView.Resources>
         <ResourceDictionary>
             <visualobjects:ValueToPointConverter x:Key="LenthToLine" />
