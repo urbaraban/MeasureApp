@@ -12,7 +12,7 @@
              Rotation="{Binding Vector, Converter={StaticResource VectorToAngle}}"
              HeightRequest="{Binding Source={RelativeSource AncestorType={x:Type canvas:CanvasView}, AncestorLevel=0}, Path=CommonScale, Converter={StaticResource HeightConverter}}"
              WidthRequest="{Binding Lenth}" 
-             TranslationX="{Binding Anchor1.Point.X, Converter={StaticResource PositionXConverter}}"
+             TranslationX="{Binding Anchor1.Point.X, Converter={StaticResource PositionXConverter}, ConverterParameter={Binding Self}}"
              TranslationY="{Binding Anchor1.Point.Y, Converter={StaticResource PositionYConverter}}">
     <ContentView.Resources>
         <ResourceDictionary>

@@ -56,10 +56,11 @@ namespace SureMeasure.ShapeObj.VisualObjects
                 Angle = -this.Rotation
             };
             Point transformPoint = rotateTransform.Value.Transform(InnerPoint);
-            return (transformPoint.X > TranslationX
-            && transformPoint.X < TranslationX + Width
-            && transformPoint.Y > TranslationY - Height
-            && transformPoint.Y < TranslationY + Height);
+            return (
+                transformPoint.X > TranslationX + (WidthBlock - ToychLabel.Height * 3)  * this.Scale
+                && transformPoint.X < TranslationX + WidthBlock * this.Scale
+                && transformPoint.Y > TranslationY
+                && transformPoint.Y < TranslationY + ToychLabel.Width * this.Scale);
         }
 
         public void TapAction() { }
@@ -83,7 +84,7 @@ namespace SureMeasure.ShapeObj.VisualObjects
         });
         private ICommand FreeAngle => new Command(() =>
         {
-            this.constraintAngle.Value = -1;
+            this.constraintAngle.IsFix = !this.constraintAngle.IsFix;
         });
         private ICommand Remove => new Command(() =>
         {

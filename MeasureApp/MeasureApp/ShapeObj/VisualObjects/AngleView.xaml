@@ -23,6 +23,8 @@
             <visualobjects:RoundAngleConverter x:Key="RoundAngleConverter"/>
             <visualobjects:AngleRotateVectorConverter x:Key="AngleRotateVectorConverter"/>
             <visualobjects:AngleLabelPosition x:Key="AngleLabelPosition"/>
+            <visualobjects:PerpendecularAngleConverter x:Key="PerpendecularAngleConverter"/>
+            <visualobjects:AngleValueToColor x:Key="AngleValueToColor"/>
         </ResourceDictionary>
     </ContentView.Resources>
     <ContentView.Content>
@@ -33,12 +35,12 @@
                     <PathGeometry>
                         <PathGeometry.Figures>
                             <PathFigureCollection>
-                                <PathFigure StartPoint="10,0">
+                                <PathFigure StartPoint="0,0">
                                     <PathFigure.Segments>
                                         <PathSegmentCollection>
                                             <ArcSegment Size="50,50"
                                             SweepDirection="Clockwise"
-                                            Point="10,50" />
+                                            Point="0,50" />
                                         </PathSegmentCollection>
                                     </PathFigure.Segments>
                                 </PathFigure>
@@ -47,19 +49,23 @@
                     </PathGeometry>
                 </Path.Data>
             </Path>
-            <Frame BackgroundColor="LightBlue" 
+            <Frame
+                BackgroundColor="{Binding IsFix, Converter={StaticResource AngleValueToColor}}"
                    VerticalOptions="Center" HorizontalOptions="End" 
                    CornerRadius="5" 
                    Padding="2"
-                                          AnchorX="0.5" AnchorY="0.5" 
+                   AnchorX="0.5" AnchorY="0.5" 
                    Rotation="90"
                    Scale="{Binding Source={RelativeSource AncestorType={x:Type AbsoluteLayout}, AncestorLevel=2}, Path=CommonScale, Converter={StaticResource ScaleConverter}}">
-                <Label VerticalOptions="Center" 
+                <Label
+                    x:Name="ToychLabel"
+                    VerticalOptions="Center" 
                        HorizontalOptions="Center" 
                        HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
                        ScaleY="-1"
                        WidthRequest="50"
                        FontSize="Micro"
+                    Rotation="{Binding Mediana, Converter={StaticResource PerpendecularAngleConverter}}"
                        Text="{Binding Value, Converter={StaticResource RoundAngleConverter}}" />
             </Frame>
         </Grid>

@@ -97,6 +97,7 @@ namespace SureMeasure.ShapeObj.VisualObjects
             }
         }
 
+
         private void ConstraintLenth_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             OnPropertyChanged("ObjectStatus");
@@ -106,15 +107,15 @@ namespace SureMeasure.ShapeObj.VisualObjects
         {
             RotateTransform rotateTransform = new RotateTransform
             {
-                CenterX = TranslationX,
-                CenterY = TranslationY,
+                CenterX = TranslationX + this.Width * this.AnchorX,
+                CenterY = TranslationY + this.Height * this.AnchorY,
                 Angle = -this.Rotation
             };
             Point transformPoint = rotateTransform.Value.Transform(InnerPoint);
             return (transformPoint.X > TranslationX
-            && transformPoint.X < TranslationX + Width
-            && transformPoint.Y > TranslationY - Height
-            && transformPoint.Y < TranslationY + Height);
+            && transformPoint.X < TranslationX + Width * this.Scale
+            && transformPoint.Y > TranslationY
+            && transformPoint.Y < TranslationY + Height * this.Scale);
         }
 
         public void TapAction()

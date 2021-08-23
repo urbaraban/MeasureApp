@@ -294,6 +294,10 @@
                         <RowDefinition />
                     </Grid.RowDefinitions>
                     <Grid Grid.Row="0" Margin="5">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition />
                             <ColumnDefinition />
@@ -323,6 +327,7 @@
                                     Color="White" />
                             </Button.ImageSource>
                         </Button>
+                        <Picker Grid.Row="1" Grid.ColumnSpan="2"/>
                     </Grid>
 
                 </Grid>

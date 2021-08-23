@@ -19,7 +19,7 @@ namespace SureMeasure.ShapeObj.VisualObjects
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (double)value - CanvasView.ZeroPoint.X + 15;
+            return (double)value - (CanvasView.ZeroPoint.X - 15);
         }
     }
 
@@ -30,8 +30,36 @@ namespace SureMeasure.ShapeObj.VisualObjects
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             System.Numerics.Vector2 vector2 = (System.Numerics.Vector2)value;
-            double angle = Math.Atan2(vector2.Y, vector2.X) * (180 / Math.PI);
-            return angle > 90 && angle < 270 ? 180 : 0;
+            double angle = (Math.Atan2(vector2.Y, vector2.X) +  Math.PI * 2) % (Math.PI * 2);
+            return angle > (Math.PI / 2) && angle < Math.PI * 1.5 ? 180 : 0;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (double)value;
+        }
+    }
+
+    public class PerpendecularAngleConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            System.Numerics.Vector2 vector2 = (System.Numerics.Vector2)value;
+            double angle = (Math.Atan2(vector2.Y, vector2.X) + Math.PI * 2 + Math.PI / 2) % (Math.PI * 2) ;
+            return angle < (Math.PI * 2) && angle > Math.PI ? 0 : 180;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (double)value;
+        }
+    }
+
+    public class AngleValueToColor : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (bool)value ? Color.LightBlue : Color.LimeGreen;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -109,7 +137,7 @@ namespace SureMeasure.ShapeObj.VisualObjects
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (double)value + CanvasView.ZeroPoint.Y - 15;
+            return (double)value + CanvasView.ZeroPoint.Y - 7;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

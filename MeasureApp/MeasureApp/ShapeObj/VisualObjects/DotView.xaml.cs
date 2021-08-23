@@ -75,9 +75,12 @@ namespace SureMeasure.ShapeObj.VisualObjects
             }
         }
 
-        bool ITouchObject.ContainsPoint(Point InnerPoint) => 
-            (InnerPoint.X > TranslationX && InnerPoint.X < TranslationX + (Width * this.Scale)
-            && InnerPoint.Y > TranslationY && InnerPoint.Y < TranslationY + (Height * this.Scale));
+
+        bool ITouchObject.ContainsPoint(Point InnerPoint) =>
+            InnerPoint.X > TranslationX + 15 - Width / 2 * this.Scale
+            && InnerPoint.X < TranslationX + 15 + Width / 2 * this.Scale
+            && InnerPoint.Y > TranslationY + 15 - Height / 2 * this.Scale
+            && InnerPoint.Y < TranslationY + 15 + Width / 2 * this.Scale;
 
         public ObjectStatus ObjectStatus
         {
