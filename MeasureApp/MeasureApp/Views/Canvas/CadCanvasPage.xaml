@@ -7,7 +7,7 @@
     xmlns:control="clr-namespace:Plugin.Segmented.Control;assembly=Plugin.Segmented"
     xmlns:orderpage="clr-namespace:SureMeasure.Views.OrderPage"
     xmlns:orders="clr-namespace:SureMeasure.Orders"
-    xmlns:shell="clr-namespace:SureMeasure" xmlns:canvas="clr-namespace:SureMeasure.Views.Canvas"
+    xmlns:shell="clr-namespace:SureMeasure" xmlns:canvas="clr-namespace:SureMeasure.Views.Canvas" xmlns:drawengine="clr-namespace:DrawEngine;assembly=2DrawContourEngine"
     x:Name="DrawingPage"
     Title="Drawing"
     x:DataType="orders:Order"
@@ -19,7 +19,7 @@
         <ToolbarItem Clicked="ShareBtn_Clicked" Text="Share">
             <ToolbarItem.IconImageSource>
                 <FontImageSource
-                    FontFamily="SegoeAssets"
+                    FontFamily="SegoeMDL2Assets"
                     Glyph="{x:Static common:IconFont.Share}"
                     Size="30"
                     Color="White" />
@@ -40,7 +40,7 @@
         <AbsoluteLayout BackgroundColor="White">
                 <Grid AbsoluteLayout.LayoutBounds="0,0,1,1" AbsoluteLayout.LayoutFlags="SizeProportional">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="110" />
                     <RowDefinition Height="1*" />
                     <RowDefinition Height="2*" />
                     <RowDefinition Height="1*"/>
@@ -67,8 +67,8 @@
                             <ColumnDefinition Width="auto" />
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="auto" />
-                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="1*" />
+                            <RowDefinition Height="1*" />
                     </Grid.RowDefinitions>
                         <Button
                             Grid.Row="0"
@@ -82,7 +82,7 @@
                             WidthRequest="40">
                             <Button.ImageSource>
                                 <FontImageSource
-                                    FontFamily="SegoeAssets"
+                                    FontFamily="SegoeMDL2Assets"
                                     Glyph="{x:Static common:IconFont.Minus}"
                                     Size="18"
                                     Color="White" />
@@ -106,26 +106,27 @@
                             WidthRequest="40">
                             <Button.ImageSource>
                                 <FontImageSource
-                                    FontFamily="SegoeAssets"
+                                    FontFamily="SegoeMDL2Assets"
                                     Glyph="{x:Static common:IconFont.Plus}"
                                     Size="18"
                                     Color="White" />
                             </Button.ImageSource>
                         </Button>
-                        <control:SegmentedControl
-                            x:Name="DrawMethodSelecter"
+                    <control:SegmentedControl
+                        x:Name="DrawMethodSelecter"
                             Grid.Row="1"
                             Grid.ColumnSpan="2"
-                            Margin="8,8,8,8"
                             BackgroundColor="Gray"
                             DisabledColor="Gray"
-                            FontSize="Small"
+                            FontFamily="SegoeMDL2Assets"
+                            FontSize="Large"
                             SelectedItem="{Binding SelectContour.SelectedDrawMethod, Mode=TwoWay}"
                             SelectedTextColor="White"
                             TextColor="Black"
-                            TintColor="{StaticResource Primary}" 
-                            HeightRequest="30"/>
-                        <Button
+                            TintColor="{StaticResource Primary}"
+                        VerticalOptions="CenterAndExpand">
+                    </control:SegmentedControl>
+                    <Button
                             Grid.Row="1"
                             Grid.Column="2"
                             Command="{Binding Undo}"
@@ -135,7 +136,7 @@
                             WidthRequest="80">
                             <Button.ImageSource>
                                 <FontImageSource
-                                    FontFamily="SegoeAssets"
+                                    FontFamily="SegoeMDL2Assets"
                                     Glyph="{x:Static common:IconFont.Undo}"
                                     Size="20"
                                     Color="White" />
@@ -151,7 +152,7 @@
                             WidthRequest="40">
                         <Button.ImageSource>
                             <FontImageSource
-                                    FontFamily="SegoeAssets"
+                                    FontFamily="SegoeMDL2Assets"
                                     Glyph="{x:Static common:IconFont.Redo}"
                                     Size="20"
                                     Color="White" />
@@ -172,7 +173,7 @@
                             WidthRequest="40">
                         <Button.ImageSource>
                             <FontImageSource
-                                    FontFamily="SegoeAssets"
+                                    FontFamily="SegoeMDL2Assets"
                                     Glyph="{x:Static common:IconFont.Plus}"
                                     Size="20"
                                     Color="White" />
@@ -191,7 +192,7 @@
                         >
                         <Button.ImageSource>
                             <FontImageSource
-                                    FontFamily="SegoeAssets"
+                                    FontFamily="SegoeMDL2Assets"
                                     Glyph="{x:Static common:IconFont.Minus}"
                                     Size="20"
                                     Color="White" />
@@ -210,7 +211,7 @@
                             WidthRequest="40">
                         <Button.ImageSource>
                             <FontImageSource
-                                    FontFamily="SegoeAssets"
+                                    FontFamily="SegoeMDL2Assets"
                                     Glyph="{x:Static common:IconFont.FitPage}"
                                     Size="30"
                                     Color="White" />
@@ -241,7 +242,7 @@
                             WidthRequest="60">
                             <Button.ImageSource>
                                 <FontImageSource
-                                    FontFamily="SegoeAssets"
+                                    FontFamily="SegoeMDL2Assets"
                                     Glyph="{x:Static common:IconFont.Device}"
                                     Size="24"
                                     Color="White" />
@@ -259,7 +260,7 @@
                             WidthRequest="60">
                         <Button.ImageSource>
                             <FontImageSource
-                                    FontFamily="SegoeAssets"
+                                    FontFamily="SegoeMDL2Assets"
                                     Glyph="{x:Static common:IconFont.Plus}"
                                     Size="24"
                                     Color="White" />

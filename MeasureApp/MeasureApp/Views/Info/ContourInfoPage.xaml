@@ -11,7 +11,7 @@
         <ToolbarItem Clicked="ShareBtn_Clicked" Text="Share">
             <ToolbarItem.IconImageSource>
                 <FontImageSource
-                    FontFamily="SegoeAssets"
+                    FontFamily="SegoeMDL2Assets"
                     Glyph="{x:Static common:IconFont.Share}"
                     Size="30"
                     Color="White" />
@@ -113,7 +113,7 @@
                         <Button Grid.Column="3" Clicked="MapButton_Clicked">
                             <Button.ImageSource>
                                 <FontImageSource
-                                    FontFamily="SegoeAssets"
+                                    FontFamily="SegoeMDL2Assets"
                                     Glyph="{x:Static common:IconFont.Map}"
                                     Size="24"
                                     Color="White" />
@@ -134,7 +134,7 @@
                         <Button Grid.Column="2">
                             <Button.ImageSource>
                                 <FontImageSource
-                                    FontFamily="SegoeAssets"
+                                    FontFamily="SegoeMDL2Assets"
                                     Glyph="{x:Static common:IconFont.PhoneBook}"
                                     Size="24"
                                     Color="White" />
@@ -143,7 +143,7 @@
                         <Button Grid.Column="3" Clicked="CallButton_Clicked">
                             <Button.ImageSource>
                                 <FontImageSource
-                                    FontFamily="SegoeAssets"
+                                    FontFamily="SegoeMDL2Assets"
                                     Glyph="{x:Static common:IconFont.Phone}"
                                     Size="24"
                                     Color="White" />
@@ -179,7 +179,7 @@
                                     Clicked="PhotoButton_Clicked">
                                     <Button.ImageSource>
                                         <FontImageSource
-                                            FontFamily="SegoeAssets"
+                                            FontFamily="SegoeMDL2Assets"
                                             Glyph="{x:Static common:IconFont.Camera}"
                                             Size="24"
                                             Color="White" />
@@ -192,7 +192,7 @@
                                     WidthRequest="90">
                                     <Button.ImageSource>
                                         <FontImageSource
-                                            FontFamily="SegoeAssets"
+                                            FontFamily="SegoeMDL2Assets"
                                             Glyph="{x:Static common:IconFont.PhotoGallery}"
                                             Size="24"
                                             Color="White" />

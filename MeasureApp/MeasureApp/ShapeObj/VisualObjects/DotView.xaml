@@ -27,7 +27,7 @@
                  Fill="White"
                  Stroke="{Binding Source={RelativeSource AncestorLevel=1, AncestorType={x:Type visualobjects:DotView}},
                     Path=ObjectStatus, Converter={StaticResource StatusColorConverter}}"
-                 StrokeThickness="4"
+                 StrokeThickness="2"
                 HeightRequest="30" WidthRequest="30"/>
             <Label HorizontalOptions="Center" VerticalOptions="Center" Text="{Binding ID}" TextColor="Gray" ScaleY="-1"/>
         </Grid>

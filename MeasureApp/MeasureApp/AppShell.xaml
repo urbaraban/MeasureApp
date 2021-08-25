@@ -99,7 +99,7 @@
         <ShellContent Title="Draw" ContentTemplate="{DataTemplate orderPage:CadCanvasPage}">
             <ShellContent.Icon>
                 <FontImageSource
-                    FontFamily="SegoeAssets"
+                    FontFamily="SegoeMDL2Assets"
                     Glyph="{x:Static common:IconFont.EditPage}"
                     Size="24"
                     Color="White" />
@@ -108,7 +108,7 @@
         <ShellContent Title="Detail" ContentTemplate="{DataTemplate orderPage:ContourInfoPage}">
             <ShellContent.Icon>
                 <FontImageSource
-                    FontFamily="SegoeAssets"
+                    FontFamily="SegoeMDL2Assets"
                     Glyph="{x:Static common:IconFont.Calculator}"
                     Size="24"
                     Color="White" />
@@ -120,7 +120,7 @@
             Route="AdressListPage">
             <ShellContent.Icon>
                 <FontImageSource
-                    FontFamily="SegoeAssets"
+                    FontFamily="SegoeMDL2Assets"
                     Glyph="{x:Static common:IconFont.OrderPage}"
                     Size="24"
                     Color="White" />
@@ -131,7 +131,7 @@
 
     <MenuItem Clicked="DeviceItem_Clicked" Text="Device">
         <MenuItem.IconImageSource>
-            <FontImageSource FontFamily="SegoeAssets" Glyph="{x:Static common:IconFont.Bluetooth}" />
+            <FontImageSource FontFamily="SegoeMDL2Assets" Glyph="{x:Static common:IconFont.Bluetooth}" />
         </MenuItem.IconImageSource>
     </MenuItem>
 

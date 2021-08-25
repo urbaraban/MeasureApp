@@ -141,7 +141,7 @@ namespace SureMeasure.Views.Canvas
                 {
                     ICommand ConnectPoint = new Command(async () =>
                     {
-                        this.Contour.Add(new LenthConstraint(cadAnchor1.Anchor, cadAnchor2.Anchor, -1));
+                        this.Contour.Add(new LenthConstraint(cadAnchor1.Anchor, cadAnchor2.Anchor, -1, false));
                     });
                     ICommand MergePoint = new Command(() =>
                     {
@@ -434,12 +434,12 @@ namespace SureMeasure.Views.Canvas
                             {
                                 if ((ITouchObject)GetObjectFromPoint(args.Location, typeof(ITouchObject)) is DotView dotView)
                                 {
-                                    await this.Contour.BuildLine(dotView.Anchor);
+                                    await this.Contour.BuildLine(dotView.Anchor, false);
                                 }
                                 else
                                 {
                                     Point point = ConvertMainPoint(args.Location);
-                                    await this.Contour.BuildLine(new CadAnchor(point.X - CanvasView.ZeroPoint.X, point.Y - CanvasView.ZeroPoint.Y));
+                                    await this.Contour.BuildLine(new CadAnchor(point.X - CanvasView.ZeroPoint.X, point.Y - CanvasView.ZeroPoint.Y), false);
                                 }
                             }
 

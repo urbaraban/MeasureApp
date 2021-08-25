@@ -24,5 +24,8 @@ namespace SureMeasure.Common
 		public const string PhotoGallery = "\uE7C5";
 		public const string Calculator = "\uE8EF";
 		public const string Map = "\uE707";
+		public const string Touch = "\uE815";
+		public const string StepByStep = "\uF003";
+		public const string FromPoint = "\uF0B9";
 	}
 }

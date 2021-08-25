@@ -1,6 +1,7 @@
 ﻿using DrawEngine;
 using DrawEngine.Constraints;
 using Plugin.Segmented.Control;
+using SureMeasure.Common;
 using SureMeasure.Orders;
 using SureMeasure.Tools;
 using SureMeasure.Views.OrderPage.Canvas;
@@ -29,9 +30,9 @@ namespace SureMeasure.Views.OrderPage
 
             AppShell.LenthUpdated += AppShell_LenthUpdated;
 
-            DrawMethodSelecter.Children.Add(new SegmentedControlOption() { Text = "Step By Step", Item = DrawMethod.StepByStep });
-            DrawMethodSelecter.Children.Add(new SegmentedControlOption() { Text = "From Point", Item = DrawMethod.FromPoint });
-            DrawMethodSelecter.Children.Add(new SegmentedControlOption() { Text = "Manual", Item = DrawMethod.Manual });
+            DrawMethodSelecter.Children.Add(new SegmentedControlOption() { Text = IconFont.StepByStep, Item = DrawMethod.StepByStep });
+            DrawMethodSelecter.Children.Add(new SegmentedControlOption() { Text = IconFont.FromPoint, Item = DrawMethod.FromPoint });
+            DrawMethodSelecter.Children.Add(new SegmentedControlOption() { Text = IconFont.Touch, Item = DrawMethod.Manual });
 
             if (this.MainCanvas.BindingContext != null)
             {

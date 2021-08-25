@@ -168,7 +168,7 @@
                                                         WidthRequest="50">
                                                         <Button.ImageSource>
                                                             <FontImageSource
-                                                                FontFamily="SegoeAssets"
+                                                                FontFamily="SegoeMDL2Assets"
                                                                 Glyph="{x:Static common:IconFont.Phone}"
                                                                 Size="24"
                                                                 Color="Gray" />
@@ -184,7 +184,7 @@
                                                         WidthRequest="50">
                                                         <Button.ImageSource>
                                                             <FontImageSource
-                                                                FontFamily="SegoeAssets"
+                                                                FontFamily="SegoeMDL2Assets"
                                                                 Glyph="{x:Static common:IconFont.Car}"
                                                                 Size="24"
                                                                 Color="Gray" />
@@ -305,10 +305,10 @@
                         <Button
                             Grid.Column="0"
                             Command="{Binding AddOrder}"
-                            FontFamily="SegoeAssets">
+                            FontFamily="SegoeMDL2Assets">
                             <Button.ImageSource>
                                 <FontImageSource
-                                    FontFamily="SegoeAssets"
+                                    FontFamily="SegoeMDL2Assets"
                                     Glyph="{x:Static common:IconFont.Plus}"
                                     Size="20"
                                     Color="White" />
@@ -321,7 +321,7 @@
                             Command="{Binding RemoveOrder}">
                             <Button.ImageSource>
                                 <FontImageSource
-                                    FontFamily="SegoeAssets"
+                                    FontFamily="SegoeMDL2Assets"
                                     Glyph="{x:Static common:IconFont.Remove}"
                                     Size="20"
                                     Color="White" />

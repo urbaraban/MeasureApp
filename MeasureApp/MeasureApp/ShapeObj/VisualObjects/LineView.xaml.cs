@@ -131,7 +131,7 @@ namespace SureMeasure.ShapeObj.VisualObjects
         #region Command
         private ICommand CallValueDialog => new Command(async () =>
         {
-            string callresult = await AppShell.Instance.DisplayPromtDialog(_lenthConstrait.Variable.Name, _lenthConstrait.Lenth.ToString());
+            string callresult = await AppShell.Instance.DisplayPromtDialog(_lenthConstrait.Variable.Name, _lenthConstrait.Value.ToString());
             if (callresult != null)
             {
                 this._lenthConstrait.Value = double.Parse(callresult);
@@ -140,8 +140,7 @@ namespace SureMeasure.ShapeObj.VisualObjects
 
         private ICommand Free => new Command(async () =>
         {
-            this._lenthConstrait.Value = -1;
-            this._lenthConstrait.Fix(false);
+            this._lenthConstrait.IsFix = !this._lenthConstrait.IsFix;
         });
 
         private ICommand GetMeasure => new Command(() =>
@@ -198,11 +197,12 @@ namespace SureMeasure.ShapeObj.VisualObjects
         {
             ICommand Position = new Command(() =>
             {
-                this._lenthConstrait.Fix(!this._lenthConstrait.IsFix);
+                this._lenthConstrait.Anchor1.IsFix = !this._lenthConstrait.Anchor1.IsFix;
+                this._lenthConstrait.Anchor2.IsFix = this._lenthConstrait.Anchor1.IsFix;
             });
             ICommand Lenth = new Command(() =>
             {
-                this._lenthConstrait.Value = this._lenthConstrait.Lenth;
+                this._lenthConstrait.IsFix = !this._lenthConstrait.IsFix;
             });
 
             SheetMenu menu = new SheetMenu(new System.Collections.Generic.List<SheetMenuItem>()

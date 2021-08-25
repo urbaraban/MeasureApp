@@ -224,7 +224,7 @@ namespace SureMeasure
                     {
                         dxfFile.Entities.Add(new DxfLine(
                             new DxfPoint(constraintLenth.Anchor1.Point.X, constraintLenth.Anchor1.Point.Y, 0),
-                            new DxfPoint(constraintLenth.Anchor1.Point.X, constraintLenth.Anchor1.Point.Y, 0)));
+                            new DxfPoint(constraintLenth.Anchor2.Point.X, constraintLenth.Anchor2.Point.Y, 0)));
                     }
                 }
                 string path = Path.ChangeExtension(Path.Combine(FileSystem.CacheDirectory, Path.GetTempFileName()), ".dxf");

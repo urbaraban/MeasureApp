@@ -11,7 +11,7 @@
              AnchorY="0.5"
              Rotation="{Binding Vector, Converter={StaticResource VectorToAngle}}"
              HeightRequest="{Binding Source={RelativeSource AncestorType={x:Type canvas:CanvasView}, AncestorLevel=0}, Path=CommonScale, Converter={StaticResource HeightConverter}}"
-             WidthRequest="{Binding Lenth}" 
+             WidthRequest="{Binding Value}" 
              TranslationX="{Binding Anchor1.Point.X, Converter={StaticResource PositionXConverter}, ConverterParameter={Binding Self}}"
              TranslationY="{Binding Anchor1.Point.Y, Converter={StaticResource PositionYConverter}}">
     <ContentView.Resources>
@@ -43,7 +43,7 @@
                 Grid.Column="0"
                 Margin="0"
                 StrokeThickness="{Binding Source={RelativeSource AncestorType={x:Type canvas:CanvasView}, AncestorLevel=0}, Path=CommonScale, Converter={StaticResource ThinkessConverter}}"
-                X1="0" Y1="0" X2="{Binding Lenth}" Y2="0" 
+                X1="0" Y1="0" X2="{Binding Value}" Y2="0" 
                   Stroke="{Binding Source={RelativeSource AncestorLevel=1, AncestorType={x:Type visualobjects:LineView}},
                     Path=ObjectStatus, Converter={StaticResource StatusColorConverter}}"
                   StrokeDashArray="{Binding IsSupport, Converter={StaticResource SupportDashConverter}}"/>
@@ -56,7 +56,7 @@
                 <Label 
                     HorizontalOptions="Center" 
                     VerticalOptions="Center" 
-                    Text="{Binding Lenth, Converter={StaticResource RoundConverter}}"
+                    Text="{Binding Value, Converter={StaticResource RoundConverter}}"
                     FontSize="Micro"
                     ScaleY="-1"/>
             </Frame>
