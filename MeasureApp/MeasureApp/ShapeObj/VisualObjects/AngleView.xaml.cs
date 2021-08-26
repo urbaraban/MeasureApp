@@ -76,7 +76,7 @@ namespace SureMeasure.ShapeObj.VisualObjects
         private ICommand SendMeasure => new Command(() =>
         {
             CadCanvasPage.MeasureVariable = this.constraintAngle.Variable;
-            AppShell.BLEDevice.OnDevice();
+            AppShell.BLEDevice.IsOn = true;
         });
         private ICommand InvertAngle => new Command(() =>
         {

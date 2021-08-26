@@ -162,18 +162,24 @@ namespace SureMeasure.Views.Canvas
                     CadAnchor cadPoint = new CadAnchor(point.X - CanvasView.ZeroPoint.X, point.Y - CanvasView.ZeroPoint.Y);
                     this.Contour.Add(new LenthConstraint(dotView.Anchor, cadPoint, -1));
                     this.Contour.Add(cadPoint);
-
-
-                    /*ICommand ConnectPoint = new Command(async () =>
+                }
+                else if (activeObject1 is LineView lenth1 && activeObject2 is LineView lenth2)
+                {
+                    ICommand MakeAngle = new Command(async () =>
                     {
-                       
+                        this.Contour.Add(new AngleConstraint(lenth1.Lenth, lenth2.Lenth));
+                    });
+                    ICommand Equalse = new Command(() =>
+                    {
+                        lenth2.Lenth.Variable = lenth1.Lenth.Variable;
                     });
 
                     SheetMenu sheetMenu = new SheetMenu(new List<SheetMenuItem>() {
-                        new SheetMenuItem(ConnectPoint, "{CONNECT_POINT}"),
+                        new SheetMenuItem(MakeAngle, "{MAKE_ANGLE}"),
+                        new SheetMenuItem(Equalse, "{EQUALSE}")
                     });
 
-                    sheetMenu.ShowMenu(this);*/
+                    sheetMenu.ShowMenu(this, "{DRAGOPERATION}");
                 }
             }
         }

@@ -66,7 +66,7 @@ namespace SureMeasure.Views.OrderPage
         {
             if (MeasureVariable != null)
             {
-                MeasureVariable.Value = MeasureVariable.IsLenth == true ? e.Item1 : e.Item2;
+                MeasureVariable.Value = e.Item1;
                 MeasureVariable = null;
             }
             else
@@ -157,7 +157,7 @@ namespace SureMeasure.Views.OrderPage
         public ICommand GetDevice => new Command(() => {
             if (AppShell.BLEDevice != null)
             {
-                AppShell.BLEDevice.OnDevice();
+                AppShell.BLEDevice.IsOn = !AppShell.BLEDevice.IsOn;
             }
         });
     }

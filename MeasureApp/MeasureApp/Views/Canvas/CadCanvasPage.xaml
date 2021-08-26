@@ -12,7 +12,11 @@
     Title="Drawing"
     x:DataType="orders:Order"
     BindingContext="{Binding Source={x:Static shell:AppShell.SelectOrder}}">
-    <ContentPage.Resources />
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <canvas:OnButtonScale x:Key="OnButtonScale"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="ID" />
         <ToolbarItem Text="{Binding ID}" />
@@ -237,6 +241,7 @@
                             CornerRadius="30"
                             FontSize="Large"
                             HeightRequest="60"
+                            AnchorX="0.5" AnchorY="0.5"
                             HorizontalOptions="Center"
                             VerticalOptions="Center"
                             WidthRequest="60">
@@ -248,6 +253,7 @@
                                     Color="White" />
                             </Button.ImageSource>
                         </Button>
+                    <!--Scale="{Binding Source={StaticResource shell:AppShell.BLEDevice}, Path=IsOn, Converter={StaticResource OnButtonScale}}"-->
                     <Button
                             Grid.Column="0"
                             x:DataType="orderpage:CadCanvasPage"

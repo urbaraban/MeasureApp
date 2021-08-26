@@ -50,20 +50,27 @@ namespace SureMeasure.Data
                     //add lenth constraint
                     foreach (XElement XLenth in XContour.Element("Objects").Elements("Lenth"))
                     {
-                        contour.Add(new LenthConstraint(
-                            contour.GetPointByName(XLenth.Attribute("P1").Value),
-                            contour.GetPointByName(XLenth.Attribute("P2").Value),
-                            double.Parse(XLenth.Attribute("Lenth").Value, XMLReadWriter.dblfrm),
-                            bool.Parse(XLenth.Attribute("Support").Value)));
+                        OrientationStat orientationStat = (OrientationStat)int.Parse(XLenth.Attribute("Orientation").Value);
+                        contour.Add(new LenthConstraint()
+                        {
+                            Anchor1 = contour.GetPointByName(XLenth.Attribute("P1").Value),
+                            Anchor2 = contour.GetPointByName(XLenth.Attribute("P2").Value),
+                            Variable = new CadVariable(double.Parse(XLenth.Attribute("Lenth").Value, XMLReadWriter.dblfrm)),
+                            Orientation = (OrientationStat)int.Parse(XLenth.Attribute("Orientation").Value),
+                            IsSupport = bool.Parse(XLenth.Attribute("Support").Value),
+                            IsFix = bool.Parse(XLenth.Attribute("Fix").Value)
+                        });
                     }
                     //add angle constraint
                     foreach (XElement XAngle in XContour.Element("Objects").Elements("Angle"))
                     {
-                        contour.Add(new AngleConstraint(
-                            contour.GetLenthByName(XAngle.Attribute("Lenth1").Value),
-                            contour.GetLenthByName(XAngle.Attribute("Lenth2").Value),
-                            double.Parse(XAngle.Attribute("Angle").Value, XMLReadWriter.dblfrm)
-                            ));
+                        contour.Add(new AngleConstraint()
+                        {
+                            Lenth1 = contour.GetLenthByName(XAngle.Attribute("Lenth1").Value),
+                            Lenth2 = contour.GetLenthByName(XAngle.Attribute("Lenth2").Value),
+                            Variable = new CadVariable(double.Parse(XAngle.Attribute("Angle").Value, XMLReadWriter.dblfrm)),
+                            IsFix = bool.Parse(XAngle.Attribute("Fix").Value)
+                        });                          
                     }
                 }
 
@@ -127,16 +134,18 @@ namespace SureMeasure.Data
                         new XAttribute("P1", constraintLenth.Anchor1.ID),
                         new XAttribute("P2", constraintLenth.Anchor2.ID),
                         new XAttribute("Lenth", constraintLenth.Value),
-                        new XAttribute("Orientation", constraintLenth.Orientation),
+                        new XAttribute("Orientation", (int)constraintLenth.Orientation),
                         new XAttribute("Support", constraintLenth.IsSupport),
-                        new XAttribute("Select", constraintLenth.IsSelect));
+                        new XAttribute("Select", constraintLenth.IsSelect),
+                        new XAttribute("Fix", constraintLenth.IsFix));
                 }
                 else if (cadObject is AngleConstraint constraintAngle)
                 {
                     return new XElement("Angle",
                         new XAttribute("Lenth1", constraintAngle.Lenth1.ID),
                         new XAttribute("Lenth2", constraintAngle.Lenth2.ID),
-                        new XAttribute("Angle", constraintAngle.Value));
+                        new XAttribute("Angle", constraintAngle.Value),
+                        new XAttribute("Fix", constraintAngle.IsFix));
                 }
                 return null;
             }

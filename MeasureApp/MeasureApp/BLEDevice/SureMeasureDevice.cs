@@ -1,12 +1,31 @@
 ﻿using InTheHand.Bluetooth;
 using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace SureMeasure.BLEDevice
 {
-    public class SureMeasureDevice : DistanceMeter
+    public class SureMeasureDevice : IDistanceMeter
     {
+        public event EventHandler<Tuple<double, double>> LenthUpdated;
+
+        public bool IsConnected { get; private set; } = false;
+
+        public bool IsOn
+        {
+            get => ison;
+            set
+            {
+                ison = value;
+                TurnDevice();
+                OnPropertyChanged("IsOn");
+            }
+        }
+        private bool ison = false;
+
         public BluetoothDevice Device
         {
             get => this._device;
@@ -33,7 +52,6 @@ namespace SureMeasure.BLEDevice
         }
         private GattCharacteristic _gattCharacteristic;
 
-        public event EventHandler<Tuple<double, double>> LenthUpdated;
 
         public  SureMeasureDevice(BluetoothDevice bluetoothDevice)
         {
@@ -85,15 +103,22 @@ namespace SureMeasure.BLEDevice
             }
         }
 
-        public void OnDevice()
+        public async Task<bool> TurnDevice()
         {
-            return;
+            return false;
         }
 
         private async void Device_GattServerDisconnected(object sender, EventArgs e)
         {
             var device = sender as BluetoothDevice;
             await device.Gatt.ConnectAsync();
+        }
+
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        public void OnPropertyChanged([CallerMemberName] string prop = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
     }
 }

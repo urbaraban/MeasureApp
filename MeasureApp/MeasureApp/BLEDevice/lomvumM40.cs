@@ -1,13 +1,34 @@
 ﻿using InTheHand.Bluetooth;
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace SureMeasure.BLEDevice
 {
-    public class lomvumM40 : DistanceMeter
+    public class lomvumM40 : IDistanceMeter
     {
+        public byte[] OnMsg { get; } = new byte[] { 0x64, 0x74, 0x0d, 0x0a, 0x00 };
+
+        public event EventHandler<Tuple<double, double>> LenthUpdated;
+
+        public bool IsConnected { get; private set; } = false;
+
+        public bool IsOn
+        {
+            get => ison;
+            set
+            {
+                ison = value;
+                TurnDevice();
+                OnPropertyChanged("IsOn");
+            }
+        }
+        private bool ison = false;
+
         public BluetoothDevice Device
         {
             get => this._device;
@@ -40,9 +61,6 @@ namespace SureMeasure.BLEDevice
         }
         private GattCharacteristic _gattCharacteristic;
 
-
-        public event EventHandler<Tuple<double, double>> LenthUpdated;
-
         public lomvumM40(BluetoothDevice device)
         {
             LoadDevice(device);
@@ -73,28 +91,6 @@ namespace SureMeasure.BLEDevice
                                 {
                                     this.GattCharacteristic = characteristic;
                                 }
-                                /*
-                                foreach (var descriptors in await characteristic.GetDescriptorsAsync())
-                                {
-                                    Debug.WriteLine($"Descriptor:{descriptors.Uuid}");
-
-                                    var val2 = await descriptors.ReadValueAsync();
-
-                                    if (descriptors.Uuid == GattDescriptorUuids.ClientCharacteristicConfiguration)
-                                    {
-                                        Debug.WriteLine($"Notifying:{val2[0] > 0}");
-                                    }
-                                    else if (descriptors.Uuid == GattDescriptorUuids.CharacteristicUserDescription)
-                                    {
-                                        Debug.WriteLine($"UserDescription:{ByteArrayToString(val2)}");
-                                    }
-                                    else
-                                    {
-                                        Debug.WriteLine(ByteArrayToString(val2));
-                                    }
-
-                                }
-                                */
                             }
 
                             Debug.Unindent();
@@ -108,6 +104,9 @@ namespace SureMeasure.BLEDevice
         {
             if (e.Value != null)
             {
+                ison = Equality(this.GattCharacteristic.Value, OnMsg);
+                OnPropertyChanged("IsOn");
+
                 string value = Encoding.ASCII.GetString(e.Value);
 
                 Regex regex = new Regex(@"[^\d]");
@@ -122,16 +121,44 @@ namespace SureMeasure.BLEDevice
             throw new NotImplementedException();
         }
 
-        public async void OnDevice()
+        private async void TurnDevice()
         {
-            byte[] msg = new byte[] { 0x64, 0x74, 0x0d, 0x0a, 0x00 };
-            await this.GattCharacteristic.WriteValueWithResponseAsync(msg);
+            await this.GattCharacteristic.WriteValueWithResponseAsync(OnMsg);
+            ison = Equality(this.GattCharacteristic.Value, OnMsg);
+            OnPropertyChanged("IsOn");
+        }
+
+        private bool Equality(byte[] a1, byte[] b1)
+        {
+            int i;
+            if (a1.Length == b1.Length)
+            {
+                i = 0;
+                while (i < a1.Length && (a1[i] == b1[i])) //Earlier it was a1[i]!=b1[i]
+                {
+                    i++;
+                }
+                if (i == a1.Length)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private async void Device_GattServerDisconnected(object sender, EventArgs e)
         {
+            IsConnected = false;
             var device = sender as BluetoothDevice;
             await device.Gatt.ConnectAsync();
+            IsConnected = device.Gatt.IsConnected;
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        public void OnPropertyChanged([CallerMemberName] string prop = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
     }
 }

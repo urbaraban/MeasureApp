@@ -13,40 +13,40 @@ namespace SureMeasure.ShapeObj.VisualObjects
     {
         public bool IsSelect
         {
-            get => this._lenthConstrait.IsSelect;
+            get => this.Lenth.IsSelect;
             set
             {
-                this._lenthConstrait.IsSelect = value;
+                this.Lenth.IsSelect = value;
                 OnPropertyChanged("ObjectStatus");
             }
         }
 
         public bool IsFix
         {
-            get => this._lenthConstrait.IsFix;
+            get => this.Lenth.IsFix;
             set
             {
-                this._lenthConstrait.IsFix = value;
+                this.Lenth.IsFix = value;
                 OnPropertyChanged("ObjectStatus");
             }
         }
 
         public bool IsBase
         {
-            get => this._lenthConstrait.IsBase;
+            get => this.Lenth.IsBase;
             set
             {
-                this._lenthConstrait.IsBase = value;
+                this.Lenth.IsBase = value;
                 OnPropertyChanged("ObjectStatus");
             }
         }
 
         public bool IsSupport
         {
-            get => this._lenthConstrait.IsSupport;
+            get => this.Lenth.IsSupport;
             set
             {
-                this._lenthConstrait.IsSupport = value;
+                this.Lenth.IsSupport = value;
                 OnPropertyChanged("ObjectStatus");
             }
         }
@@ -55,7 +55,7 @@ namespace SureMeasure.ShapeObj.VisualObjects
         {
             get
             {
-                if (this._lenthConstrait != null)
+                if (this.Lenth != null)
                 {
                     if (this.IsSelect == true) return ObjectStatus.Select;
                     else if (this.IsBase == true) return ObjectStatus.Base;
@@ -66,7 +66,7 @@ namespace SureMeasure.ShapeObj.VisualObjects
             }
         }
 
-        private LenthConstraint _lenthConstrait => (LenthConstraint)this.BindingContext;
+        public LenthConstraint Lenth => (LenthConstraint)this.BindingContext;
 
         public virtual SheetMenu SheetMenu { get => this._sheetMenu; set => this._sheetMenu = value; }
         private SheetMenu _sheetMenu;
@@ -125,30 +125,30 @@ namespace SureMeasure.ShapeObj.VisualObjects
 
         public override string ToString()
         {
-            return $"LINE  {this._lenthConstrait.ID}";
+            return $"LINE  {this.Lenth.ID}";
         }
 
         #region Command
         private ICommand CallValueDialog => new Command(async () =>
         {
-            string callresult = await AppShell.Instance.DisplayPromtDialog(_lenthConstrait.Variable.Name, _lenthConstrait.Value.ToString());
+            string callresult = await AppShell.Instance.DisplayPromtDialog(Lenth.Variable.Name, Lenth.Value.ToString());
             if (callresult != null)
             {
-                this._lenthConstrait.Value = double.Parse(callresult);
+                this.Lenth.Value = double.Parse(callresult);
             }
         });
 
         private ICommand Free => new Command(async () =>
         {
-            this._lenthConstrait.IsFix = !this._lenthConstrait.IsFix;
+            this.Lenth.IsFix = !this.Lenth.IsFix;
         });
 
         private ICommand GetMeasure => new Command(() =>
         {
-            CadCanvasPage.MeasureVariable = this._lenthConstrait.Variable;
+            CadCanvasPage.MeasureVariable = this.Lenth.Variable;
             if (AppShell.BLEDevice != null)
             {
-                AppShell.BLEDevice.OnDevice();
+                AppShell.BLEDevice.IsOn = true;
             }
         });
         private ICommand SupportLine => new Command(() =>
@@ -160,25 +160,25 @@ namespace SureMeasure.ShapeObj.VisualObjects
         {
             ICommand Verical = new Command(() =>
             {
-                this._lenthConstrait.Orientation = OrientationStat.Vertical;
+                this.Lenth.Orientation = OrientationStat.Vertical;
             });
             ICommand Horizontal = new Command(() =>
             {
-                this._lenthConstrait.Orientation = OrientationStat.Horizontal;
+                this.Lenth.Orientation = OrientationStat.Horizontal;
             });
             ICommand Free_Orientation = new Command(() =>
             {
-                this._lenthConstrait.Orientation = OrientationStat.Free;
+                this.Lenth.Orientation = OrientationStat.Free;
             });
 
             ICommand Fix_Orientation = new Command(() =>
             {
-                this._lenthConstrait.Orientation = OrientationStat.Fix;
+                this.Lenth.Orientation = OrientationStat.Fix;
             });
 
             ICommand Dynamic_Orientation = new Command(() =>
             {
-                this._lenthConstrait.Orientation = OrientationStat.Dynamic;
+                this.Lenth.Orientation = OrientationStat.Dynamic;
             });
 
             SheetMenu menu = new SheetMenu(new System.Collections.Generic.List<SheetMenuItem>()
@@ -189,7 +189,7 @@ namespace SureMeasure.ShapeObj.VisualObjects
                 new SheetMenuItem(Fix_Orientation, "{FIX_ORIENTATION}"),
                 new SheetMenuItem(Dynamic_Orientation, "{DYNAMIC_ORIENTATION}"),
             });
-            menu.ShowMenu(this, _lenthConstrait.ToString());
+            menu.ShowMenu(this, Lenth.ToString());
         });
 
 
@@ -197,12 +197,12 @@ namespace SureMeasure.ShapeObj.VisualObjects
         {
             ICommand Position = new Command(() =>
             {
-                this._lenthConstrait.Anchor1.IsFix = !this._lenthConstrait.Anchor1.IsFix;
-                this._lenthConstrait.Anchor2.IsFix = this._lenthConstrait.Anchor1.IsFix;
+                this.Lenth.Anchor1.IsFix = !this.Lenth.Anchor1.IsFix;
+                this.Lenth.Anchor2.IsFix = this.Lenth.Anchor1.IsFix;
             });
             ICommand Lenth = new Command(() =>
             {
-                this._lenthConstrait.IsFix = !this._lenthConstrait.IsFix;
+                this.Lenth.IsFix = !this.Lenth.IsFix;
             });
 
             SheetMenu menu = new SheetMenu(new System.Collections.Generic.List<SheetMenuItem>()
@@ -214,28 +214,28 @@ namespace SureMeasure.ShapeObj.VisualObjects
         });
         private ICommand Remove => new Command(() =>
         {
-            this._lenthConstrait.TryRemove();
+            this.Lenth.TryRemove();
         });
 
         private ICommand Split => new Command(() =>
         {
-            this._lenthConstrait.MakeSplit();
+            this.Lenth.MakeSplit();
         });
         #endregion
         double IMoveObject.X 
         { 
-            get => this._lenthConstrait.Anchor1.Point.X;
+            get => this.Lenth.Anchor1.Point.X;
             set
             {
-                this._lenthConstrait.Anchor1.Point.X = value;
+                this.Lenth.Anchor1.Point.X = value;
             }
         }
         double IMoveObject.Y 
         {
-            get => this._lenthConstrait.Anchor1.Point.Y;
+            get => this.Lenth.Anchor1.Point.Y;
             set
             {
-                this._lenthConstrait.Anchor1.Point.Y = value;
+                this.Lenth.Anchor1.Point.Y = value;
             }
         }
 

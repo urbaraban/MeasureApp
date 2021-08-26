@@ -62,7 +62,7 @@ namespace SureMeasure
 
         public static AppShell Instance { get; set; }
 
-        public static DistanceMeter BLEDevice
+        public static IDistanceMeter BLEDevice
         {
             get => AppShell._bledevice;
             set
@@ -80,7 +80,7 @@ namespace SureMeasure
         }
         private static void Bledevice_LenthUpdated(object sender, Tuple<double, double> e) => LenthUpdated?.Invoke(null, e);
 
-        private static DistanceMeter _bledevice;
+        private static IDistanceMeter _bledevice;
 
         private readonly List<BluetoothDevice> Devices = new List<BluetoothDevice>();
 

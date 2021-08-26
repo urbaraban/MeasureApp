@@ -22,4 +22,18 @@ namespace SureMeasure.Views.Canvas
         }
     }
 
+    public class OnButtonScale : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            bool on = (bool)value;
+            return on == true ? 5 : 1;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+    }
+
 }
