@@ -8,16 +8,28 @@
              x:Class="SureMeasure.ShapeObj.VisualObjects.DotView"
              x:DataType="cadobjects:CadAnchor"
              AnchorX="0.5" AnchorY="0.5"
-             TranslationX="{Binding Point.X, Mode=TwoWay, Converter={StaticResource CentrePointConverter}}"
-             TranslationY="{Binding Point.Y, Mode=TwoWay, Converter={StaticResource CentrePointConverter}}"
+             IsVisible="{Binding Source={RelativeSource AncestorType={x:Type canvas:CanvasView}, AncestorLevel=1}, Path=ShowAnchor}"
              Scale="{Binding Source={RelativeSource AncestorType={x:Type canvas:CanvasView}, AncestorLevel=1}, Path=CommonScale, Converter={StaticResource ScaleConverter}}">
-
+              <!--TranslationX="{Binding Point.X, Mode=TwoWay, Converter={StaticResource CentrePointConverter}}"-->
+    <ContentView.TranslationX>
+        <MultiBinding Converter="{StaticResource AnchorCenterPosition}">
+            <Binding Path="Point.X"/>
+            <Binding Source="{RelativeSource Self}" Path="Scale" Mode="OneWay"/>
+        </MultiBinding>
+    </ContentView.TranslationX>
+    <ContentView.TranslationY>
+        <MultiBinding Converter="{StaticResource AnchorCenterPosition}">
+            <Binding Path="Point.Y"/>
+            <Binding Source="{RelativeSource Self}" Path="Scale" Mode="OneWay"/>
+        </MultiBinding>
+    </ContentView.TranslationY>
     <ContentView.Resources>
         <ResourceDictionary>
             <visualobjects:StatusColorConverter x:Key="StatusColorConverter" />
             <visualobjects:CentrePointConverter x:Key="CentrePointConverter" />
             <visualobjects:ScaleConverter x:Key="ScaleConverter"/>
-            <visualobjects:AllTrueMultiConverter x:Key="MultiConverter"/>
+            <visualobjects:AnchorCenterPosition x:Key="AnchorCenterPosition"/>
+            <x:Double x:Key="Size">30</x:Double>
         </ResourceDictionary>
     </ContentView.Resources>
   <ContentView.Content>
@@ -28,7 +40,7 @@
                  Stroke="{Binding Source={RelativeSource AncestorLevel=1, AncestorType={x:Type visualobjects:DotView}},
                     Path=ObjectStatus, Converter={StaticResource StatusColorConverter}}"
                  StrokeThickness="2"
-                HeightRequest="30" WidthRequest="30"/>
+                HeightRequest="{x:StaticResource Size}" WidthRequest="{x:StaticResource Size}"/>
             <Label HorizontalOptions="Center" VerticalOptions="Center" Text="{Binding ID}" TextColor="Gray" ScaleY="-1"/>
         </Grid>
   </ContentView.Content>

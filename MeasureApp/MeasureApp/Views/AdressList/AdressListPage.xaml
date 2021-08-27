@@ -77,7 +77,7 @@
                                 Margin="0"
                                 Padding="0"
                                 BackgroundColor="Transparent"
-                                HorizontalOptions="Center">
+                                HorizontalOptions="Start">
                                 <SwipeView BindingContext="{Binding .}">
                                     <SwipeView.RightItems>
                                         <SwipeItem

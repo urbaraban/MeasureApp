@@ -22,7 +22,6 @@
             <visualobjects:ScaleConverter x:Key="ScaleConverter"/>
             <visualobjects:RoundAngleConverter x:Key="RoundAngleConverter"/>
             <visualobjects:AngleRotateVectorConverter x:Key="AngleRotateVectorConverter"/>
-            <visualobjects:AngleLabelPosition x:Key="AngleLabelPosition"/>
             <visualobjects:PerpendecularAngleConverter x:Key="PerpendecularAngleConverter"/>
             <visualobjects:AngleValueToColor x:Key="AngleValueToColor"/>
         </ResourceDictionary>

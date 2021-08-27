@@ -49,11 +49,21 @@ namespace SureMeasure.Views.Canvas
 
         private Contour _contour;
 
+        public bool ShowAnchor
+        {
+            get => showanchor;
+            set
+            {
+                showanchor = value;
+                OnPropertyChanged("ShowAnchor");
+            }
+        }
+        private bool showanchor = true;
 
         public double CommonScale
         {
             get => (this.GroupLayout.Scale != double.PositiveInfinity ? this.GroupLayout.Scale : 1) / (draggingstatus ? 1.5 : 1);
-            set
+            private set
             {
                 SetAnchorToPoint(new TouchTrackingPoint((float)this.MainLayout.Width / 2, (float)this.MainLayout.Height / 2));
                 this.GroupLayout.Scale = value;

@@ -269,11 +269,45 @@ namespace SureMeasure.ShapeObj.VisualObjects
         }
     }
 
-    public class AngleLabelPosition : IMultiValueConverter
+    public class AnchorCenterPosition : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            return 0;
+            foreach (var value in values)
+            {
+                if (!(value is double))
+                {
+                    return 0;
+                }
+            }
+
+            double position = (double)values[0];
+            double scale = (double)values[1];
+            return position + CanvasView.ZeroPoint.X - 15;
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
+    }
+
+    public class LineYPosition : IMultiValueConverter
+    {
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            foreach (var value in values)
+            {
+                if (!(value is double))
+                {
+                    return 0;
+                }
+            }
+
+            double position = (double)values[0];
+            double scale = (double)values[1];
+            double height = (double)values[2];
+            return position + CanvasView.ZeroPoint.X - height * scale / 2;
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
