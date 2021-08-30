@@ -157,7 +157,7 @@ namespace SureMeasure.ShapeObj.VisualObjects
 
         private ICommand Split => new Command(() =>
         {
-            Anchor.MakeSplit();
+            Anchor.MakeSplit(0);
         });
         #endregion
 

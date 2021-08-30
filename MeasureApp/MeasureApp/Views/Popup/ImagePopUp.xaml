@@ -33,6 +33,5 @@
                 <Button Clicked="CloseButton_Clicked" Text="close" />
             </StackLayout>
         </Frame>
-
     </StackLayout>
 </pages:PopupPage>

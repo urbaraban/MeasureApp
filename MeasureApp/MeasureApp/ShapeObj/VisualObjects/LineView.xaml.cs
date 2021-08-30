@@ -1,6 +1,8 @@
 ﻿using DrawEngine.Constraints;
+using Rg.Plugins.Popup.Extensions;
 using SureMeasure.ShapeObj.Interface;
 using SureMeasure.Views.OrderPage;
+using SureMeasure.Views.Popup;
 using System.Windows.Input;
 using Xamarin.Forms;
 using Xamarin.Forms.Shapes;
@@ -217,9 +219,14 @@ namespace SureMeasure.ShapeObj.VisualObjects
             this.Lenth.TryRemove();
         });
 
-        private ICommand Split => new Command(() =>
+        private ICommand Split => new Command(async () =>
         {
-            this.Lenth.MakeSplit();
+            UpDownPopUp upDownPopUp = new UpDownPopUp(2);
+            upDownPopUp.ReturnFormDialog += (sender, count) =>
+            {
+                if (count > 1) this.Lenth.MakeSplit(count);
+            };
+            await Navigation.PushPopupAsync(upDownPopUp);
         });
         #endregion
         double IMoveObject.X 

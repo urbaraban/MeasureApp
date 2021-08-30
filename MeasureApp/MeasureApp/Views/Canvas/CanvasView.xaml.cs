@@ -169,7 +169,10 @@ namespace SureMeasure.Views.Canvas
                 else if (activeObject1 is CanvasView canvasView && activeObject2 is DotView dotView)
                 {
                     Point point = ConvertMainPoint(TouchPoint);
-                    CadAnchor cadPoint = new CadAnchor(point.X - CanvasView.ZeroPoint.X, point.Y - CanvasView.ZeroPoint.Y);
+                    CadAnchor cadPoint = new CadAnchor(point.X - CanvasView.ZeroPoint.X, point.Y - CanvasView.ZeroPoint.Y)
+                    {
+                        Order = dotView.Anchor.Order 
+                    };
                     this.Contour.Add(new LenthConstraint(dotView.Anchor, cadPoint, -1));
                     this.Contour.Add(cadPoint);
                 }

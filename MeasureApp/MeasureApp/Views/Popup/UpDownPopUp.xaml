@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<pages:PopupPage
+    xmlns:pages="http://rotorgames.com"
+    xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+    xmlns:popup ="clr-namespace:SureMeasure.Views.Popup" x:DataType="popup:UpDownPopUp"
+    x:Class="SureMeasure.Views.Popup.UpDownPopUp"
+    BindingContext="{RelativeSource Self}">
+    
+    <pages:PopupPage.Animation>
+        <pages:ScaleAnimation
+            DurationIn="400"
+            DurationOut="300"
+            EasingIn="SinOut"
+            EasingOut="SinIn"
+            HasBackgroundAnimation="True"
+            PositionIn="Bottom"
+            PositionOut="Bottom" />
+    </pages:PopupPage.Animation>
+    <pages:PopupPage.Content>
+        <StackLayout HorizontalOptions="Center" VerticalOptions="Center" Margin="40, 0, 0, 40">
+            <Frame CornerRadius="20" HorizontalOptions="Center">
+                <StackLayout VerticalOptions="Center">
+                    <Button Text="+" Command="{Binding Source={RelativeSource AncestorType={x:Type pages:PopupPage}}, Path=Plus}"/>
+                    <Entry Text="{Binding Source={RelativeSource AncestorType={x:Type pages:PopupPage}}, Path=Count}"/>
+                    <Button Text="-" Command="{Binding Source={RelativeSource AncestorType={x:Type pages:PopupPage}}, Path=Minus}"/>
+                    <Label Text="This is test label" />
+                    <StackLayout Orientation="Horizontal">
+                    <Button Text="Ok" Command="{Binding Source={RelativeSource AncestorType={x:Type pages:PopupPage}}, Path=OK}" />
+                    <Button Text="Cancel" Command="{Binding Source={RelativeSource AncestorType={x:Type pages:PopupPage}}, Path=Cancel}"/>
+                    </StackLayout>
+                </StackLayout>
+            </Frame>
+        </StackLayout>
+    </pages:PopupPage.Content>
+</pages:PopupPage>

@@ -37,14 +37,15 @@ namespace SureMeasure.Data
                     {
                         contour.Add(new CadAnchor()
                         {
-                            ID = XPoint.Attribute("ID").Value,
+                            
                             Point = new CadPoint()
                             {
                                 X = double.Parse(XPoint.Attribute("X").Value, XMLReadWriter.dblfrm),
                                 Y = double.Parse(XPoint.Attribute("Y").Value, XMLReadWriter.dblfrm)
                             },
                             IsSupport = bool.Parse(XPoint.Attribute("Support").Value),
-                            IsFix = bool.Parse(XPoint.Attribute("Fix").Value)
+                            IsFix = bool.Parse(XPoint.Attribute("Fix").Value),
+                            Order = int.Parse(XPoint.Attribute("Order").Value)
                         });
                     }
                     //add lenth constraint
@@ -122,7 +123,7 @@ namespace SureMeasure.Data
                 if (cadObject is CadAnchor cadPoint)
                 {
                     return new XElement("Point",
-                        new XAttribute("ID", cadPoint.ID),
+                        new XAttribute("Order", cadPoint.Order),
                         new XAttribute("X", cadPoint.Point.X),
                         new XAttribute("Y", cadPoint.Point.Y),
                         new XAttribute("Support", cadPoint.IsSupport),
