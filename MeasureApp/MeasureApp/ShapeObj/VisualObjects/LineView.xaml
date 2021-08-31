@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <ContentView x:Name="LineMain"
-             xmlns="http://xamarin.com/schemas/2014/forms" 
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
-             xmlns:constraints="clr-namespace:DrawEngine.Constraints;assembly=2DrawContourEngine" 
+             xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:constraints="clr-namespace:DrawEngine.Constraints;assembly=2DrawContourEngine"
              xmlns:visualobjects="clr-namespace:SureMeasure.ShapeObj.VisualObjects"
              xmlns:canvas="clr-namespace:SureMeasure.Views.Canvas"
              x:Class="SureMeasure.ShapeObj.VisualObjects.LineView"
@@ -11,14 +11,13 @@
              AnchorY="0.5"
              Rotation="{Binding Vector, Converter={StaticResource VectorToAngle}}"
              HeightRequest="{Binding Source={RelativeSource AncestorType={x:Type canvas:CanvasView}, AncestorLevel=0}, Path=CommonScale, Converter={StaticResource HeightConverter}}"
-             WidthRequest="{Binding Value}" 
-             TranslationX="{Binding Anchor1.Point.X, Converter={StaticResource PositionXConverter}, ConverterParameter={Binding Self}}"
-             TranslationY="{Binding Anchor1.Point.Y, Converter={StaticResource PositionYConverter}}">
+             WidthRequest="{Binding Value}"
+             TranslationX="{Binding Anchor1.Point.X, Converter={StaticResource PositionXConverter}, ConverterParameter={Binding Self}}">
     <ContentView.TranslationY>
-        <MultiBinding Converter="{StaticResource LineYPosition}">
-            <Binding Path="Anchor1.Point.Y"/>
-            <Binding Source="{RelativeSource Self}" Path="Scale" Mode="OneWay"/>
-            <Binding Source="{RelativeSource Self}" Path="Height" Mode="OneWay"/>
+        <MultiBinding Converter="{StaticResource CenterYPosition}">
+            <Binding Path="Anchor1.Point.Y" />
+            <Binding Source="{RelativeSource Self}" Path="Scale" Mode="OneWay" />
+            <Binding Source="{RelativeSource Self}" Path="Height" Mode="OneWay" />
         </MultiBinding>
     </ContentView.TranslationY>
     <ContentView.Resources>
@@ -28,47 +27,46 @@
             <visualobjects:SupportDashConverter x:Key="SupportDashConverter" />
             <visualobjects:YPointConverter x:Key="PositionYConverter" />
             <visualobjects:XPointConverter x:Key="PositionXConverter" />
-            <visualobjects:LineThinkessConverter x:Key="ThinkessConverter"/>
-            <visualobjects:LineHeightConverter x:Key="HeightConverter"/>
-            <visualobjects:ScaleConverter x:Key="ScaleConverter"/>
-            <visualobjects:RoundConverter x:Key="RoundConverter"/>
-            <visualobjects:FrameAngleConverter x:Key="FrameAngleConverter"/>
-            <visualobjects:VectorToAngle x:Key="VectorToAngle"/>
-            <visualobjects:LineYPosition x:Key="LineYPosition"/>
+            <visualobjects:LineThinkessConverter x:Key="ThinkessConverter" />
+            <visualobjects:LineHeightConverter x:Key="HeightConverter" />
+            <visualobjects:ScaleConverter x:Key="ScaleConverter" />
+            <visualobjects:RoundConverter x:Key="RoundConverter" />
+            <visualobjects:FrameAngleConverter x:Key="FrameAngleConverter" />
+            <visualobjects:VectorToAngle x:Key="VectorToAngle" />
+            <visualobjects:CenterYPosition x:Key="CenterYPosition" />
         </ResourceDictionary>
     </ContentView.Resources>
     <ContentView.Content>
         <Grid x:Name="MainGrid" Padding="0" Margin="0">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1"/>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="1"/>
+                <ColumnDefinition Width="1" />
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="1" />
             </Grid.ColumnDefinitions>
             <Line
                 HorizontalOptions="CenterAndExpand"
                 VerticalOptions="CenterAndExpand"
-                Grid.ColumnSpan="3" 
+                Grid.ColumnSpan="3"
                 Grid.Column="0"
                 Margin="0"
                 StrokeThickness="{Binding Source={RelativeSource AncestorType={x:Type canvas:CanvasView}, AncestorLevel=0}, Path=CommonScale, Converter={StaticResource ThinkessConverter}}"
-                X1="0" Y1="0" X2="{Binding Value}" Y2="0" 
+                X1="0" Y1="0" X2="{Binding Value}" Y2="0"
                   Stroke="{Binding Source={RelativeSource AncestorLevel=1, AncestorType={x:Type visualobjects:LineView}},
                     Path=ObjectStatus, Converter={StaticResource StatusColorConverter}}"
-                  StrokeDashArray="{Binding IsSupport, Converter={StaticResource SupportDashConverter}}"/>
+                  StrokeDashArray="{Binding IsSupport, Converter={StaticResource SupportDashConverter}}" />
 
             <Frame x:Name="LabelFrame" Grid.Column="1" Grid.ColumnSpan="1"
-                   VerticalOptions="Center" HorizontalOptions="Center" 
+                   VerticalOptions="Center" HorizontalOptions="Center"
                    CornerRadius="5" Padding="2" Margin="0"
                    Rotation="{Binding Vector, Converter={StaticResource FrameAngleConverter}}"
                    Scale="{Binding Source={RelativeSource AncestorType={x:Type AbsoluteLayout}, AncestorLevel=2}, Path=Scale, Converter={StaticResource ScaleConverter}}">
-                <Label 
-                    HorizontalOptions="Center" 
-                    VerticalOptions="Center" 
+                <Label
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center"
                     Text="{Binding Value, Converter={StaticResource RoundConverter}}"
                     FontSize="Micro"
-                    ScaleY="-1"/>
+                    ScaleY="-1" />
             </Frame>
         </Grid>
-        
-  </ContentView.Content>
+    </ContentView.Content>
 </ContentView>

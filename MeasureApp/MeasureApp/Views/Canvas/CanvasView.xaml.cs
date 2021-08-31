@@ -22,6 +22,8 @@ namespace SureMeasure.Views.Canvas
         public static Point ZeroPoint = new Point(5000, 5000);
         public static List<object> RunningGestureObject = new List<object>();
 
+        public object[] GridCell { get; } = new object[100];
+
         bool ITouchObject.ContainsPoint(Point InnerPoint) => true;
 
         private IStatusObject DragObjects
@@ -33,6 +35,7 @@ namespace SureMeasure.Views.Canvas
                 OnPropertyChanged("CommonScale");
             }
         }
+
         private IStatusObject dragobject;
 
         private Contour Contour
@@ -58,6 +61,7 @@ namespace SureMeasure.Views.Canvas
                 OnPropertyChanged("ShowAnchor");
             }
         }
+
         private bool showanchor = true;
 
         public double CommonScale
@@ -70,6 +74,7 @@ namespace SureMeasure.Views.Canvas
                 OnPropertyChanged("CommonScale");
             }
         }
+
         private bool draggingstatus => DragObjects != null;
 
         public CanvasView()
@@ -79,10 +84,8 @@ namespace SureMeasure.Views.Canvas
 
             this.SheetMenu = new SheetMenu(new List<SheetMenuItem>()
             {
-
             });
         }
-
 
         protected override void OnPropertyChanging([CallerMemberName] string propertyName = null)
         {
@@ -90,10 +93,8 @@ namespace SureMeasure.Views.Canvas
             Console.WriteLine($"Canvas property: {propertyName}");
         }
 
-
-
         /// <summary>
-        /// Add object on Canvas. 
+        /// Add object on Canvas.
         /// </summary>
         /// <param name="Object"></param>
         private async Task<object> Add(object Object)
@@ -171,7 +172,7 @@ namespace SureMeasure.Views.Canvas
                     Point point = ConvertMainPoint(TouchPoint);
                     CadAnchor cadPoint = new CadAnchor(point.X - CanvasView.ZeroPoint.X, point.Y - CanvasView.ZeroPoint.Y)
                     {
-                        Order = dotView.Anchor.Order 
+                        Order = dotView.Anchor.Order
                     };
                     this.Contour.Add(new LenthConstraint(dotView.Anchor, cadPoint, -1));
                     this.Contour.Add(cadPoint);
@@ -221,7 +222,6 @@ namespace SureMeasure.Views.Canvas
                 }
             }
         }
-
 
         /// <summary>
         /// Remove object
@@ -292,7 +292,6 @@ namespace SureMeasure.Views.Canvas
                         }
                     }
 
-
                     double scale = Math.Min(this.MainLayout.Width / (maxX - minX), this.MainLayout.Height / (maxY - minY));
                     this.CommonScale = scale * 0.6;
                     TranslateToPoint(new Point((minX + maxX) / 2, (minY + maxY) / 2));
@@ -303,9 +302,7 @@ namespace SureMeasure.Views.Canvas
                     Console.WriteLine("Fit Error");
                 }
             }
-
         }
-
 
         public ICommand DraggingStartObject => new Command(() =>
         {
@@ -350,6 +347,7 @@ namespace SureMeasure.Views.Canvas
                 this._sheetMenu = value;
             }
         }
+
         protected SheetMenu _sheetMenu;
 
         double IMoveObject.X
@@ -357,6 +355,7 @@ namespace SureMeasure.Views.Canvas
             get => this.GroupLayout.TranslationX;
             set => this.GroupLayout.TranslationX = value;
         }
+
         double IMoveObject.Y
         {
             get => this.GroupLayout.TranslationY;
@@ -364,6 +363,7 @@ namespace SureMeasure.Views.Canvas
         }
 
         private TouchTrackingPoint TouchPoint;
+
         private IMoveObject SelectMoveObject
         {
             get => selectMO == null ? this : selectMO;
@@ -372,6 +372,7 @@ namespace SureMeasure.Views.Canvas
                 selectMO = value;
             }
         }
+
         private IMoveObject selectMO;
         private Dictionary<long, TouchTrackingPoint> touchDictionary = new Dictionary<long, TouchTrackingPoint>();
         private double pinchLenth;
@@ -411,6 +412,7 @@ namespace SureMeasure.Views.Canvas
                     }
 
                     break;
+
                 case TouchActionType.Moved:
                     touchDictionary[args.Id] = args.Location;
 
@@ -443,6 +445,7 @@ namespace SureMeasure.Views.Canvas
                         //TranslateToPoint(centerpoint);
                     }
                     break;
+
                 case TouchActionType.Cancelled:
                 case TouchActionType.Released:
                     if (touchDictionary.Count == 1)
@@ -461,7 +464,6 @@ namespace SureMeasure.Views.Canvas
                                     await this.Contour.BuildLine(new CadAnchor(point.X - CanvasView.ZeroPoint.X, point.Y - CanvasView.ZeroPoint.Y), false);
                                 }
                             }
-
                             else if (SelectMoveObject == this)
                             {
                                 TapManager((ITouchObject)GetObjectFromPoint(args.Location, typeof(ITouchObject)));
@@ -495,13 +497,11 @@ namespace SureMeasure.Views.Canvas
                     break;
             }
 
-
             double PtPLenth(TouchTrackingPoint cadPoint1, TouchTrackingPoint cadPoint2)
             {
                 return Math.Sqrt(Math.Pow(cadPoint2.X - cadPoint1.X, 2) + Math.Pow(cadPoint2.Y - cadPoint1.Y, 2));
             }
         }
-
 
         private void TranslateToPoint(Point point)
         {
@@ -516,14 +516,14 @@ namespace SureMeasure.Views.Canvas
 
         private void SetAnchorToPoint(TouchTrackingPoint point)
         {
-            this.GroupLayout.AnchorX = (-this.GroupLayout.TranslationX + point.X ) / (this.GroupLayout.Width);
-            this.GroupLayout.AnchorY = (-this.GroupLayout.TranslationY + point.Y ) / (this.GroupLayout.Height);
+            this.GroupLayout.AnchorX = (-this.GroupLayout.TranslationX + point.X) / (this.GroupLayout.Width);
+            this.GroupLayout.AnchorY = (-this.GroupLayout.TranslationY + point.Y) / (this.GroupLayout.Height);
         }
 
         private int taps = 0;
         private bool runtimer = false;
 
-        private  void TapManager(ITouchObject touchObject)
+        private void TapManager(ITouchObject touchObject)
         {
             if (touchObject != null)
             {
@@ -544,12 +544,11 @@ namespace SureMeasure.Views.Canvas
 
                         taps = 0;
                         return false; // return true to repeat counting, false to stop timer
-                });
+                    });
                     this.runtimer = false;
                 }
             }
         }
-
 
         private object GetObjectFromPoint(TouchTrackingPoint innerPoint, Type Filter, object ignoreObject = null)
         {
@@ -557,7 +556,7 @@ namespace SureMeasure.Views.Canvas
 
             for (int i = this.ObjectLayout.Children.Count - 1; i > -1; i -= 1)
             {
-                if (this.ObjectLayout.Children[i] != ignoreObject 
+                if (this.ObjectLayout.Children[i] != ignoreObject
                     && this.ObjectLayout.Children[i].GetType().GetInterface(Filter.Name) != null)
                 {
                     if (this.ObjectLayout.Children[i] is ITouchObject touchObject)
@@ -584,8 +583,6 @@ namespace SureMeasure.Views.Canvas
 
         public void TapAction()
         {
-            
         }
     }
-
 }

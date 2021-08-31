@@ -1,50 +1,54 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
-             xmlns:drawengine="clr-namespace:DrawEngine;assembly=2DrawContourEngine" xmlns:tt="clr-namespace:TouchTracking.Forms;assembly=TouchTracking.Forms"
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:drawengine="clr-namespace:DrawEngine;assembly=2DrawContourEngine"
+             xmlns:tt="clr-namespace:TouchTracking.Forms;assembly=TouchTracking.Forms"
              x:Class="SureMeasure.Views.Canvas.CanvasView"
              x:DataType="drawengine:Contour"
              IsClippedToBounds="True" ScaleY="-1">
     <ContentView.Resources>
-        <x:Double x:Key="Width">100000</x:Double>
-        <x:Double x:Key="Height">100000</x:Double>
+        <x:Double x:Key="Width">10000</x:Double>
+        <x:Double x:Key="Height">10000</x:Double>
         <x:Double x:Key="StartX">5000</x:Double>
         <x:Double x:Key="StartY">5000</x:Double>
         <ImageSource x:Key="BackTile">Grid.svg</ImageSource>
+        <DataTemplate x:Key="BackCell">
+            <Rectangle
+                   HorizontalOptions="Start"
+                   VerticalOptions="Start"
+                   Stroke="Gray"
+                   StrokeThickness="1"
+                   WidthRequest="100"
+                   HeightRequest="100" />
+        </DataTemplate>
     </ContentView.Resources>
-    
+
     <ContentView.Content>
-        <AbsoluteLayout x:Name="MainLayout"                 
+        <AbsoluteLayout x:Name="MainLayout"
                         InputTransparent="False"
                 VerticalOptions="FillAndExpand"
                 HorizontalOptions="FillAndExpand"
                 AbsoluteLayout.LayoutFlags="All"
                 AbsoluteLayout.LayoutBounds="1,1,1,1">
-            <!--<AbsoluteLayout.GestureRecognizers>
-                <PinchGestureRecognizer PinchUpdated="PinchGestureRecognizer_PinchUpdated"/>
-                <PanGestureRecognizer  PanUpdated="PanGestureRecognizer_PanUpdated"/>
-            </AbsoluteLayout.GestureRecognizers>-->
             <AbsoluteLayout.Effects>
                 <tt:TouchEffect Capture="True" TouchAction="TouchEffect_TouchAction" />
             </AbsoluteLayout.Effects>
-            <AbsoluteLayout x:Name="GroupLayout" 
+            <AbsoluteLayout x:Name="GroupLayout"
                                 VerticalOptions="StartAndExpand"
                                 HorizontalOptions="EndAndExpand"
                                 WidthRequest="{StaticResource Width}"
                                 HeightRequest="{StaticResource Height}"
                                 TranslationX="-4900"
                                 TranslationY="-4800">
-                
 
-                <Line Stroke="Gray" X1="5000" Y1="5000" X2="5000" Y2="5100"/>
-                <Line Stroke="Gray" X1="5000" Y1="5000" X2="5100" Y2="5000"/>
+                <Line Stroke="Gray" X1="5000" Y1="5000" X2="5000" Y2="5100" />
+                <Line Stroke="Gray" X1="5000" Y1="5000" X2="5100" Y2="5000" />
 
                 <AbsoluteLayout x:Name="ObjectLayout"
                                     VerticalOptions="FillAndExpand"
                                     HorizontalOptions="FillAndExpand"
                                     AbsoluteLayout.LayoutFlags="All"
-                                    AbsoluteLayout.LayoutBounds="1,1,1,1"
-                                   />
+                                    AbsoluteLayout.LayoutBounds="1,1,1,1" />
             </AbsoluteLayout>
         </AbsoluteLayout>
     </ContentView.Content>

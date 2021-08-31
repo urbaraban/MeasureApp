@@ -292,7 +292,7 @@ namespace SureMeasure.ShapeObj.VisualObjects
         }
     }
 
-    public class LineYPosition : IMultiValueConverter
+    public class CenterYPosition : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
@@ -307,7 +307,7 @@ namespace SureMeasure.ShapeObj.VisualObjects
             double position = (double)values[0];
             double scale = (double)values[1];
             double height = (double)values[2];
-            return position + CanvasView.ZeroPoint.X - height * scale / 2;
+            return position + CanvasView.ZeroPoint.X - height / 2;
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)

@@ -3,8 +3,8 @@
     x:Class="SureMeasure.Views.OrderPage.ContourInfoPage"
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:common="clr-namespace:SureMeasure.Common"
     xmlns:shell="clr-namespace:SureMeasure"
+    xmlns:common="clr-namespace:SureMeasure.Common"
     Title="Detail"
     BindingContext="{Binding Source={x:Static shell:AppShell.SelectOrder}}">
     <ContentPage.ToolbarItems>
@@ -22,13 +22,13 @@
         <ScrollView>
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="100" />
+                    <RowDefinition Height="100" />
+                    <RowDefinition Height="100" />
+                    <RowDefinition Height="70" />
+                    <RowDefinition Height="120" />
+                    <RowDefinition Height="100" />
+                    <RowDefinition Height="100" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
@@ -37,210 +37,185 @@
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
                 <!--  Name  -->
-                <Frame
+
+                <SwipeView 
+                    HeightRequest="400"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="4"
                     Grid.Row="0"
-                    Grid.ColumnSpan="4"
-                    BorderColor="LightGray">
-                    <Grid>
-                        <Label
-                            Grid.Column="0"
-                            Grid.ColumnSpan="1"
-                            FontSize="Title"
-                            HorizontalOptions="Center"
-                            Text="{Binding ID}"
-                            VerticalOptions="Center" />
-                        <Entry
-                            Grid.Column="1"
-                            Grid.ColumnSpan="3"
-                            Text="{Binding Name}" />
-                    </Grid>
-                </Frame>
-                <Frame
-                    Grid.Row="1"
-                    Grid.ColumnSpan="4"
-                    BorderColor="LightGray">
-                    <Grid>
-                        <Picker x:Name="ContourPicker" ItemDisplayBinding="{Binding Path=ID}" />
-                    </Grid>
-                </Frame>
-                <!--  SqarePerimetr  -->
-                <Frame
-                    Grid.Row="2"
-                    Grid.ColumnSpan="2"
-                    BorderColor="LightGray">
-                    <Grid>
-                        <Label
-                            Grid.Column="0"
-                            Grid.ColumnSpan="2"
-                            FontSize="48"
-                            Text="S" />
-                        <Label
-                            Grid.Column="0"
-                            Grid.ColumnSpan="2"
-                            FontSize="48"
-                            HorizontalTextAlignment="End"
-                            Text="{Binding Area}" />
-                    </Grid>
-                </Frame>
-                <Frame
-                    Grid.Row="2"
-                    Grid.Column="2"
-                    Grid.ColumnSpan="2"
-                    BorderColor="LightGray">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto" />
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
-                        <Label
-                            Grid.Column="0"
-                            FontSize="48"
-                            Text="P" />
-                        <Label
-                            Grid.Column="1"
-                            FontSize="48"
-                            HorizontalTextAlignment="End"
-                            Text="{Binding Perimetre}" />
-                    </Grid>
-                </Frame>
-                <!--  Location  -->
-                <Frame
-                    Grid.Row="3"
-                    Grid.ColumnSpan="4"
-                    BorderColor="LightGray">
-                    <Grid>
-                        <Entry Grid.ColumnSpan="3" Text="{Binding Adress}" />
-                        <Button Grid.Column="3" Clicked="MapButton_Clicked">
-                            <Button.ImageSource>
-                                <FontImageSource
-                                    FontFamily="SegoeMDL2Assets"
-                                    Glyph="{x:Static common:IconFont.Map}"
-                                    Size="24"
-                                    Color="White" />
-                            </Button.ImageSource>
-                        </Button>
-                    </Grid>
-                </Frame>
-                <!--  Phone  -->
-                <Frame
-                    Grid.Row="4"
-                    Grid.ColumnSpan="4"
-                    BorderColor="LightGray">
-                    <Grid>
-                        <Entry
-                            Grid.ColumnSpan="2"
-                            Keyboard="Numeric"
-                            Text="{Binding Phone}" />
-                        <Button Grid.Column="2">
-                            <Button.ImageSource>
-                                <FontImageSource
-                                    FontFamily="SegoeMDL2Assets"
-                                    Glyph="{x:Static common:IconFont.PhoneBook}"
-                                    Size="24"
-                                    Color="White" />
-                            </Button.ImageSource>
-                        </Button>
-                        <Button Grid.Column="3" Clicked="CallButton_Clicked">
-                            <Button.ImageSource>
-                                <FontImageSource
-                                    FontFamily="SegoeMDL2Assets"
-                                    Glyph="{x:Static common:IconFont.Phone}"
-                                    Size="24"
-                                    Color="White" />
-                            </Button.ImageSource>
-                        </Button>
-                    </Grid>
-                </Frame>
-                <!--  Photo  -->
-                <Frame
-                    Grid.Row="5"
-                    Grid.ColumnSpan="4"
-                    BorderColor="LightGray">
-                    <StackLayout
-                        Grid.Row="0"
-                        HeightRequest="100"
-                        Orientation="Horizontal">
-                        <ScrollView
-                            HeightRequest="100"
-                            HorizontalOptions="StartAndExpand"
-                            Orientation="Horizontal">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition />
-                                    <RowDefinition />
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="auto" />
-                                    <ColumnDefinition Width="auto" />
-                                </Grid.ColumnDefinitions>
-                                <Button
-                                    Grid.Row="0"
-                                    Grid.Column="0"
-                                    Clicked="PhotoButton_Clicked">
-                                    <Button.ImageSource>
-                                        <FontImageSource
-                                            FontFamily="SegoeMDL2Assets"
-                                            Glyph="{x:Static common:IconFont.Camera}"
-                                            Size="24"
-                                            Color="White" />
-                                    </Button.ImageSource>
-                                </Button>
-                                <Button
-                                    Grid.Row="1"
-                                    Grid.Column="0"
-                                    Clicked="SelectPhotoButton_Clicked"
-                                    WidthRequest="90">
-                                    <Button.ImageSource>
-                                        <FontImageSource
-                                            FontFamily="SegoeMDL2Assets"
-                                            Glyph="{x:Static common:IconFont.PhotoGallery}"
-                                            Size="24"
-                                            Color="White" />
-                                    </Button.ImageSource>
-                                </Button>
-                                <CollectionView
+                    Grid.RowSpan="4"
+                    HorizontalOptions="StartAndExpand"
+                    VerticalOptions="Start"
+                    BackgroundColor="DarkGray">
+                    <CollectionView
                                     x:Name="ImageGallery"
                                     Grid.Row="0"
                                     Grid.RowSpan="2"
                                     Grid.Column="1"
-                                    HeightRequest="100"
                                     ItemsSource="{Binding ImagesUrls}"
                                     SelectionMode="Single">
-                                    <CollectionView.ItemsLayout>
-                                        <GridItemsLayout Orientation="Horizontal" />
-                                    </CollectionView.ItemsLayout>
-                                    <CollectionView.ItemTemplate>
-                                        <DataTemplate>
-                                            <Grid>
-                                                <Image
+                        <CollectionView.ItemsLayout>
+                            <GridItemsLayout Orientation="Horizontal" />
+                        </CollectionView.ItemsLayout>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Image
                                                     Margin="3,0,3,0"
-                                                    Aspect="AspectFit"
-                                                    HeightRequest="100"
+                                                    Aspect="AspectFill"
                                                     Source="{Binding .}">
-                                                    <Image.GestureRecognizers>
-                                                        <TapGestureRecognizer Tapped="ImageTapGestureRecognizer_Tapped" />
-                                                    </Image.GestureRecognizers>
-                                                </Image>
-                                                <ActivityIndicator BindingContext="{x:Reference ImageGallery}" IsRunning="{Binding IsLoading}" />
-                                            </Grid>
-                                        </DataTemplate>
-                                    </CollectionView.ItemTemplate>
-                                </CollectionView>
-                            </Grid>
-                        </ScrollView>
-                    </StackLayout>
-                </Frame>
-                <!--  Detail  -->
+                                        <Image.GestureRecognizers>
+                                            <TapGestureRecognizer Tapped="ImageTapGestureRecognizer_Tapped" />
+                                        </Image.GestureRecognizers>
+                                    </Image>
+                                    <ActivityIndicator BindingContext="{x:Reference ImageGallery}" IsRunning="{Binding IsLoading}" />
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </SwipeView>
+                <Label
+                    Margin="15"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    FontSize="48"
+                    TextColor="White"
+                    HorizontalOptions="Center"
+                    Text="{Binding ID}"
+                    VerticalOptions="Center" />
+                 <Entry
+                     Grid.Row="2"
+                     Grid.Column="0"
+                     Grid.ColumnSpan="3"
+                     TextColor="White"
+                     FontSize="48"
+                     Text="{Binding Name}"/>
+                <Entry Grid.ColumnSpan="3" Grid.Row="3" Text="{Binding Adress}" />
+                <Button 
+                    Grid.Column="3" 
+                    Grid.Row="3" 
+                    Padding="0"
+                    FontSize="36"
+                    BackgroundColor="Transparent"
+                    Clicked="MapButton_Clicked">
+                    <Button.ImageSource>
+                        <FontImageSource
+                                    FontFamily="SegoeMDL2Assets"
+                                    Glyph="{x:Static common:IconFont.Map}"
+                                    Size="24"
+                                    Color="White" />
+                    </Button.ImageSource>
+                </Button>
+
+
+                <StackLayout Orientation="Horizontal" HorizontalOptions="EndAndExpand" Grid.Column="2" Grid.ColumnSpan="2">
+                    <Button
+                        BackgroundColor="Transparent"
+                        Clicked="PhotoButton_Clicked">
+                        <Button.ImageSource>
+                            <FontImageSource
+                                            FontFamily="SegoeMDL2Assets"
+                                            Glyph="{x:Static common:IconFont.Camera}"
+                                            Size="24"
+                                            Color="White" />
+                        </Button.ImageSource>
+                    </Button>
+                    <Button
+                        BackgroundColor="Transparent"
+                        Clicked="SelectPhotoButton_Clicked"
+                        WidthRequest="90">
+                        <Button.ImageSource>
+                            <FontImageSource
+                                            FontFamily="SegoeMDL2Assets"
+                                            Glyph="{x:Static common:IconFont.PhotoGallery}"
+                                            Size="24"
+                                            Color="White" />
+                        </Button.ImageSource>
+                    </Button>
+                </StackLayout>
+
+
+                <!--  SqarePerimetr  -->
                 <Frame
-                    Grid.Row="6"
+                    Grid.Row="4"
+                    Grid.RowSpan="3"
                     Grid.ColumnSpan="4"
-                    BorderColor="LightGray">
+                    BorderColor="Transparent"
+                    Padding="25,0,25,0"
+                    BackgroundColor="White"
+                    CornerRadius="15">
                     <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition Width="auto" />
-                        </Grid.ColumnDefinitions>
-                        <Editor AutoSize="TextChanges" Text="{Binding Details}" />
+                        <SwipeView BackgroundColor="Azure" 
+                                   Grid.ColumnSpan="4" 
+                                   Grid.RowSpan="2"
+                                   HorizontalOptions="StartAndExpand">
+                            <CollectionView ItemsSource="{Binding Contours}">
+                                <CollectionView.ItemsLayout>
+                                    <GridItemsLayout Orientation="Horizontal"/>
+                                </CollectionView.ItemsLayout>
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Frame BackgroundColor="LightCoral" CornerRadius="15" Padding="25">
+                                            <Grid>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition/>
+                                                    <RowDefinition/>
+                                                </Grid.RowDefinitions>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition/>
+                                                </Grid.ColumnDefinitions>
+                                                <Entry
+                                                    Grid.Column="0" 
+                                                    Grid.ColumnSpan="2"
+                                                    Grid.Row="0"
+                                                    Text="{Binding Path=ID}"/>
+                                                <Label
+                                                    Grid.Row="1"
+                                                    Grid.Column="0"
+                                                    FontSize="16"
+                                                    HorizontalTextAlignment="End"
+                                                    Text="{Binding Area}" />
+                                                <Label
+                                                    Grid.Row="1"
+                                                    Grid.Column="1"
+                                                    FontSize="16"
+                                                    HorizontalTextAlignment="End"
+                                                    Text="{Binding Perimeter}" />
+                                            </Grid>
+       
+                                        </Frame>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                                
+                            </CollectionView>
+                        </SwipeView>
+                        
+                        <Editor Grid.Row="4" Grid.ColumnSpan="4" AutoSize="TextChanges" Text="{Binding Details}" />
+                        <Grid Grid.Row="3" Grid.ColumnSpan="4">
+                            <Entry
+                            Grid.ColumnSpan="2"
+                            Keyboard="Numeric"
+                            Text="{Binding Phone}" />
+                            <Button Grid.Column="2">
+                                <Button.ImageSource>
+                                    <FontImageSource
+                                    FontFamily="SegoeMDL2Assets"
+                                    Glyph="{x:Static common:IconFont.PhoneBook}"
+                                    Size="24"
+                                    Color="White" />
+                                </Button.ImageSource>
+                            </Button>
+                            <Button Grid.Column="3" Clicked="CallButton_Clicked">
+                                <Button.ImageSource>
+                                    <FontImageSource
+                                    FontFamily="SegoeMDL2Assets"
+                                    Glyph="{x:Static common:IconFont.Phone}"
+                                    Size="24"
+                                    Color="White" />
+                                </Button.ImageSource>
+                            </Button>
+                        </Grid>
                     </Grid>
                 </Frame>
             </Grid>

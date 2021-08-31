@@ -211,7 +211,7 @@ namespace SureMeasure.Orders
                 double perimetr = 0;
                 foreach (Contour contour in this.Contours)
                 {
-                    perimetr += contour.Perimetr;
+                    perimetr += contour.Perimeter;
                 }
                 this.DataItem.Perimetre = Math.Round(perimetr / 1000, 1);
                 return this.DataItem.Perimetre;
